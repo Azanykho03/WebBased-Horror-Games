@@ -1,0 +1,200 @@
+{
+  "status": "complete",
+  "started_at": "20260930T042405_117499Z",
+  "generator": "TRELLIS",
+  "fallback_used": false,
+  "output": "ghost.glb",
+  "rigged": false,
+  "animated": false,
+  "babylon_ready": true,
+  "attempts": [
+    {
+      "generator": "TRELLIS",
+      "space_id": "trellis-community/TRELLIS",
+      "status": "complete",
+      "raw_asset": ".cache\\3d-generation\\runs\\20260930T042405_117499Z\\trellis\\downloads\\48ef6411e48b77e601fa746c94d8496b0f649166a08554064f8c7e2411a13973\\sample.glb",
+      "purpose": "full-body reconstruction"
+    },
+    {
+      "generator": "TRELLIS",
+      "space_id": "trellis-community/TRELLIS",
+      "purpose": "direct face-reference head reconstruction",
+      "status": "complete",
+      "raw_asset": ".cache\\3d-generation\\face-runs\\20260930T043146_997194Z\\downloads\\ccbe07420bc211cd4cb776d712db7f42ec750802b20d9bb2d2522a43a0d271f5\\sample.glb"
+    }
+  ],
+  "face_reference": "source/ghost-face-reference.png",
+  "body_reference": "source/ghost-body-reference.jpg",
+  "face_sha256": "89a44a290825f70d6488925db10cfb653c191b357e5102f085e20eb87c429975",
+  "body_sha256": "605d64894ed0bb2ee1d125de368398bd8907dda0c5a1caf423da174e92ee3b34",
+  "generation_input": "source/ghost-combined-reference.png",
+  "generation_input_sha256": "66fbf852c217bb0f80ab404b221423d7767f00b2d8a5be49d9bbcced5d47e64d",
+  "seed": 42,
+  "texture_size_requested": 2048,
+  "reference_strategy": "Full-body reconstruction from a combined reference, followed by direct face-reference head reconstruction, fitted assembly, and head simplification.",
+  "validation": {
+    "format": "GLB 2.0",
+    "file_size_bytes": 8475252,
+    "triangles": 39713,
+    "vertices": 31816,
+    "mesh_count": 2,
+    "materials": 2,
+    "textures": true,
+    "embedded_images": 2,
+    "image_sizes": [
+      [
+        2048,
+        2048
+      ],
+      [
+        2048,
+        2048
+      ]
+    ],
+    "rigged": false,
+    "animated": false,
+    "bounds_metres": [
+      [
+        -0.4565020799636841,
+        0.0,
+        -0.4852439761161804
+      ],
+      [
+        0.4565020799636841,
+        1.850000023841858,
+        0.4852439761161804
+      ]
+    ],
+    "uvs": true,
+    "external_paths": false,
+    "validation": "basic structural, embedded-image and mesh checks; not Khronos conformance",
+    "up_axis": "Y",
+    "height_metres": 1.85,
+    "pivot": "ground, centre of body horizontal bounds",
+    "front_axis": "+Z",
+    "khronos_errors": 0,
+    "khronos_warnings": 0,
+    "khronos_report": "validation-report.json",
+    "babylon_report": "babylon-validation.json",
+    "visual_review": [
+      "full body",
+      "front",
+      "back",
+      "side",
+      "face close-up"
+    ],
+    "material_fixes": [
+      "Explicit metallicFactor=0 for skin, cloth and hair on both source meshes."
+    ]
+  },
+  "notes": [
+    "First reference supplies facial identity and the directly generated head; second reference supplies body proportions, clothing, pose and long hair.",
+    "Two overlapping textured meshes; head and body are not welded. Neck/hair junction and topology need cleanup before skeletal animation.",
+    "Facial likeness is approximate. Red eyes are baked into the base-color texture, with no emissive shader or animated mouth.",
+    "TRELLIS succeeded for both generation passes. TripoSR adapter is available but was not needed or generation-tested.",
+    "No gameplay, rigging or animations were created."
+  ],
+  "completed_at": "2026-09-30T04:45:09.744489+00:00",
+  "fallback_attempted": false,
+  "output_sha256": "6909796ed3f3973e290b35fb4f61411b65714b06ac344b93de8bc22f1a1f86f1",
+  "file_size_bytes": 8475252,
+  "textures": true,
+  "babylon_ready_scope": "Validated for static rendering; skeletal animation still requires topology cleanup and rigging.",
+  "face_refinement": {
+    "purpose": "direct face-reference head detail",
+    "face_sha256": "89a44a290825f70d6488925db10cfb653c191b357e5102f085e20eb87c429975",
+    "generator": "TRELLIS",
+    "space_id": "trellis-community/TRELLIS",
+    "seed": 42,
+    "mesh_simplify": 0.9,
+    "texture_size": 2048,
+    "raw_asset": ".cache\\3d-generation\\face-runs\\20260930T043146_997194Z\\downloads\\ccbe07420bc211cd4cb776d712db7f42ec750802b20d9bb2d2522a43a0d271f5\\sample.glb",
+    "validation": {
+      "format": "GLB 2.0",
+      "file_size_bytes": 5946308,
+      "triangles": 112002,
+      "vertices": 67360,
+      "mesh_count": 1,
+      "materials": 1,
+      "textures": true,
+      "embedded_images": 1,
+      "image_sizes": [
+        [
+          2048,
+          2048
+        ]
+      ],
+      "rigged": false,
+      "animated": false,
+      "bounds_metres": [
+        [
+          -0.1181011850479886,
+          0.0,
+          -0.1421167167180544
+        ],
+        [
+          0.1181011850479886,
+          0.31,
+          0.1421167167180544
+        ]
+      ],
+      "uvs": true,
+      "external_paths": false,
+      "validation": "basic structural, embedded-image and mesh checks; not Khronos conformance",
+      "up_axis": "Y",
+      "source_up_axis": "Y",
+      "height_metres": 0.31,
+      "pivot": "ground, centre of horizontal bounds",
+      "material_fixes": [
+        "geometry_0: set omitted metallicFactor to 0 for skin/cloth/hair"
+      ]
+    },
+    "status": "complete",
+    "output": "source/ghost-head-generated.glb"
+  },
+  "assembly": {
+    "fit": {
+      "cut_y": 1.59,
+      "head_bottom": 1.54,
+      "head_x": -0.01,
+      "head_z": 0.1,
+      "head_height": 0.31,
+      "yaw": 0
+    },
+    "topology": "separate overlapping textured head and body; not welded or rigged",
+    "body_source": "source/ghost-body-generated.glb",
+    "head_source": "source/ghost-head-generated.glb"
+  },
+  "optimization": {
+    "before": [
+      {
+        "name": "Ghost_body",
+        "triangles": 17313
+      },
+      {
+        "name": "Ghost_head",
+        "triangles": 112002
+      }
+    ],
+    "after": [
+      {
+        "name": "Ghost_body",
+        "triangles": 17313
+      },
+      {
+        "name": "Ghost_head",
+        "triangles": 22400
+      }
+    ],
+    "textureBytesPreserved": true,
+    "fileSize": 8475252,
+    "errors": 0,
+    "warnings": 0,
+    "ratio": 0.2,
+    "errorTolerance": 0.003
+  },
+  "previews": {
+    "full_body": "ghost-preview.png",
+    "face": "ghost-face-preview.png"
+  }
+}

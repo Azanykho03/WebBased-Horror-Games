@@ -1,0 +1,28 @@
+{
+  "before": [
+    {
+      "name": "Ghost_body",
+      "triangles": 17313
+    },
+    {
+      "name": "Ghost_head",
+      "triangles": 112002
+    }
+  ],
+  "after": [
+    {
+      "name": "Ghost_body",
+      "triangles": 17313
+    },
+    {
+      "name": "Ghost_head",
+      "triangles": 22400
+    }
+  ],
+  "textureBytesPreserved": true,
+  "fileSize": 8475252,
+  "errors": 0,
+  "warnings": 0,
+  "ratio": 0.2,
+  "errorTolerance": 0.003
+}

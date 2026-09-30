@@ -1,0 +1,52 @@
+{
+  "purpose": "direct face-reference head detail",
+  "face_sha256": "89a44a290825f70d6488925db10cfb653c191b357e5102f085e20eb87c429975",
+  "generator": "TRELLIS",
+  "space_id": "trellis-community/TRELLIS",
+  "seed": 42,
+  "mesh_simplify": 0.9,
+  "texture_size": 2048,
+  "raw_asset": ".cache\\3d-generation\\face-runs\\20260930T043146_997194Z\\downloads\\ccbe07420bc211cd4cb776d712db7f42ec750802b20d9bb2d2522a43a0d271f5\\sample.glb",
+  "validation": {
+    "format": "GLB 2.0",
+    "file_size_bytes": 5946308,
+    "triangles": 112002,
+    "vertices": 67360,
+    "mesh_count": 1,
+    "materials": 1,
+    "textures": true,
+    "embedded_images": 1,
+    "image_sizes": [
+      [
+        2048,
+        2048
+      ]
+    ],
+    "rigged": false,
+    "animated": false,
+    "bounds_metres": [
+      [
+        -0.1181011850479886,
+        0.0,
+        -0.1421167167180544
+      ],
+      [
+        0.1181011850479886,
+        0.31,
+        0.1421167167180544
+      ]
+    ],
+    "uvs": true,
+    "external_paths": false,
+    "validation": "basic structural, embedded-image and mesh checks; not Khronos conformance",
+    "up_axis": "Y",
+    "source_up_axis": "Y",
+    "height_metres": 0.31,
+    "pivot": "ground, centre of horizontal bounds",
+    "material_fixes": [
+      "geometry_0: set omitted metallicFactor to 0 for skin/cloth/hair"
+    ]
+  },
+  "status": "complete",
+  "output": "source/ghost-head-generated.glb"
+}
