@@ -1,0 +1,135 @@
+{
+  "status": "complete",
+  "asset_type": "key",
+  "started_at": "20261001T013339_324101Z",
+  "generator": "TRELLIS",
+  "fallback_used": false,
+  "rigged": false,
+  "animated": false,
+  "babylon_ready": true,
+  "attempts": [
+    {
+      "generator": "TRELLIS",
+      "space_id": "trellis-community/TRELLIS",
+      "status": "complete",
+      "raw_asset": ".cache\\3d-generation\\runs\\key-20260930T122918_288666Z\\trellis\\downloads\\48e8d1a12723ba5237bf066e656546233c3f3081ec58f9f43fc565fd845f60cf\\sample.glb"
+    }
+  ],
+  "run_directory": ".cache/3d-generation/runs/key-20261001T013339_324101Z",
+  "references_used": [
+    "source/reference-1.png"
+  ],
+  "reference_original_names": [
+    "ScaryKeys.png"
+  ],
+  "reference_sha256": {
+    "reference-1.png": "660a1a37be5db60a54cf9ad0a8eee1966d58fb3fecfec741853d75e562360872"
+  },
+  "generation_input": "source/reference-1.png",
+  "generation_input_sha256": "660a1a37be5db60a54cf9ad0a8eee1966d58fb3fecfec741853d75e562360872",
+  "reference_strategy": "Direct reconstruction from the supplied reference; provider performs background preprocessing.",
+  "seed": 1042,
+  "texture_size_requested": 2048,
+  "mesh_simplify_requested": 0.95,
+  "resumed_from": ".cache\\3d-generation\\runs\\key-20261001T013235_425721Z\\generation-info.json",
+  "raw_source": "source/generated-20261001T013339_324101Z/sample.glb",
+  "output": "key.glb",
+  "output_sha256": "f0a945bef00f1e007a24f4b872b2135d7df5a1dde9fb19b2f21a4b1b2222a085",
+  "file_size_bytes": 3292592,
+  "textures": true,
+  "validation": {
+    "format": "GLB 2.0",
+    "file_size_bytes": 3292592,
+    "triangles": 3904,
+    "vertices": 3228,
+    "mesh_count": 1,
+    "materials": 1,
+    "textures": true,
+    "embedded_images": 1,
+    "image_sizes": [
+      [
+        2048,
+        2048
+      ]
+    ],
+    "rigged": false,
+    "animated": false,
+    "bounds_metres": [
+      [
+        -0.06,
+        -0.03109703090676789,
+        -0.007711375150612644
+      ],
+      [
+        0.06,
+        0.03109703090676789,
+        0.007711375150612645
+      ]
+    ],
+    "uvs": true,
+    "external_paths": false,
+    "validation": "basic structural, embedded-image and mesh checks; not Khronos conformance",
+    "up_axis": "Y",
+    "source_up_axis": "Y",
+    "rotation_degrees_xyz": [
+      0,
+      0,
+      0
+    ],
+    "longest_dimension_metres": 0.12,
+    "pivot": "centre of mesh bounds",
+    "normalization_matrix": [
+      [
+        0.11996668906086742,
+        0.0,
+        0.0,
+        -5.981989675825546e-05
+      ],
+      [
+        0.0,
+        0.11996668906086742,
+        0.0,
+        0.00023494812811286368
+      ],
+      [
+        0.0,
+        0.0,
+        0.11996668906086742,
+        6.38385181583857e-05
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "material_changes": [
+      {
+        "material": "unnamed",
+        "metallicFactor": 0.65,
+        "roughnessFactor": 0.72
+      }
+    ],
+    "renamed_reserved_world_nodes": [
+      0
+    ],
+    "native_glb_binary_preserved": true,
+    "conversion_performed": false
+  },
+  "notes": [
+    "Reused the preserved TRELLIS generation because its reference SHA256 exactly matches ScaryKeys.png.",
+    "Three-loop bow, key bit, aged red paint and metal appearance checked in the actual GLB.",
+    "12 cm longest dimension; Y up; centered pickup pivot; embedded 2048x2048 color atlas.",
+    "No rig or animation; none required for a static key."
+  ],
+  "babylon_ready_scope": "Static rendering validated in Babylon.js 9.28.0; no gameplay included.",
+  "visual_status": "accepted",
+  "validation_report": "validation-report.json",
+  "babylon_validation": "babylon-validation.json",
+  "preview": "key-preview.png",
+  "texture_files": [
+    "textures/image-0.png"
+  ],
+  "asset_directory": "public/assets/models/items/keys"
+}
