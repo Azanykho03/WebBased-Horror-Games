@@ -1,0 +1,153 @@
+{
+  "status": "complete",
+  "asset_type": "flashlight-arms",
+  "started_at": "20261001T014800_881999Z",
+  "generator": "TripoSR (local)",
+  "fallback_used": true,
+  "rigged": false,
+  "animated": false,
+  "babylon_ready": false,
+  "attempts": [
+    {
+      "generator": "TRELLIS",
+      "space_id": "trellis-community/TRELLIS",
+      "status": "failed",
+      "error_code": "quota_or_rate_limit",
+      "reason": "You have exceeded your ZeroGPU quota (120s requested vs. 145s left). Try again in 11:05:52. Authenticate with a Hugging Face token [REDACTED] more quota - https://huggingface.co/settings/tokens"
+    },
+    {
+      "generator": "TripoSR",
+      "space_id": "stabilityai/TripoSR",
+      "status": "failed",
+      "error_code": "space_unavailable",
+      "reason": "The current space is in the invalid state: RUNTIME_ERROR. Please contact the owner to fix this."
+    },
+    {
+      "generator": "TripoSR (local)",
+      "model": "stabilityai/TripoSR",
+      "status": "generated",
+      "raw_asset": ".cache/3d-generation/runs/flashlight-arms-local-20261001-01/triposr.glb"
+    }
+  ],
+  "asset_directory": "public/assets/models/player/arms/flashlight-arms",
+  "run_directory": ".cache/3d-generation/runs/flashlight-arms-20261001T014800_881999Z",
+  "references_used": [
+    "source/reference-1.jpg"
+  ],
+  "reference_original_names": [
+    "handTexture.jpg"
+  ],
+  "reference_sha256": {
+    "reference-1.jpg": "217d7e7d8cdea28ae89ca9374d6ee465ce4a7262ab738f978b27a6279a6ac522"
+  },
+  "generation_input": "source/prepared-reference.png",
+  "generation_input_sha256": "9e598b6eaf7610f47a0ab57e27ced7cc7872c2320dde0ca96c960b9788a72adf",
+  "reference_strategy": "Original handTexture.jpg supplies the right-hand grip, tan skin and silver flashlight design. Built-in imagegen completes the cropped forearm and makes its silhouette visible for reconstruction. Unseen anatomy is inferred; see source/reference-preparation.json.",
+  "seed": 42,
+  "texture_size_requested": 2048,
+  "mesh_simplify_requested": 0.9,
+  "resumed_from": "public\\assets\\models\\player\\arms\\flashlight-arms\\generation-info.json",
+  "provider_details": {
+    "model": "stabilityai/TripoSR",
+    "model_revision": "5b521936b01fbe1890f6f9baed0254ab6351c04a",
+    "license": "MIT",
+    "device": "NVIDIA GeForce GTX 1650",
+    "torch_version": "2.6.0+cu124",
+    "resolution": 192,
+    "chunk_size": 4096,
+    "cpu_isosurface": "scikit-image marching_cubes; upstream coordinate order retained",
+    "network_access": false
+  },
+  "raw_source": "source/generated-20261001T014800_881999Z/triposr.glb",
+  "output": "flashlight_arms.glb",
+  "output_sha256": "449a62c9626c50449618cab50899ce7b55e29de23f4f4cda2b80ac4f8e66a346",
+  "texture_files": [
+    "textures/image-0.png"
+  ],
+  "file_size_bytes": 2486768,
+  "textures": true,
+  "validation": {
+    "format": "GLB 2.0",
+    "file_size_bytes": 2486768,
+    "triangles": 24688,
+    "vertices": 18571,
+    "mesh_count": 1,
+    "materials": 1,
+    "textures": true,
+    "embedded_images": 1,
+    "image_sizes": [
+      [
+        2048,
+        2048
+      ]
+    ],
+    "rigged": false,
+    "animated": false,
+    "bounds_metres": [
+      [
+        -0.08728334533566104,
+        -0.15469828530347526,
+        -0.2750000000000001
+      ],
+      [
+        0.08728334533566103,
+        0.15469828530347526,
+        0.2750000000000001
+      ]
+    ],
+    "uvs": true,
+    "external_paths": false,
+    "validation": "basic structural, embedded-image and mesh checks; not Khronos conformance",
+    "up_axis": "Y",
+    "source_up_axis": "Z",
+    "rotation_degrees_xyz": [
+      -125.0,
+      0.0,
+      0.0
+    ],
+    "longest_dimension_metres": 0.5500000000000002,
+    "pivot": "centre of mesh bounds",
+    "normalization_matrix": [
+      [
+        0.5103591744800737,
+        0.0,
+        0.0,
+        -0.02104574040824128
+      ],
+      [
+        0.0,
+        -0.4180617610969946,
+        -0.2927299965573425,
+        0.0008206321882554303
+      ],
+      [
+        0.0,
+        0.2927299965573425,
+        -0.4180617610969946,
+        -0.0033728084431896626
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "material_changes": [
+      {
+        "material": "FlashlightArmSurface",
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.58
+      }
+    ],
+    "renamed_reserved_world_nodes": [
+      0
+    ],
+    "native_glb_binary_preserved": true,
+    "conversion_performed": false
+  },
+  "notes": [
+    "Structural checks passed. Visual review and runtime validation are still required.",
+    "Static hand/forearm and flashlight mesh. No skeleton or animation; deformation needs topology cleanup, rigging and weight painting."
+  ]
+}

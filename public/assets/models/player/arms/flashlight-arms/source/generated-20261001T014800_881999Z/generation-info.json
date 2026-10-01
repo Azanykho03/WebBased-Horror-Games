@@ -1,0 +1,66 @@
+{
+  "status": "generated",
+  "asset_type": "flashlight-arms",
+  "started_at": "20261001T014344_707311Z",
+  "generator": "TripoSR (local)",
+  "fallback_used": true,
+  "rigged": false,
+  "animated": false,
+  "babylon_ready": false,
+  "attempts": [
+    {
+      "generator": "TRELLIS",
+      "space_id": "trellis-community/TRELLIS",
+      "status": "failed",
+      "error_code": "quota_or_rate_limit",
+      "reason": "You have exceeded your ZeroGPU quota (120s requested vs. 145s left). Try again in 11:05:52. Authenticate with a Hugging Face token [REDACTED] more quota - https://huggingface.co/settings/tokens"
+    },
+    {
+      "generator": "TripoSR",
+      "space_id": "stabilityai/TripoSR",
+      "status": "failed",
+      "error_code": "space_unavailable",
+      "reason": "The current space is in the invalid state: RUNTIME_ERROR. Please contact the owner to fix this."
+    },
+    {
+      "generator": "TripoSR (local)",
+      "model": "stabilityai/TripoSR",
+      "status": "generated",
+      "raw_asset": ".cache/3d-generation/runs/flashlight-arms-local-20261001-01/triposr.glb"
+    }
+  ],
+  "run_directory": ".cache\\3d-generation\\runs\\flashlight-arms-local-20261001-01",
+  "references_used": [
+    "source/reference-1.jpg"
+  ],
+  "reference_original_names": [
+    "handTexture.jpg"
+  ],
+  "reference_sha256": {
+    "reference-1.jpg": "217d7e7d8cdea28ae89ca9374d6ee465ce4a7262ab738f978b27a6279a6ac522"
+  },
+  "generation_input": "source/prepared-reference.png",
+  "generation_input_sha256": "9e598b6eaf7610f47a0ab57e27ced7cc7872c2320dde0ca96c960b9788a72adf",
+  "reference_strategy": "Original handTexture.jpg supplies the right-hand grip, tan skin and silver flashlight design. Built-in imagegen completes the cropped forearm and makes its silhouette visible for reconstruction. Unseen anatomy is inferred; see source/reference-preparation.json.",
+  "seed": 42,
+  "texture_size_requested": 2048,
+  "mesh_simplify_requested": 0.9,
+  "resumed_failures_from": ".cache\\3d-generation\\runs\\flashlight-arms-20261001T013839_092756Z\\generation-info.json",
+  "resolution": 192,
+  "chunk_size": 4096,
+  "model": "stabilityai/TripoSR",
+  "license": "MIT",
+  "network_access": false,
+  "output": null,
+  "torch_version": "2.6.0+cu124",
+  "device": "NVIDIA GeForce GTX 1650",
+  "model_revision": "5b521936b01fbe1890f6f9baed0254ab6351c04a",
+  "cpu_isosurface": "scikit-image marching_cubes; upstream coordinate order retained",
+  "saved_inference_state": ".cache/3d-generation/runs/flashlight-arms-local-20261001-01/scene-code.pt",
+  "triangles": 24688,
+  "vertices": 18571,
+  "textures": true,
+  "raw_sha256": "aefa6b8ea22feeac5514160c38e615cc504108891d18c20658055965296dab24",
+  "source_up": "z",
+  "next_step": "Run generate_asset.py --resume-run on this report with the same original/prepared images, --source-up z, and --replace"
+}

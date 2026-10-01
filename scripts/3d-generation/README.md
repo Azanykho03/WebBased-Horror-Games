@@ -1,7 +1,123 @@
-# Ghost asset generation
+# 3D asset generation
 
 Creates a mesh asset only. No game, game UI, enemy AI, rig or animation is created.
 The project-local TypeSafe skill and existing project instructions are preserved.
+
+## Flashlight arms and keys
+
+These commands reuse the ghost workflow's Space adapters, reference preservation
+and GLB validation. They do not build the game:
+
+```powershell
+.\.venv-3d\Scripts\python.exe scripts\3d-generation\generate_asset.py `
+  --type flashlight-arms --image "path\to\handTexture.jpg"
+.\.venv-3d\Scripts\python.exe scripts\3d-generation\generate_asset.py `
+  --type key --image "path\to\ScaryKeys.png"
+```
+
+The default output paths are:
+
+- `public/assets/models/player/arms/flashlight-arms/flashlight_arms.glb`
+- `public/assets/models/items/keys/key.glb`
+
+`--image` can be repeated. The single-image adapters use the first image and
+explicitly record that additional images are preserved for review, not separately
+conditioned. For one coherent input prepared from several references, pass
+`--prepared-image` and a required `--reference-strategy` explaining each input's
+role. Original images and their SHA256 hashes are always preserved.
+
+Props use Y-up with a centered pivot. `--size` sets the longest dimension in
+metres (key default 0.12, flashlight arms default 0.5). `--source-up x|y|z`,
+`--rotate X Y Z` in degrees and `--pivot center|base` allow visual correction.
+These settings do not change the existing ghost's normalization behavior.
+Native GLB texture/geometry binary data is preserved; a root transform supplies
+orientation, scale and pivot. Textures remain embedded, and copies are also
+extracted to `textures/` without re-encoding. Scalar PBR settings approximate
+painted metal for the key and nonmetal skin for the combined arm; the arm's
+single color atlas does not provide a separate metallic map for its flashlight.
+
+Use `--resume-run path/to/generation-info.json` with the same input images to
+finish processing a preserved raw generation **without another GPU call**. The
+script checks both original-reference and prepared-input hashes before resuming.
+Raw sources and their sidecars are also retained in `source/`; resuming can use
+that copy if the ignored cache has been removed. `--replace` archives the previous
+GLB and metadata before replacing it. Successful GPU downloads are recorded
+before normalization so a failed conversion can be resumed.
+
+### Delivered assets, 2026-10-01
+
+- **Key:** the saved TRELLIS run used the exact `ScaryKeys.png` hash, so it was
+  recovered rather than generated again. 3,904 triangles, 12 cm, one 2048px color
+  atlas. Three-loop bow, red worn finish and key bit visually checked.
+- **Flashlight hand/forearm:** the original `handTexture.jpg` shows one right
+  hand/forearm. Direct TRELLIS output omitted most of the cropped forearm and was
+  rejected. Built-in imagegen completed that forearm in a transparent reference
+  while retaining the grip and plain silver flashlight; its prompt and limitations
+  are saved in `source/reference-preparation.json`. The next TRELLIS attempt hit
+  its free GPU quota; the TripoSR Space reported `RUNTIME_ERROR`. The existing
+  offline TripoSR installation generated the accepted complete forearm instead.
+  24,688 triangles, 55 cm, one 2048px atlas, source Z-up converted to Y-up, then
+  rotated `-100 0 0` degrees for a raised forward resting pose. A centered root
+  allows later positioning below/right of the player camera.
+
+Both GLBs pass Khronos validation with zero errors/warnings and load in Babylon.js
+9.28.0 with ready textures and verified world-space vertex bounds. Each asset has
+`generation-info.json`, `validation-report.json`, `babylon-validation.json`, and
+preview PNGs. They are ready for **static rendering**. The arm is a single fused
+surface with inferred hidden anatomy and approximate small details; it still
+needs cleanup/retopology, rigging and weight painting for animation. It has no
+independent flashlight articulation, emission, beam or gameplay. Neither asset
+has a skeleton or animation. Existing ghost assets were left unchanged.
+
+### Optional local TripoSR fallback
+
+The local runtime already present in this project is
+`.cache/3d-generation/triposr-local/venv/` (Python 3.12, PyTorch 2.6 CUDA); the
+ordinary `.venv-3d` is the small Space-client/validation environment. Local
+inference uses the official [TripoSR source](https://github.com/VAST-AI-Research/TripoSR)
+in `triposr-local/vendor`, and cached `stabilityai/TripoSR` plus DINO model files
+under `.cache/huggingface`. No dependency installation, weights download or paid
+service is triggered. A fresh checkout needs those optional dependencies/weights
+provisioned separately; the remote commands above do not require them.
+
+After **both** Space providers have failed, run the following with a prepared
+transparent RGBA input and their matching failure report:
+
+```powershell
+.\.cache\3d-generation\triposr-local\venv\Scripts\python.exe `
+  scripts\3d-generation\generate_local_triposr.py `
+  --image public\assets\models\player\arms\flashlight-arms\source\forearm-complete-reference.png `
+  --resume-failures .cache\3d-generation\runs\flashlight-arms-20261001T013839_092756Z\generation-info.json `
+  --output-run .cache\3d-generation\runs\flashlight-arms-local-20261001-01
+```
+
+The Windows fallback uses scikit-image marching cubes on the same inferred density
+field, instead of the unavailable torchmcubes extension; upstream coordinate order
+is retained. It uses xatlas/ModernGL for UV baking and chunked GPU color queries.
+It saves inference state and the untextured mesh so the same `--output-run` resumes
+unfinished stages. Finalize an existing local result through the normal entry point:
+
+```powershell
+.\.venv-3d\Scripts\python.exe scripts\3d-generation\generate_asset.py `
+  --type flashlight-arms `
+  --image public\assets\models\player\arms\flashlight-arms\source\reference-1.jpg `
+  --prepared-image public\assets\models\player\arms\flashlight-arms\source\forearm-complete-reference.png `
+  --reference-strategy "Original grip, skin and silver flashlight; imagegen completed the cropped forearm." `
+  --resume-run public\assets\models\player\arms\flashlight-arms\generation-info.json `
+  --source-up z --rotate -100 0 0 --size 0.55 --replace
+```
+
+Offline conformance validation (uses the existing mesh-tools dependencies):
+
+```powershell
+node scripts/3d-generation/mesh-tools/validate.mjs `
+  public/assets/models/items/keys/key.glb `
+  public/assets/models/player/arms/flashlight-arms/flashlight_arms.glb
+```
+
+The temporary Babylon inspection page is in
+`.cache/3d-generation/flashlight-key-preview/`; it is a standalone asset viewer,
+not a game UI. `PROGRESS.md` records the resumable task state.
 
 ## Setup (PowerShell, Python 3.11+)
 

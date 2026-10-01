@@ -28,6 +28,8 @@ def safe_error(error: Exception) -> str:
 def error_code(error: Exception) -> str:
     if isinstance(error, GenerationError):
         return error.code
+    if isinstance(error, ImportError):
+        return "missing_dependency"
     text = safe_error(error).lower()
     for terms, code in [
         (("quota", "rate limit", "429"), "quota_or_rate_limit"),

@@ -1,0 +1,24 @@
+{
+  "asset": "key.glb",
+  "babylonVersion": "9.28.0",
+  "loaded": true,
+  "meshCount": 1,
+  "triangles": 3904,
+  "skeletons": 0,
+  "animations": 0,
+  "texturedMaterials": 1,
+  "textureProblems": [],
+  "boundsMetres": {
+    "min": [
+      -0.059999998356667916,
+      -0.031097030053961916,
+      -0.007711374938375926
+    ],
+    "max": [
+      0.05999999835349357,
+      0.031097030054503705,
+      0.007711374940029714
+    ]
+  },
+  "longestDimensionMetres": 0.11999999671016148
+}

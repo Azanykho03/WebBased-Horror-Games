@@ -105,3 +105,133 @@ def prepare_mesh(source: Path, target: Path, *, height=1.85, source_up="auto") -
     report = inspect_glb(target)
     report.update({"up_axis": "Y", "source_up_axis": source_up.upper(), "height_metres": height, "pivot": "ground, centre of horizontal bounds", "material_fixes": material_fixes})
     return report
+
+
+def prepare_asset_mesh(source: Path, target: Path, *, asset_type, size=None,
+                       source_up="y", rotation=(0, 0, 0), pivot="center") -> dict:
+    """Prepare props without applying the ghost's height/anatomy assumptions.
+
+    Native GLBs keep their binary chunk (including textures) byte-for-byte. A
+    parent node supplies the metre scale and pivot; existing node transforms stay
+    intact. This avoids a lossy texture re-encode or accidental transform baking.
+    """
+    if asset_type not in {"key", "flashlight-arms"}:
+        raise ValueError("Unsupported asset type")
+    size = size if size is not None else (0.12 if asset_type == "key" else 0.5)
+    if not np.isfinite(size) or size <= 0 or not np.isfinite(rotation).all():
+        raise ValueError("Size must be positive and rotations must be finite")
+    if source_up not in {"x", "y", "z"} or pivot not in {"center", "base"}:
+        raise ValueError("Invalid source-up axis or pivot")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    native = source.suffix.lower() == ".glb"
+    if native:
+        inspect_glb(source)
+        data = source.read_bytes()
+    else:
+        try:
+            data = trimesh.load_scene(source, process=False).export(file_type="glb")
+        except Exception as error:
+            raise GenerationError("conversion_failure", f"Cannot convert {source.suffix}; raw output preserved. Blender may be required: {error}") from error
+    position, document, binary = 12, None, b""
+    while position < len(data):
+        length, kind = struct.unpack_from("<II", data, position)
+        chunk = data[position + 8:position + 8 + length]
+        if kind == 0x4E4F534A:
+            document = json.loads(chunk)
+        elif kind == 0x004E4942:
+            binary = chunk
+        position += 8 + length
+    if not document or not document.get("scenes"):
+        raise GenerationError("invalid_output_file", "Mesh has no scene")
+    # Use the loaded scene's world-space bounds, including all existing parents.
+    scene = trimesh.load_scene(io.BytesIO(data), file_type="glb", process=False)
+    orient = np.eye(4)
+    if source_up == "z":
+        orient = trimesh.transformations.rotation_matrix(-np.pi / 2, [1, 0, 0])
+    elif source_up == "x":
+        orient = trimesh.transformations.rotation_matrix(np.pi / 2, [0, 0, 1])
+    orient = trimesh.transformations.euler_matrix(*np.radians(rotation)) @ orient
+    scene.apply_transform(orient)
+    bounds = scene.bounds
+    if bounds is None or not np.isfinite(bounds).all() or scene.extents.max() <= 1e-8:
+        raise GenerationError("invalid_output_file", "Mesh has no finite nonzero bounds")
+    origin = bounds.mean(axis=0)
+    if pivot == "base":
+        origin[1] = bounds[0, 1]
+    scale = size / scene.extents.max()
+    transform = np.diag([scale, scale, scale, 1.0]) @ trimesh.transformations.translation_matrix(-origin) @ orient
+    nodes = document.setdefault("nodes", [])
+    # trimesh reserves "world" for its synthetic scene base. A source node with
+    # that name under a new parent disconnects the parent in trimesh's graph.
+    # Rename only the display label; indices, hierarchy and geometry stay intact.
+    renamed_nodes = []
+    for index, node in enumerate(nodes):
+        if node.get("name") == "world":
+            node["name"] = f"AssetSourceWorld_{index}"
+            renamed_nodes.append(index)
+    for item in document["scenes"]:
+        children = list(item.get("nodes", []))
+        if children:
+            item["nodes"] = [len(nodes)]
+            nodes.append({"name": "Key" if asset_type == "key" else "FlashlightArms",
+                          "children": children, "matrix": transform.flatten(order="F").tolist()})
+    changes = []
+    for material in document.get("materials", []):
+        pbr = material.setdefault("pbrMetallicRoughness", {})
+        # TRELLIS supplies one color atlas, not a physically measured metal map.
+        if "metallicRoughnessTexture" not in pbr:
+            pbr["metallicFactor"] = 0.65 if asset_type == "key" else 0.0
+            pbr["roughnessFactor"] = 0.72 if asset_type == "key" else 0.58
+            changes.append({"material": material.get("name", "unnamed"),
+                            "metallicFactor": pbr["metallicFactor"], "roughnessFactor": pbr["roughnessFactor"]})
+    document.setdefault("asset", {})["generator"] = "Ghost-aligned asset preparation; original mesh and texture binary preserved" if native else "Ghost-aligned asset conversion via trimesh"
+    encoded = json.dumps(document, separators=(",", ":")).encode("utf-8")
+    encoded += b" " * (-len(encoded) % 4)
+    body = struct.pack("<II", len(encoded), 0x4E4F534A) + encoded
+    if binary:
+        binary += b"\0" * (-len(binary) % 4)
+        body += struct.pack("<II", len(binary), 0x004E4942) + binary
+    target.write_bytes(struct.pack("<4sII", b"glTF", 2, 12 + len(body)) + body)
+    report = inspect_glb(target)
+    actual = np.ptp(np.array(report["bounds_metres"]), axis=0).max()
+    if not np.isclose(actual, size, rtol=1e-5, atol=1e-7):
+        raise GenerationError("validation_failure", "Exported world-space bounds do not match the requested size")
+    report.update({"up_axis": "Y", "source_up_axis": source_up.upper(),
+                   "rotation_degrees_xyz": list(rotation), "longest_dimension_metres": float(actual),
+                   "pivot": "centre of mesh bounds" if pivot == "center" else "bottom centre of mesh bounds",
+                   "normalization_matrix": transform.tolist(), "material_changes": changes,
+                   "renamed_reserved_world_nodes": renamed_nodes,
+                   "native_glb_binary_preserved": native, "conversion_performed": not native})
+    return report
+
+
+def extract_embedded_textures(source: Path, directory: Path) -> list[str]:
+    """Save texture bytes for later editing while retaining them in the GLB."""
+    data = source.read_bytes()
+    position, document, binary = 12, None, b""
+    while position < len(data):
+        size, kind = struct.unpack_from("<II", data, position)
+        chunk = data[position + 8:position + 8 + size]
+        if kind == 0x4E4F534A:
+            document = json.loads(chunk)
+        elif kind == 0x004E4942:
+            binary = chunk
+        position += 8 + size
+    directory.mkdir(parents=True, exist_ok=True)
+    paths = []
+    for i, item in enumerate(document.get("images", [])):
+        if "bufferView" not in item:
+            continue
+        extension = {"image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp"}.get(item.get("mimeType"))
+        if extension is None:
+            continue
+        view = document["bufferViews"][item["bufferView"]]
+        offset = view.get("byteOffset", 0)
+        content = binary[offset:offset + view["byteLength"]]
+        target = directory / f"image-{i}{extension}"
+        if target.exists() and target.read_bytes() != content:
+            import hashlib
+            target = directory / f"image-{i}-{hashlib.sha256(content).hexdigest()[:12]}{extension}"
+        target.write_bytes(content)
+        paths.append(target.name)
+    return paths

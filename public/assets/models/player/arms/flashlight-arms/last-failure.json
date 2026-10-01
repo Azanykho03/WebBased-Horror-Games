@@ -1,0 +1,45 @@
+{
+  "status": "failed",
+  "asset_type": "flashlight-arms",
+  "started_at": "20261001T013839_092756Z",
+  "generator": null,
+  "fallback_used": false,
+  "rigged": false,
+  "animated": false,
+  "babylon_ready": false,
+  "attempts": [
+    {
+      "generator": "TRELLIS",
+      "space_id": "trellis-community/TRELLIS",
+      "status": "failed",
+      "error_code": "quota_or_rate_limit",
+      "reason": "You have exceeded your ZeroGPU quota (120s requested vs. 145s left). Try again in 11:05:52. Authenticate with a Hugging Face token [REDACTED] more quota - https://huggingface.co/settings/tokens"
+    },
+    {
+      "generator": "TripoSR",
+      "space_id": "stabilityai/TripoSR",
+      "status": "failed",
+      "error_code": "space_unavailable",
+      "reason": "The current space is in the invalid state: RUNTIME_ERROR. Please contact the owner to fix this."
+    }
+  ],
+  "run_directory": ".cache/3d-generation/runs/flashlight-arms-20261001T013839_092756Z",
+  "references_used": [
+    "source/reference-1.jpg"
+  ],
+  "reference_original_names": [
+    "handTexture.jpg"
+  ],
+  "reference_sha256": {
+    "reference-1.jpg": "217d7e7d8cdea28ae89ca9374d6ee465ce4a7262ab738f978b27a6279a6ac522"
+  },
+  "generation_input": "source/prepared-reference.png",
+  "generation_input_sha256": "9e598b6eaf7610f47a0ab57e27ced7cc7872c2320dde0ca96c960b9788a72adf",
+  "reference_strategy": "Original handTexture.jpg supplies the right-hand grip, tan skin and silver flashlight design. Built-in imagegen completes the cropped forearm and makes its silhouette visible for reconstruction. Unseen anatomy is inferred; see source/reference-preparation.json.",
+  "seed": 42,
+  "texture_size_requested": 2048,
+  "mesh_simplify_requested": 0.9,
+  "error_code": "providers_failed",
+  "reason": "TRELLIS and TripoSR failed; see attempts in generation-info.json",
+  "next_step": "Resume this report if a raw_asset was saved; otherwise resolve the reported provider/dependency failure"
+}

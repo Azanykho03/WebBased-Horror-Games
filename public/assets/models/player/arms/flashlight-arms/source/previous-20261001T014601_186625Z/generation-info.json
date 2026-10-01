@@ -1,0 +1,126 @@
+{
+  "status": "complete",
+  "asset_type": "flashlight-arms",
+  "started_at": "20261001T013353_088936Z",
+  "generator": "TRELLIS",
+  "fallback_used": false,
+  "rigged": false,
+  "animated": false,
+  "babylon_ready": false,
+  "attempts": [
+    {
+      "generator": "TRELLIS",
+      "space_id": "trellis-community/TRELLIS",
+      "status": "generated",
+      "raw_asset": ".cache/3d-generation/runs/flashlight-arms-20261001T013223_060113Z/trellis/downloads/9ba03ecc8fc9db27c80e76cd0784f0a36d0080b561ed851dbcce43d82a50e289/sample.glb"
+    }
+  ],
+  "run_directory": ".cache/3d-generation/runs/flashlight-arms-20261001T013353_088936Z",
+  "references_used": [
+    "source/reference-1.jpg"
+  ],
+  "reference_original_names": [
+    "handTexture.jpg"
+  ],
+  "reference_sha256": {
+    "reference-1.jpg": "217d7e7d8cdea28ae89ca9374d6ee465ce4a7262ab738f978b27a6279a6ac522"
+  },
+  "generation_input": "source/reference-1.jpg",
+  "generation_input_sha256": "217d7e7d8cdea28ae89ca9374d6ee465ce4a7262ab738f978b27a6279a6ac522",
+  "reference_strategy": "Direct reconstruction from the first reference; provider preprocesses its background. All supplied references used.",
+  "seed": 42,
+  "texture_size_requested": 2048,
+  "mesh_simplify_requested": 0.9,
+  "resumed_from": ".cache\\3d-generation\\runs\\flashlight-arms-20261001T013223_060113Z\\generation-info.json",
+  "raw_source": "source/generated-20261001T013353_088936Z/sample.glb",
+  "output": "flashlight_arms.glb",
+  "output_sha256": "c135f85f1a76f206288d3208b765fb71decd9bd987fb952578da6cc79764efe3",
+  "file_size_bytes": 4241576,
+  "textures": true,
+  "validation": {
+    "format": "GLB 2.0",
+    "file_size_bytes": 4241576,
+    "triangles": 16296,
+    "vertices": 10443,
+    "mesh_count": 1,
+    "materials": 1,
+    "textures": true,
+    "embedded_images": 1,
+    "image_sizes": [
+      [
+        2048,
+        2048
+      ]
+    ],
+    "rigged": false,
+    "animated": false,
+    "bounds_metres": [
+      [
+        -0.13836358027587836,
+        -0.11504577324853538,
+        -0.25
+      ],
+      [
+        0.13836358027587836,
+        0.11504577324853538,
+        0.25
+      ]
+    ],
+    "uvs": true,
+    "external_paths": false,
+    "validation": "basic structural, embedded-image and mesh checks; not Khronos conformance",
+    "up_axis": "Y",
+    "source_up_axis": "Y",
+    "rotation_degrees_xyz": [
+      0,
+      0,
+      0
+    ],
+    "longest_dimension_metres": 0.5,
+    "pivot": "centre of mesh bounds",
+    "normalization_matrix": [
+      [
+        0.4995155264945555,
+        0.0,
+        0.0,
+        -0.0028080750705273376
+      ],
+      [
+        0.0,
+        0.4995155264945555,
+        0.0,
+        7.589623430224859e-05
+      ],
+      [
+        0.0,
+        0.0,
+        0.4995155264945555,
+        -0.0001594963476318916
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "material_changes": [
+      {
+        "material": "unnamed",
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.58
+      }
+    ],
+    "renamed_reserved_world_nodes": [
+      0
+    ],
+    "native_glb_binary_preserved": true,
+    "conversion_performed": false
+  },
+  "notes": [
+    "Structural checks passed. Visual review and runtime validation are still required.",
+    "Static hand/forearm and flashlight mesh. No skeleton or animation; deformation needs topology cleanup, rigging and weight painting."
+  ],
+  "visual_status": "rejected",
+  "visual_rejection_reason": "Direct reconstruction from the cropped original lost most of the forearm and produced a dark wrist cap. Retry with a completed forearm reference."
+}
