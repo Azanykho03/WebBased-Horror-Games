@@ -1,0 +1,64 @@
+{
+  "renderer": "9.28.0",
+  "phase": "final",
+  "loaded": true,
+  "room": "OUT",
+  "position": {
+    "x": -2.6,
+    "y": 0,
+    "z": -13.483
+  },
+  "meshes": 275,
+  "triangles": 146276,
+  "activeLocalLights": 6,
+  "upstairsHallFixtures": [
+    "H1",
+    "H2"
+  ],
+  "diningChairs": 8,
+  "averageFps": 60,
+  "textureProblems": [],
+  "audio": {
+    "enabled": true,
+    "state": "suspended"
+  },
+  "tour": {
+    "completed": true,
+    "continuous": true,
+    "visited": [
+      "Front entrance",
+      "Living room",
+      "TV room",
+      "Book passage",
+      "Ground-floor CR",
+      "Kitchen",
+      "Dining room",
+      "Garage entrance",
+      "Garage rear",
+      "Stair foot",
+      "Stair top",
+      "Upper landing",
+      "Cabinet approach",
+      "Breaker",
+      "Master 1 corridor",
+      "Private CR",
+      "Master 1 sleeping area",
+      "Master 1 terrace door",
+      "Terrace",
+      "Study terrace door",
+      "Study",
+      "Hallway return",
+      "Guest bedroom",
+      "Twin bedroom",
+      "Shared upstairs CR",
+      "Master bedroom 2",
+      "Landing return",
+      "Stair descent",
+      "Escape-exit area",
+      "Outside escape recess"
+    ],
+    "collisions": 0,
+    "metres": 213.47
+  },
+  "errors": []
+}

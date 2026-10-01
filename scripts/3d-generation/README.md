@@ -1,5 +1,16 @@
 # 3D asset generation
 
+## Haunted-house environment
+
+The complete two-storey environment now uses this same workflow and the existing
+Babylon.js renderer. See
+`public/assets/models/environments/haunted-house/README.md` for local walkthrough,
+source/reference preservation, room/collision/light metadata, and validation.
+`HAUNTED_HOUSE_PROGRESS.md` at the project root records phase and acceptance status.
+The deterministic entry point is `generate_house.py`; existing Space-based ghost,
+arms and key generators retain their behavior and assets. No new root project,
+rendering engine or parallel asset pipeline is introduced.
+
 Creates a mesh asset only. No game, game UI, enemy AI, rig or animation is created.
 The project-local TypeSafe skill and existing project instructions are preserved.
 

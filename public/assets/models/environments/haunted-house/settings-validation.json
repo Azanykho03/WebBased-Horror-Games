@@ -1,0 +1,39 @@
+{
+  "method": "Native UI controls; DOM settings/runtime status and rendered screenshot comparison",
+  "brightness": {
+    "tested": [
+      0.65,
+      1.5
+    ],
+    "visibleChange": true,
+    "restored": 1.15,
+    "evidence": [
+      "dim-lighting-preview.png",
+      "living-room-preview.png"
+    ]
+  },
+  "flashlight": {
+    "toggledOffAndOn": true,
+    "restored": true
+  },
+  "reducedFlicker": {
+    "toggleVerified": true,
+    "stableLightingBranchReviewed": true,
+    "restored": true
+  },
+  "sound": {
+    "explicitToggle": true,
+    "explorationState": "running",
+    "pauseState": "suspended",
+    "completedTourState": "suspended",
+    "volumeTested": [
+      0.1,
+      0.2
+    ],
+    "muteVerified": true,
+    "restored": "off"
+  },
+  "consoleWarnings": [],
+  "consoleErrors": [],
+  "note": "Runtime status was read after the render tick, not inferred from the immediate button click. Visibility suspension is implemented; switching away was not separately measured."
+}

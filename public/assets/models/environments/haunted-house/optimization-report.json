@@ -1,0 +1,18 @@
+{
+  "method": "Exact vertex weld; material/texture deduplication; prune unused resources; no simplification or texture re-encoding",
+  "before": {
+    "bytes": 15447868,
+    "vertices": 438828
+  },
+  "after": {
+    "bytes": 10179228,
+    "vertices": 209422
+  },
+  "textureBytesPreserved": true,
+  "shadowMaps": 1,
+  "shadowMapPixels": 512,
+  "activeLocalLights": 6,
+  "maxTextureSize": 512,
+  "roomMaterialBatches": true,
+  "inactiveFloorCulling": true
+}

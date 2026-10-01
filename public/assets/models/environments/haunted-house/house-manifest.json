@@ -1,0 +1,7698 @@
+{
+  "version": 1,
+  "phase": "final",
+  "units": "metres",
+  "orientation": "Y up; X east; negative Z north; south frontage Z=0",
+  "floorRise": 3.24,
+  "playerRadius": 0.23,
+  "eyeHeight": 1.65,
+  "bodyHeight": 1.78,
+  "rooms": [
+    {
+      "id": "F01",
+      "name": "Entrance foyer & central passage",
+      "floor": 0,
+      "rects": [
+        [
+          -1.4,
+          1.4,
+          -12,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "F02",
+      "name": "Living room",
+      "floor": 0,
+      "rects": [
+        [
+          1.4,
+          9.4,
+          -7,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "F03",
+      "name": "Hardwood staircase",
+      "floor": 0,
+      "rects": [
+        [
+          1.5,
+          3.3,
+          -6.1,
+          -1.6
+        ]
+      ]
+    },
+    {
+      "id": "F04",
+      "name": "Dining room",
+      "floor": 0,
+      "rects": [
+        [
+          1.4,
+          9.4,
+          -22,
+          -15
+        ]
+      ]
+    },
+    {
+      "id": "F05",
+      "name": "Kitchen",
+      "floor": 0,
+      "rects": [
+        [
+          -7.6,
+          -1.4,
+          -22,
+          -15
+        ]
+      ]
+    },
+    {
+      "id": "F06",
+      "name": "TV room",
+      "floor": 0,
+      "rects": [
+        [
+          -7.6,
+          -1.4,
+          -12,
+          -7
+        ]
+      ]
+    },
+    {
+      "id": "F07",
+      "name": "Book passage & CR",
+      "floor": 0,
+      "rects": [
+        [
+          1.4,
+          9.4,
+          -15,
+          -7
+        ]
+      ]
+    },
+    {
+      "id": "F08",
+      "name": "Bar cabinet & escape passage",
+      "floor": 0,
+      "rects": [
+        [
+          -1.4,
+          1.4,
+          -22,
+          -12
+        ]
+      ]
+    },
+    {
+      "id": "F09",
+      "name": "Garage",
+      "floor": 0,
+      "rects": [
+        [
+          -7.6,
+          -1.4,
+          -7,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "U00",
+      "name": "Landing & hallway",
+      "floor": 1,
+      "rects": [
+        [
+          -1.4,
+          1.4,
+          -22,
+          0
+        ],
+        [
+          1.4,
+          3.4,
+          -1.6,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "U01",
+      "name": "Master bedroom 1",
+      "floor": 1,
+      "rects": [
+        [
+          3.4,
+          9.4,
+          -8.2,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "U02",
+      "name": "Study & two beds",
+      "floor": 1,
+      "rects": [
+        [
+          -7.6,
+          -1.4,
+          -8.2,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "U03",
+      "name": "Guest bedroom",
+      "floor": 1,
+      "rects": [
+        [
+          1.4,
+          9.4,
+          -14.8,
+          -8.2
+        ]
+      ]
+    },
+    {
+      "id": "U04",
+      "name": "Twin bedroom",
+      "floor": 1,
+      "rects": [
+        [
+          -7.6,
+          -1.4,
+          -14.8,
+          -8.2
+        ]
+      ]
+    },
+    {
+      "id": "U05",
+      "name": "Shared upstairs CR",
+      "floor": 1,
+      "rects": [
+        [
+          -5.4,
+          -1.4,
+          -19,
+          -14.8
+        ]
+      ]
+    },
+    {
+      "id": "U06",
+      "name": "Master bedroom 2",
+      "floor": 1,
+      "rects": [
+        [
+          1.4,
+          9.4,
+          -22,
+          -14.8
+        ]
+      ]
+    },
+    {
+      "id": "U07",
+      "name": "Front terrace",
+      "floor": 1,
+      "rects": [
+        [
+          -7.6,
+          9.4,
+          0,
+          2.5
+        ]
+      ]
+    }
+  ],
+  "stair": {
+    "rect": [
+      1.5,
+      3.3,
+      -6.1,
+      -1.6
+    ],
+    "bottom": [
+      2.4,
+      0,
+      -6.1
+    ],
+    "top": [
+      2.4,
+      3.24,
+      -1.6
+    ],
+    "steps": 18,
+    "width": 1.8
+  },
+  "doors": [
+    {
+      "id": "outside-front--F01",
+      "source": "outside-front",
+      "destination": "F01",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "axis": "x",
+      "facing": [
+        0,
+        0,
+        1
+      ],
+      "width": 1.41,
+      "height": 2.35,
+      "lockState": "open",
+      "floor": 0
+    },
+    {
+      "id": "F01--F09",
+      "source": "F01",
+      "destination": "F09",
+      "position": [
+        -1.4,
+        0,
+        -6.1
+      ],
+      "axis": "z",
+      "facing": [
+        1,
+        0,
+        0
+      ],
+      "width": 1.26,
+      "height": 2.35,
+      "lockState": "open",
+      "floor": 0
+    },
+    {
+      "id": "F01--F06",
+      "source": "F01",
+      "destination": "F06",
+      "position": [
+        -1.4,
+        0,
+        -9.2
+      ],
+      "axis": "z",
+      "facing": [
+        1,
+        0,
+        0
+      ],
+      "width": 1.26,
+      "height": 2.35,
+      "lockState": "open",
+      "floor": 0
+    },
+    {
+      "id": "F08--outside-escape",
+      "source": "F08",
+      "destination": "outside-escape",
+      "position": [
+        -1.4,
+        0,
+        -13.5
+      ],
+      "axis": "z",
+      "facing": [
+        1,
+        0,
+        0
+      ],
+      "width": 1.21,
+      "height": 2.35,
+      "lockState": "open",
+      "floor": 0
+    },
+    {
+      "id": "F08--F05",
+      "source": "F08",
+      "destination": "F05",
+      "position": [
+        -1.4,
+        0,
+        -18.2
+      ],
+      "axis": "z",
+      "facing": [
+        1,
+        0,
+        0
+      ],
+      "width": 1.26,
+      "height": 2.35,
+      "lockState": "open",
+      "floor": 0
+    },
+    {
+      "id": "F01--F07",
+      "source": "F01",
+      "destination": "F07",
+      "position": [
+        1.4,
+        0,
+        -9.2
+      ],
+      "axis": "z",
+      "facing": [
+        1,
+        0,
+        0
+      ],
+      "width": 1.26,
+      "height": 2.35,
+      "lockState": "open",
+      "floor": 0
+    },
+    {
+      "id": "F08--F04",
+      "source": "F08",
+      "destination": "F04",
+      "position": [
+        1.4,
+        0,
+        -18.2
+      ],
+      "axis": "z",
+      "facing": [
+        1,
+        0,
+        0
+      ],
+      "width": 1.26,
+      "height": 2.35,
+      "lockState": "open",
+      "floor": 0
+    },
+    {
+      "id": "F07--F07-CR",
+      "source": "F07",
+      "destination": "F07-CR",
+      "position": [
+        6.1,
+        0,
+        -9.2
+      ],
+      "axis": "z",
+      "facing": [
+        1,
+        0,
+        0
+      ],
+      "width": 1.16,
+      "height": 2.35,
+      "lockState": "open",
+      "floor": 0
+    },
+    {
+      "id": "U02--U07",
+      "source": "U02",
+      "destination": "U07",
+      "position": [
+        -3.8,
+        3.24,
+        0
+      ],
+      "axis": "x",
+      "facing": [
+        0,
+        0,
+        1
+      ],
+      "width": 1.21,
+      "height": 2.35,
+      "lockState": "open",
+      "floor": 1
+    },
+    {
+      "id": "U01--U07",
+      "source": "U01",
+      "destination": "U07",
+      "position": [
+        5.85,
+        3.24,
+        0
+      ],
+      "axis": "x",
+      "facing": [
+        0,
+        0,
+        1
+      ],
+      "width": 1.16,
+      "height": 2.35,
+      "lockState": "open",
+      "floor": 1
+    },
+    {
+      "id": "U00--U05",
+      "source": "U00",
+      "destination": "U05",
+      "position": [
+        -1.4,
+        3.24,
+        -16.3
+      ],
+      "axis": "z",
+      "facing": [
+        1,
+        0,
+        0
+      ],
+      "width": 1.16,
+      "height": 2.35,
+      "lockState": "open",
+      "floor": 1
+    },
+    {
+      "id": "U00--U04",
+      "source": "U00",
+      "destination": "U04",
+      "position": [
+        -1.4,
+        3.24,
+        -10.6
+      ],
+      "axis": "z",
+      "facing": [
+        1,
+        0,
+        0
+      ],
+      "width": 1.21,
+      "height": 2.35,
+      "lockState": "open",
+      "floor": 1
+    },
+    {
+      "id": "U00--U02",
+      "source": "U00",
+      "destination": "U02",
+      "position": [
+        -1.4,
+        3.24,
+        -0.85
+      ],
+      "axis": "z",
+      "facing": [
+        1,
+        0,
+        0
+      ],
+      "width": 1.21,
+      "height": 2.35,
+      "lockState": "open",
+      "floor": 1
+    },
+    {
+      "id": "U00--U01",
+      "source": "U00",
+      "destination": "U01",
+      "position": [
+        3.4,
+        3.24,
+        -0.8
+      ],
+      "axis": "z",
+      "facing": [
+        1,
+        0,
+        0
+      ],
+      "width": 1.16,
+      "height": 2.35,
+      "lockState": "open",
+      "floor": 1
+    },
+    {
+      "id": "U00--U06",
+      "source": "U00",
+      "destination": "U06",
+      "position": [
+        1.4,
+        3.24,
+        -17
+      ],
+      "axis": "z",
+      "facing": [
+        1,
+        0,
+        0
+      ],
+      "width": 1.21,
+      "height": 2.35,
+      "lockState": "open",
+      "floor": 1
+    },
+    {
+      "id": "U00--U03",
+      "source": "U00",
+      "destination": "U03",
+      "position": [
+        1.4,
+        3.24,
+        -10.6
+      ],
+      "axis": "z",
+      "facing": [
+        1,
+        0,
+        0
+      ],
+      "width": 1.21,
+      "height": 2.35,
+      "lockState": "open",
+      "floor": 1
+    },
+    {
+      "id": "U01--U01-CR",
+      "source": "U01",
+      "destination": "U01-CR",
+      "position": [
+        6.7,
+        3.24,
+        -1
+      ],
+      "axis": "z",
+      "facing": [
+        1,
+        0,
+        0
+      ],
+      "width": 1.0599999999999998,
+      "height": 2.35,
+      "lockState": "open",
+      "floor": 1
+    }
+  ],
+  "windows": [
+    {
+      "room": "F02",
+      "position": [
+        6.2,
+        0.9,
+        0
+      ],
+      "axis": "x",
+      "width": 2.5,
+      "height": 1.65,
+      "sill": 0.9,
+      "exterior": true,
+      "curtains": true
+    },
+    {
+      "room": "F06",
+      "position": [
+        -7.6,
+        0.9,
+        -9.5
+      ],
+      "axis": "z",
+      "width": 2.4,
+      "height": 1.65,
+      "sill": 0.9,
+      "exterior": true,
+      "curtains": true
+    },
+    {
+      "room": "F05",
+      "position": [
+        -7.6,
+        1.25,
+        -18.5
+      ],
+      "axis": "z",
+      "width": 1.7,
+      "height": 1.1,
+      "sill": 1.25,
+      "exterior": true,
+      "curtains": true
+    },
+    {
+      "room": "F02",
+      "position": [
+        9.4,
+        0.9,
+        -3.5
+      ],
+      "axis": "z",
+      "width": 2.7,
+      "height": 1.65,
+      "sill": 0.9,
+      "exterior": true,
+      "curtains": true
+    },
+    {
+      "room": "F07",
+      "position": [
+        9.4,
+        1.65,
+        -9.1
+      ],
+      "axis": "z",
+      "width": 0.85,
+      "height": 0.85,
+      "sill": 1.65,
+      "exterior": true,
+      "curtains": true
+    },
+    {
+      "room": "F04",
+      "position": [
+        9.4,
+        0.9,
+        -18.6
+      ],
+      "axis": "z",
+      "width": 2.2,
+      "height": 1.65,
+      "sill": 0.9,
+      "exterior": true,
+      "curtains": true
+    },
+    {
+      "room": "F05",
+      "position": [
+        -5,
+        1.25,
+        -22
+      ],
+      "axis": "x",
+      "width": 1.6,
+      "height": 1.1,
+      "sill": 1.25,
+      "exterior": true,
+      "curtains": true
+    },
+    {
+      "room": "F04",
+      "position": [
+        5.6,
+        0.9,
+        -22
+      ],
+      "axis": "x",
+      "width": 2.1,
+      "height": 1.65,
+      "sill": 0.9,
+      "exterior": true,
+      "curtains": true
+    },
+    {
+      "room": "U01",
+      "position": [
+        8.2,
+        4.94,
+        0
+      ],
+      "axis": "x",
+      "width": 0.9,
+      "height": 0.8,
+      "sill": 1.7,
+      "exterior": true,
+      "curtains": true
+    },
+    {
+      "room": "U02",
+      "position": [
+        -7.6,
+        4.140000000000001,
+        -3.2
+      ],
+      "axis": "z",
+      "width": 2.3,
+      "height": 1.65,
+      "sill": 0.9,
+      "exterior": true,
+      "curtains": true
+    },
+    {
+      "room": "U04",
+      "position": [
+        -7.6,
+        4.140000000000001,
+        -11.7
+      ],
+      "axis": "z",
+      "width": 2.3,
+      "height": 1.65,
+      "sill": 0.9,
+      "exterior": true,
+      "curtains": true
+    },
+    {
+      "room": "U05",
+      "position": [
+        -5.4,
+        4.890000000000001,
+        -16.8
+      ],
+      "axis": "z",
+      "width": 0.9,
+      "height": 0.85,
+      "sill": 1.65,
+      "exterior": true,
+      "curtains": true
+    },
+    {
+      "room": "U01",
+      "position": [
+        9.4,
+        4.140000000000001,
+        -5
+      ],
+      "axis": "z",
+      "width": 2.4,
+      "height": 1.65,
+      "sill": 0.9,
+      "exterior": true,
+      "curtains": true
+    },
+    {
+      "room": "U03",
+      "position": [
+        9.4,
+        4.140000000000001,
+        -11.5
+      ],
+      "axis": "z",
+      "width": 2.4,
+      "height": 1.65,
+      "sill": 0.9,
+      "exterior": true,
+      "curtains": true
+    },
+    {
+      "room": "U06",
+      "position": [
+        9.4,
+        4.140000000000001,
+        -18.2
+      ],
+      "axis": "z",
+      "width": 2.5,
+      "height": 1.65,
+      "sill": 0.9,
+      "exterior": true,
+      "curtains": true
+    },
+    {
+      "room": "U06",
+      "position": [
+        5.6,
+        4.140000000000001,
+        -22
+      ],
+      "axis": "x",
+      "width": 2.4,
+      "height": 1.65,
+      "sill": 0.9,
+      "exterior": true,
+      "curtains": true
+    }
+  ],
+  "props": [
+    {
+      "id": "F02-sofa-001",
+      "room": "F02",
+      "kind": "sofa",
+      "position": [
+        6.45,
+        0,
+        -5.6
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F02-sofa-002",
+      "room": "F02",
+      "kind": "sofa",
+      "position": [
+        8.4,
+        0,
+        -3.15
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "F02-armchair-003",
+      "room": "F02",
+      "kind": "armchair",
+      "position": [
+        4.45,
+        0,
+        -3.8
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F02-coffee-table-004",
+      "room": "F02",
+      "kind": "coffee-table",
+      "position": [
+        6.15,
+        0,
+        -3.3
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F02-doll-005",
+      "room": "F02",
+      "kind": "doll",
+      "position": [
+        6,
+        0.61,
+        -5.48
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F02-side-table-006",
+      "room": "F02",
+      "kind": "side-table",
+      "position": [
+        7.84,
+        0,
+        -5.6
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F02-piano-007",
+      "room": "F02",
+      "kind": "piano",
+      "position": [
+        4.27,
+        0,
+        -6.48
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F02-display-cabinet-008",
+      "room": "F02",
+      "kind": "display-cabinet",
+      "position": [
+        8.25,
+        0,
+        -6.5
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F04-dining-table-009",
+      "room": "F04",
+      "kind": "dining-table",
+      "position": [
+        5.5,
+        0,
+        -18.5
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F04-dining-chair-010",
+      "room": "F04",
+      "kind": "dining-chair",
+      "position": [
+        4.27,
+        0,
+        -19.62
+      ],
+      "yaw": 1.5707963267948966,
+      "side": "west"
+    },
+    {
+      "id": "F04-dining-chair-011",
+      "room": "F04",
+      "kind": "dining-chair",
+      "position": [
+        4.27,
+        0,
+        -18.5
+      ],
+      "yaw": 1.5707963267948966,
+      "side": "west"
+    },
+    {
+      "id": "F04-dining-chair-012",
+      "room": "F04",
+      "kind": "dining-chair",
+      "position": [
+        4.27,
+        0,
+        -17.38
+      ],
+      "yaw": 1.5707963267948966,
+      "side": "west"
+    },
+    {
+      "id": "F04-dining-chair-013",
+      "room": "F04",
+      "kind": "dining-chair",
+      "position": [
+        6.73,
+        0,
+        -19.62
+      ],
+      "yaw": -1.5707963267948966,
+      "side": "east"
+    },
+    {
+      "id": "F04-dining-chair-014",
+      "room": "F04",
+      "kind": "dining-chair",
+      "position": [
+        6.73,
+        0,
+        -18.5
+      ],
+      "yaw": -1.5707963267948966,
+      "side": "east"
+    },
+    {
+      "id": "F04-dining-chair-015",
+      "room": "F04",
+      "kind": "dining-chair",
+      "position": [
+        6.73,
+        0,
+        -17.38
+      ],
+      "yaw": -1.5707963267948966,
+      "side": "east"
+    },
+    {
+      "id": "F04-dining-chair-016",
+      "room": "F04",
+      "kind": "dining-chair",
+      "position": [
+        5.5,
+        0,
+        -20.93
+      ],
+      "yaw": 0,
+      "side": "north"
+    },
+    {
+      "id": "F04-dining-chair-017",
+      "room": "F04",
+      "kind": "dining-chair",
+      "position": [
+        5.5,
+        0,
+        -16.07
+      ],
+      "yaw": 3.141592653589793,
+      "side": "south"
+    },
+    {
+      "id": "F04-place-setting-018",
+      "room": "F04",
+      "kind": "place-setting",
+      "position": [
+        5.05,
+        0.842,
+        -19.6
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F04-place-setting-019",
+      "room": "F04",
+      "kind": "place-setting",
+      "position": [
+        5.05,
+        0.842,
+        -18.5
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F04-place-setting-020",
+      "room": "F04",
+      "kind": "place-setting",
+      "position": [
+        5.05,
+        0.842,
+        -17.4
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F04-place-setting-021",
+      "room": "F04",
+      "kind": "place-setting",
+      "position": [
+        5.95,
+        0.842,
+        -19.6
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F04-place-setting-022",
+      "room": "F04",
+      "kind": "place-setting",
+      "position": [
+        5.95,
+        0.842,
+        -18.5
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F04-place-setting-023",
+      "room": "F04",
+      "kind": "place-setting",
+      "position": [
+        5.95,
+        0.842,
+        -17.4
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F04-place-setting-024",
+      "room": "F04",
+      "kind": "place-setting",
+      "position": [
+        5.5,
+        0.842,
+        -20.03
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F04-place-setting-025",
+      "room": "F04",
+      "kind": "place-setting",
+      "position": [
+        5.5,
+        0.842,
+        -16.97
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F06-sofa-026",
+      "room": "F06",
+      "kind": "sofa",
+      "position": [
+        -4.65,
+        0,
+        -7.62
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "F06-sofa-027",
+      "room": "F06",
+      "kind": "sofa",
+      "position": [
+        -6.82,
+        0,
+        -9.83
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F06-tv-table-028",
+      "room": "F06",
+      "kind": "tv-table",
+      "position": [
+        -4.2,
+        0,
+        -11.4
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F06-crt-television-029",
+      "room": "F06",
+      "kind": "crt-television",
+      "position": [
+        -4.2,
+        0.52,
+        -11.4
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F06-side-table-030",
+      "room": "F06",
+      "kind": "side-table",
+      "position": [
+        -2.45,
+        0,
+        -7.65
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F06-remote-031",
+      "room": "F06",
+      "kind": "remote",
+      "position": [
+        -2.45,
+        0.64,
+        -7.65
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F07-bookshelf-032",
+      "room": "F07",
+      "kind": "bookshelf",
+      "position": [
+        3.8,
+        0,
+        -7.5
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "F07-toilet-033",
+      "room": "F07",
+      "kind": "toilet",
+      "position": [
+        8.65,
+        0,
+        -7.7
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "F07-basin-034",
+      "room": "F07",
+      "kind": "basin",
+      "position": [
+        8.8,
+        0,
+        -10.5
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "F07-shower-035",
+      "room": "F07",
+      "kind": "shower",
+      "position": [
+        6.9,
+        0,
+        -11.3
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F08-bar-cabinet-036",
+      "room": "F08",
+      "kind": "bar-cabinet",
+      "position": [
+        1,
+        0,
+        -13.5
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "F05-counter-037",
+      "room": "F05",
+      "kind": "counter",
+      "position": [
+        -5,
+        0,
+        -21.5
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F05-stove-038",
+      "room": "F05",
+      "kind": "stove",
+      "position": [
+        -2.35,
+        0,
+        -21.34
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F05-refrigerator-039",
+      "room": "F05",
+      "kind": "refrigerator",
+      "position": [
+        -6.94,
+        0,
+        -15.67
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "F05-cupboard-040",
+      "room": "F05",
+      "kind": "cupboard",
+      "position": [
+        -6.65,
+        1.78,
+        -21.66
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F05-cupboard-041",
+      "room": "F05",
+      "kind": "cupboard",
+      "position": [
+        -2.35,
+        1.78,
+        -21.66
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F05-abandoned-food-042",
+      "room": "F05",
+      "kind": "abandoned-food",
+      "position": [
+        -3.95,
+        1,
+        -21.47
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F09-car-043",
+      "room": "F09",
+      "kind": "car",
+      "position": [
+        -4.65,
+        0,
+        -3.05
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F09-mirror-044",
+      "room": "F09",
+      "kind": "mirror",
+      "position": [
+        -7.25,
+        0,
+        -5.85
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F09-workbench-045",
+      "room": "F09",
+      "kind": "workbench",
+      "position": [
+        -4.65,
+        0,
+        -6.57
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F09-damaged-cabinet-046",
+      "room": "F09",
+      "kind": "damaged-cabinet",
+      "position": [
+        -2,
+        0,
+        -1.3
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "F09-box-047",
+      "room": "F09",
+      "kind": "box",
+      "position": [
+        -7,
+        0,
+        -0.9
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F09-box-048",
+      "room": "F09",
+      "kind": "box",
+      "position": [
+        -7,
+        0,
+        -1.8
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F09-box-049",
+      "room": "F09",
+      "kind": "box",
+      "position": [
+        -2.3,
+        0,
+        -3
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F09-covered-furniture-050",
+      "room": "F09",
+      "kind": "covered-furniture",
+      "position": [
+        -6.9,
+        0,
+        -3.25
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F09-spare-tire-051",
+      "room": "F09",
+      "kind": "spare-tire",
+      "position": [
+        -2.13,
+        0.12,
+        -4.42
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F09-spare-tire-052",
+      "room": "F09",
+      "kind": "spare-tire",
+      "position": [
+        -2.13,
+        0.32,
+        -4.42
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F09-spare-tire-053",
+      "room": "F09",
+      "kind": "spare-tire",
+      "position": [
+        -2.13,
+        0.52,
+        -4.42
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U00-display-cabinet-054",
+      "room": "U00",
+      "kind": "display-cabinet",
+      "position": [
+        -1.06,
+        3.24,
+        -2.15
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U00-display-cabinet-055",
+      "room": "U00",
+      "kind": "display-cabinet",
+      "position": [
+        -1.06,
+        3.24,
+        -3.55
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U00-breaker-056",
+      "room": "U00",
+      "kind": "breaker",
+      "position": [
+        -1.25,
+        4.38,
+        -4.65
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U01-bookshelf-057",
+      "room": "U01",
+      "kind": "bookshelf",
+      "position": [
+        4.32,
+        3.24,
+        -1.93
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U01-bed-058",
+      "room": "U01",
+      "kind": "bed",
+      "position": [
+        6.64,
+        3.24,
+        -6.7
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U01-wardrobe-059",
+      "room": "U01",
+      "kind": "wardrobe",
+      "position": [
+        4.13,
+        3.24,
+        -6.6
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U01-computer-060",
+      "room": "U01",
+      "kind": "computer",
+      "position": [
+        8.83,
+        3.24,
+        -4.38
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "U01-bookshelf-061",
+      "room": "U01",
+      "kind": "bookshelf",
+      "position": [
+        8.75,
+        3.24,
+        -7.15
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "U01-bedside-table-062",
+      "room": "U01",
+      "kind": "bedside-table",
+      "position": [
+        5.2,
+        3.24,
+        -7.25
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U01-toilet-063",
+      "room": "U01",
+      "kind": "toilet",
+      "position": [
+        8.85,
+        3.24,
+        -0.6
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "U01-basin-064",
+      "room": "U01",
+      "kind": "basin",
+      "position": [
+        8,
+        3.24,
+        -2.45
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U01-shower-065",
+      "room": "U01",
+      "kind": "shower",
+      "position": [
+        8.85,
+        3.24,
+        -1.85
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "U02-bed-066",
+      "room": "U02",
+      "kind": "bed",
+      "position": [
+        -6.48,
+        3.24,
+        -5.8
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U02-bed-067",
+      "room": "U02",
+      "kind": "bed",
+      "position": [
+        -2.47,
+        3.24,
+        -5.8
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U02-computer-068",
+      "room": "U02",
+      "kind": "computer",
+      "position": [
+        -4.6,
+        3.24,
+        -7.6
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U02-bookshelf-069",
+      "room": "U02",
+      "kind": "bookshelf",
+      "position": [
+        -1.94,
+        3.24,
+        -3.3
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "U02-sofa-070",
+      "room": "U02",
+      "kind": "sofa",
+      "position": [
+        -6.77,
+        3.24,
+        -1.53
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U02-bookshelf-071",
+      "room": "U02",
+      "kind": "bookshelf",
+      "position": [
+        -6.3,
+        3.24,
+        -7.83
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U03-bed-072",
+      "room": "U03",
+      "kind": "bed",
+      "position": [
+        6,
+        3.24,
+        -13.23
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U03-headboard-mirror-073",
+      "room": "U03",
+      "kind": "headboard-mirror",
+      "position": [
+        6,
+        4.79,
+        -14.65
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U03-wardrobe-074",
+      "room": "U03",
+      "kind": "wardrobe",
+      "position": [
+        2.17,
+        3.24,
+        -13
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U03-bookshelf-075",
+      "room": "U03",
+      "kind": "bookshelf",
+      "position": [
+        8.78,
+        3.24,
+        -9.4
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "U03-bedside-table-076",
+      "room": "U03",
+      "kind": "bedside-table",
+      "position": [
+        7.46,
+        3.24,
+        -13.8
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U04-bed-077",
+      "room": "U04",
+      "kind": "bed",
+      "position": [
+        -6.35,
+        3.24,
+        -13.1
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U04-bed-078",
+      "room": "U04",
+      "kind": "bed",
+      "position": [
+        -2.67,
+        3.24,
+        -13.1
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U04-dresser-079",
+      "room": "U04",
+      "kind": "dresser",
+      "position": [
+        -4.75,
+        3.24,
+        -8.65
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "U05-toilet-080",
+      "room": "U05",
+      "kind": "toilet",
+      "position": [
+        -4.45,
+        3.24,
+        -18.35
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U05-basin-081",
+      "room": "U05",
+      "kind": "basin",
+      "position": [
+        -2.25,
+        3.24,
+        -18.55
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U05-shower-082",
+      "room": "U05",
+      "kind": "shower",
+      "position": [
+        -4.63,
+        3.24,
+        -15.62
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "U06-bed-083",
+      "room": "U06",
+      "kind": "bed",
+      "position": [
+        5.62,
+        3.24,
+        -20.4
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U06-doll-084",
+      "room": "U06",
+      "kind": "doll",
+      "position": [
+        5.62,
+        3.9800000000000004,
+        -20.62
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U06-mirror-085",
+      "room": "U06",
+      "kind": "mirror",
+      "position": [
+        8.88,
+        3.24,
+        -16.3
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "U06-wardrobe-086",
+      "room": "U06",
+      "kind": "wardrobe",
+      "position": [
+        2.15,
+        3.24,
+        -20.72
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U06-wardrobe-087",
+      "room": "U06",
+      "kind": "wardrobe",
+      "position": [
+        2.15,
+        3.24,
+        -18.57
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U06-bedside-table-088",
+      "room": "U06",
+      "kind": "bedside-table",
+      "position": [
+        7.18,
+        3.24,
+        -21.1
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F02-curtains-089",
+      "room": "F02",
+      "kind": "curtains",
+      "position": [
+        6.2,
+        0.9,
+        0
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F06-curtains-090",
+      "room": "F06",
+      "kind": "curtains",
+      "position": [
+        -7.6,
+        0.9,
+        -9.5
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F05-curtains-091",
+      "room": "F05",
+      "kind": "curtains",
+      "position": [
+        -7.6,
+        1.25,
+        -18.5
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F02-curtains-092",
+      "room": "F02",
+      "kind": "curtains",
+      "position": [
+        9.4,
+        0.9,
+        -3.5
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F07-curtains-093",
+      "room": "F07",
+      "kind": "curtains",
+      "position": [
+        9.4,
+        1.65,
+        -9.1
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F04-curtains-094",
+      "room": "F04",
+      "kind": "curtains",
+      "position": [
+        9.4,
+        0.9,
+        -18.6
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F05-curtains-095",
+      "room": "F05",
+      "kind": "curtains",
+      "position": [
+        -5,
+        1.25,
+        -22
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F04-curtains-096",
+      "room": "F04",
+      "kind": "curtains",
+      "position": [
+        5.6,
+        0.9,
+        -22
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U01-curtains-097",
+      "room": "U01",
+      "kind": "curtains",
+      "position": [
+        8.2,
+        4.94,
+        0
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U02-curtains-098",
+      "room": "U02",
+      "kind": "curtains",
+      "position": [
+        -7.6,
+        4.140000000000001,
+        -3.2
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U04-curtains-099",
+      "room": "U04",
+      "kind": "curtains",
+      "position": [
+        -7.6,
+        4.140000000000001,
+        -11.7
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U05-curtains-100",
+      "room": "U05",
+      "kind": "curtains",
+      "position": [
+        -5.4,
+        4.890000000000001,
+        -16.8
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U01-curtains-101",
+      "room": "U01",
+      "kind": "curtains",
+      "position": [
+        9.4,
+        4.140000000000001,
+        -5
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U03-curtains-102",
+      "room": "U03",
+      "kind": "curtains",
+      "position": [
+        9.4,
+        4.140000000000001,
+        -11.5
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U06-curtains-103",
+      "room": "U06",
+      "kind": "curtains",
+      "position": [
+        9.4,
+        4.140000000000001,
+        -18.2
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U06-curtains-104",
+      "room": "U06",
+      "kind": "curtains",
+      "position": [
+        5.6,
+        4.140000000000001,
+        -22
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F01-open-door-105",
+      "room": "F01",
+      "kind": "open-door",
+      "position": [
+        -0.92,
+        0,
+        -0.79
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F01-open-door-106",
+      "room": "F01",
+      "kind": "open-door",
+      "position": [
+        -1.515,
+        0,
+        -7.489999999999999
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F01-open-door-107",
+      "room": "F01",
+      "kind": "open-door",
+      "position": [
+        -1.515,
+        0,
+        -10.590000000000002
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F08-open-door-108",
+      "room": "F08",
+      "kind": "open-door",
+      "position": [
+        -1.515,
+        0,
+        -14.840000000000002
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F08-open-door-109",
+      "room": "F08",
+      "kind": "open-door",
+      "position": [
+        -1.515,
+        0,
+        -19.589999999999996
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F01-open-door-110",
+      "room": "F01",
+      "kind": "open-door",
+      "position": [
+        1.515,
+        0,
+        -10.590000000000002
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F08-open-door-111",
+      "room": "F08",
+      "kind": "open-door",
+      "position": [
+        1.515,
+        0,
+        -19.589999999999996
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F07-open-door-112",
+      "room": "F07",
+      "kind": "open-door",
+      "position": [
+        6.215,
+        0,
+        -10.49
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U02-open-door-113",
+      "room": "U02",
+      "kind": "open-door",
+      "position": [
+        -5.14,
+        3.24,
+        0.115
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U01-open-door-114",
+      "room": "U01",
+      "kind": "open-door",
+      "position": [
+        4.56,
+        3.24,
+        0.115
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U00-open-door-115",
+      "room": "U00",
+      "kind": "open-door",
+      "position": [
+        -1.515,
+        3.24,
+        -17.589999999999996
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U00-open-door-116",
+      "room": "U00",
+      "kind": "open-door",
+      "position": [
+        -1.515,
+        3.24,
+        -11.940000000000001
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U00-open-door-117",
+      "room": "U00",
+      "kind": "open-door",
+      "position": [
+        -1.515,
+        3.24,
+        -2.19
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U00-open-door-118",
+      "room": "U00",
+      "kind": "open-door",
+      "position": [
+        3.515,
+        3.24,
+        -2.09
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U00-open-door-119",
+      "room": "U00",
+      "kind": "open-door",
+      "position": [
+        1.515,
+        3.24,
+        -18.34
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U00-open-door-120",
+      "room": "U00",
+      "kind": "open-door",
+      "position": [
+        1.515,
+        3.24,
+        -11.940000000000001
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U01-open-door-121",
+      "room": "U01",
+      "kind": "open-door",
+      "position": [
+        6.815,
+        3.24,
+        -2.1899999999999995
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F01-muddy-mat-122",
+      "room": "F01",
+      "kind": "muddy-mat",
+      "position": [
+        0,
+        0,
+        -0.46
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F01-slipper-123",
+      "room": "F01",
+      "kind": "slipper",
+      "position": [
+        -0.75,
+        0,
+        -1.9
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F01-slipper-124",
+      "room": "F01",
+      "kind": "slipper",
+      "position": [
+        -0.48,
+        0,
+        -1.9
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F02-rug-125",
+      "room": "F02",
+      "kind": "rug",
+      "position": [
+        6.1,
+        0.015,
+        -3.1
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F06-rug-126",
+      "room": "F06",
+      "kind": "rug",
+      "position": [
+        -4.4,
+        0.015,
+        -9.5
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U00-rug-127",
+      "room": "U00",
+      "kind": "rug",
+      "position": [
+        0,
+        3.2550000000000003,
+        -10.4
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U01-rug-128",
+      "room": "U01",
+      "kind": "rug",
+      "position": [
+        6.5,
+        3.2550000000000003,
+        -5.5
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U03-rug-129",
+      "room": "U03",
+      "kind": "rug",
+      "position": [
+        6,
+        3.2550000000000003,
+        -11.8
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U06-rug-130",
+      "room": "U06",
+      "kind": "rug",
+      "position": [
+        5.6,
+        3.2550000000000003,
+        -19.2
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F01-portrait-131",
+      "room": "F01",
+      "kind": "portrait",
+      "position": [
+        -1.3,
+        1.7,
+        -3.3
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F03-portrait-132",
+      "room": "F03",
+      "kind": "portrait",
+      "position": [
+        3.3,
+        4.65,
+        -3.5
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "F02-portrait-133",
+      "room": "F02",
+      "kind": "portrait",
+      "position": [
+        7.7,
+        1.9,
+        -6.9
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F06-portrait-134",
+      "room": "F06",
+      "kind": "portrait",
+      "position": [
+        -2.8,
+        1.8,
+        -11.9
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U00-portrait-135",
+      "room": "U00",
+      "kind": "portrait",
+      "position": [
+        -1.29,
+        5.04,
+        -6.7
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U00-portrait-136",
+      "room": "U00",
+      "kind": "portrait",
+      "position": [
+        1.29,
+        4.99,
+        -11.9
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "U00-portrait-137",
+      "room": "U00",
+      "kind": "portrait",
+      "position": [
+        -1.29,
+        4.94,
+        -19.8
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U02-portrait-138",
+      "room": "U02",
+      "kind": "portrait",
+      "position": [
+        -5.2,
+        5.04,
+        -8.09
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U01-portrait-139",
+      "room": "U01",
+      "kind": "portrait",
+      "position": [
+        4.35,
+        5.140000000000001,
+        -8.08
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F07-water-stain-140",
+      "room": "F07",
+      "kind": "water-stain",
+      "position": [
+        9.306,
+        0.5,
+        -10
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "F05-water-stain-141",
+      "room": "F05",
+      "kind": "water-stain",
+      "position": [
+        -5,
+        1.32,
+        -21.91
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U01-water-stain-142",
+      "room": "U01",
+      "kind": "water-stain",
+      "position": [
+        9.306,
+        4.24,
+        -1.5
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "U05-water-stain-143",
+      "room": "U05",
+      "kind": "water-stain",
+      "position": [
+        -3.5,
+        3.8400000000000003,
+        -18.908
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U00-water-stain-144",
+      "room": "U00",
+      "kind": "water-stain",
+      "position": [
+        -1.3,
+        5.34,
+        -12.3
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F02-water-stain-145",
+      "room": "F02",
+      "kind": "water-stain",
+      "position": [
+        9.306,
+        0.48,
+        -3.5
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "U04-water-stain-146",
+      "room": "U04",
+      "kind": "water-stain",
+      "position": [
+        -7.505,
+        3.6900000000000004,
+        -11.7
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U00-peeling-plaster-147",
+      "room": "U00",
+      "kind": "peeling-plaster",
+      "position": [
+        -1.307,
+        5.19,
+        -12.7
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F03-peeling-plaster-148",
+      "room": "F03",
+      "kind": "peeling-plaster",
+      "position": [
+        3.309,
+        4.2,
+        -4.9
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "F07-peeling-plaster-149",
+      "room": "F07",
+      "kind": "peeling-plaster",
+      "position": [
+        9.307,
+        1.25,
+        -10.2
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "U07-surface-crack-150",
+      "room": "U07",
+      "kind": "surface-crack",
+      "position": [
+        3.1,
+        3.249,
+        1.5
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-surface-crack-151",
+      "room": "U07",
+      "kind": "surface-crack",
+      "position": [
+        -4.8,
+        3.249,
+        1.1
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F05-surface-crack-152",
+      "room": "F05",
+      "kind": "surface-crack",
+      "position": [
+        -4.8,
+        0.009,
+        -20.5
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F07-surface-crack-153",
+      "room": "F07",
+      "kind": "surface-crack",
+      "position": [
+        8,
+        0.026,
+        -10
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U05-surface-crack-154",
+      "room": "U05",
+      "kind": "surface-crack",
+      "position": [
+        -3.4,
+        3.266,
+        -17
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F02-surface-crack-155",
+      "room": "F02",
+      "kind": "surface-crack",
+      "position": [
+        6.4,
+        0.48,
+        -3.3
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F07-portrait-156",
+      "room": "F07",
+      "kind": "portrait",
+      "position": [
+        5,
+        2.47,
+        -7.72
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "F07-shelf-figurine-157",
+      "room": "F07",
+      "kind": "shelf-figurine",
+      "position": [
+        3.7,
+        2.43,
+        -7.75
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F07-abandoned-belongings-158",
+      "room": "F07",
+      "kind": "abandoned-belongings",
+      "position": [
+        3.7,
+        0.02,
+        -8.16
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F07-abandoned-belongings-159",
+      "room": "F07",
+      "kind": "abandoned-belongings",
+      "position": [
+        2.45,
+        0.02,
+        -8.05
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U01-abandoned-belongings-160",
+      "room": "U01",
+      "kind": "abandoned-belongings",
+      "position": [
+        4.62,
+        3.2600000000000002,
+        -2.44
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U02-abandoned-belongings-161",
+      "room": "U02",
+      "kind": "abandoned-belongings",
+      "position": [
+        -4.3,
+        3.2600000000000002,
+        -6.9
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U02-abandoned-belongings-162",
+      "room": "U02",
+      "kind": "abandoned-belongings",
+      "position": [
+        -2.52,
+        3.2600000000000002,
+        -4.2
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U03-abandoned-belongings-163",
+      "room": "U03",
+      "kind": "abandoned-belongings",
+      "position": [
+        8,
+        3.2600000000000002,
+        -12.5
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U04-abandoned-belongings-164",
+      "room": "U04",
+      "kind": "abandoned-belongings",
+      "position": [
+        -4.8,
+        3.2600000000000002,
+        -13.8
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U06-abandoned-belongings-165",
+      "room": "U06",
+      "kind": "abandoned-belongings",
+      "position": [
+        7.65,
+        3.2600000000000002,
+        -18.8
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F06-tangled-cables-166",
+      "room": "F06",
+      "kind": "tangled-cables",
+      "position": [
+        -4.3,
+        0,
+        -11.28
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F09-tools-167",
+      "room": "F09",
+      "kind": "tools",
+      "position": [
+        -4.6,
+        0.92,
+        -6.57
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-dead-plant-168",
+      "room": "U07",
+      "kind": "dead-plant",
+      "position": [
+        -6.7,
+        3.24,
+        1.35
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-dead-plant-169",
+      "room": "U07",
+      "kind": "dead-plant",
+      "position": [
+        8.65,
+        3.24,
+        1.15
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-dead-plant-170",
+      "room": "U07",
+      "kind": "dead-plant",
+      "position": [
+        -0.7,
+        3.24,
+        1.95
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-171",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        0.5159990914024952,
+        3.265,
+        1.8420207702139513
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-172",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -5.251970817444153,
+        3.265,
+        0.6458534297193756
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-173",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        2.887280219177497,
+        3.265,
+        0.8817891936995534
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-174",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -3.088753534966383,
+        3.265,
+        0.7130017956597547
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-175",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        2.3221597567976753,
+        3.265,
+        0.9864653239014274
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-176",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -4.383398533389346,
+        3.265,
+        1.4304490504148333
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-177",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -4.047124906374262,
+        3.265,
+        1.3430863669599964
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-178",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -1.3746110805187284,
+        3.265,
+        0.7792002000162942
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-179",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -3.2204472316333965,
+        3.265,
+        0.6563301666805245
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-180",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        0.056316763653076585,
+        3.265,
+        0.9427823458881085
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-181",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        4.4278059717261575,
+        3.265,
+        2.1791075099894286
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-182",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        3.2274735932699157,
+        3.265,
+        0.7756209078373839
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-183",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -4.422428903536604,
+        3.265,
+        1.02682345823358
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-184",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -1.7425178744235712,
+        3.265,
+        0.5807474791364081
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-185",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -5.592581841624012,
+        3.265,
+        1.922738236015365
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-186",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -5.600290980547211,
+        3.265,
+        1.266426641896013
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-187",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -2.923797526533395,
+        3.265,
+        1.3849535156934976
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-188",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -7.050700987781397,
+        3.265,
+        0.9504672565724577
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-189",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -7.095120967380787,
+        3.265,
+        0.6889718019840186
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-190",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        3.6796704372876823,
+        3.265,
+        1.7365438807048086
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-191",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -4.687662425580124,
+        3.265,
+        0.94233639600024
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-192",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        4.041805230523171,
+        3.265,
+        1.8564664878323458
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-193",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -0.9236327854988096,
+        3.265,
+        0.8419248307084546
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-194",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        8.267569472348228,
+        3.265,
+        1.1402291547594088
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-195",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        7.4313861936651255,
+        3.265,
+        1.010984875780549
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-196",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -1.8997351222532801,
+        3.265,
+        0.507898415155465
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-197",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        7.052930008319856,
+        3.265,
+        1.4165596494987611
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-198",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        8.254819536778971,
+        3.265,
+        1.0500841356640263
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-199",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -1.2922009100960539,
+        3.265,
+        1.2411267351471575
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-200",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        6.841315839543733,
+        3.265,
+        1.2497647614302794
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-201",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -5.701635933274989,
+        3.265,
+        1.343012816328545
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-202",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -0.14155991173101246,
+        3.265,
+        1.6485072051664516
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-203",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        8.647856830353856,
+        3.265,
+        1.0194674488413535
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-204",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -2.297527562951493,
+        3.265,
+        1.9824615201927949
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-205",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -1.9011392643643088,
+        3.265,
+        1.350239967234511
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-206",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        0.6260811591114068,
+        3.265,
+        1.1921211485850822
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-207",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -1.7152073719041745,
+        3.265,
+        0.6823288037136427
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-208",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -0.31902328511483713,
+        3.265,
+        1.0767095737227321
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-209",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        -5.557578751858565,
+        3.265,
+        2.102334570859937
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-leaf-210",
+      "room": "U07",
+      "kind": "leaf",
+      "position": [
+        5.657785537739218,
+        3.265,
+        1.2200037276730042
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F02-light-fixture-211",
+      "room": "F02",
+      "kind": "light-fixture",
+      "position": [
+        6.2,
+        2.72,
+        -3.4
+      ],
+      "yaw": 0,
+      "fixtureId": "L-living"
+    },
+    {
+      "id": "F02-light-fixture-212",
+      "room": "F02",
+      "kind": "light-fixture",
+      "position": [
+        7.84,
+        0.94,
+        -5.6
+      ],
+      "yaw": 0,
+      "fixtureId": "L-doll"
+    },
+    {
+      "id": "F03-light-fixture-213",
+      "room": "F03",
+      "kind": "light-fixture",
+      "position": [
+        3.2,
+        2.95,
+        -4.2
+      ],
+      "yaw": 0,
+      "fixtureId": "L-stairs"
+    },
+    {
+      "id": "F04-light-fixture-214",
+      "room": "F04",
+      "kind": "light-fixture",
+      "position": [
+        5.5,
+        2.2,
+        -18.5
+      ],
+      "yaw": 0,
+      "fixtureId": "L-dining"
+    },
+    {
+      "id": "F05-light-fixture-215",
+      "room": "F05",
+      "kind": "light-fixture",
+      "position": [
+        -4.5,
+        2.86,
+        -18.6
+      ],
+      "yaw": 0,
+      "fixtureId": "L-kitchen"
+    },
+    {
+      "id": "F06-light-fixture-216",
+      "room": "F06",
+      "kind": "light-fixture",
+      "position": [
+        -2.45,
+        0.92,
+        -7.65
+      ],
+      "yaw": 0,
+      "fixtureId": "L-tv"
+    },
+    {
+      "id": "F07-light-fixture-217",
+      "room": "F07",
+      "kind": "light-fixture",
+      "position": [
+        3.8,
+        2.7,
+        -10.2
+      ],
+      "yaw": 0,
+      "fixtureId": "L-books"
+    },
+    {
+      "id": "F07-light-fixture-218",
+      "room": "F07",
+      "kind": "light-fixture",
+      "position": [
+        7.8,
+        2.7,
+        -9.5
+      ],
+      "yaw": 0,
+      "fixtureId": "L-cr-ground"
+    },
+    {
+      "id": "F08-light-fixture-219",
+      "room": "F08",
+      "kind": "light-fixture",
+      "position": [
+        0,
+        2.68,
+        -13.5
+      ],
+      "yaw": 0,
+      "fixtureId": "L-bar"
+    },
+    {
+      "id": "F09-light-fixture-220",
+      "room": "F09",
+      "kind": "light-fixture",
+      "position": [
+        -2.05,
+        2.72,
+        -6
+      ],
+      "yaw": 0,
+      "fixtureId": "L-garage"
+    },
+    {
+      "id": "U00-light-fixture-221",
+      "room": "U00",
+      "kind": "light-fixture",
+      "position": [
+        2.4,
+        5.880000000000001,
+        -0.83
+      ],
+      "yaw": 0,
+      "fixtureId": "H1"
+    },
+    {
+      "id": "U00-light-fixture-222",
+      "room": "U00",
+      "kind": "light-fixture",
+      "position": [
+        -0.05,
+        5.890000000000001,
+        -4.5
+      ],
+      "yaw": 0,
+      "fixtureId": "H2"
+    },
+    {
+      "id": "U01-light-fixture-223",
+      "room": "U01",
+      "kind": "light-fixture",
+      "position": [
+        5.2,
+        4.18,
+        -7.25
+      ],
+      "yaw": 0,
+      "fixtureId": "L-master-bed"
+    },
+    {
+      "id": "U01-light-fixture-224",
+      "room": "U01",
+      "kind": "light-fixture",
+      "position": [
+        8.73,
+        4.3100000000000005,
+        -3.8
+      ],
+      "yaw": 0,
+      "fixtureId": "L-master-desk"
+    },
+    {
+      "id": "U01-light-fixture-225",
+      "room": "U01",
+      "kind": "light-fixture",
+      "position": [
+        8.25,
+        6,
+        -1.5
+      ],
+      "yaw": 0,
+      "fixtureId": "L-master-cr"
+    },
+    {
+      "id": "U02-light-fixture-226",
+      "room": "U02",
+      "kind": "light-fixture",
+      "position": [
+        -4.2,
+        4.3100000000000005,
+        -7.6
+      ],
+      "yaw": 0,
+      "fixtureId": "L-study"
+    },
+    {
+      "id": "U03-light-fixture-227",
+      "room": "U03",
+      "kind": "light-fixture",
+      "position": [
+        7.46,
+        4.21,
+        -13.8
+      ],
+      "yaw": 0,
+      "fixtureId": "L-guest"
+    },
+    {
+      "id": "U04-light-fixture-228",
+      "room": "U04",
+      "kind": "light-fixture",
+      "position": [
+        -4.75,
+        4.74,
+        -8.65
+      ],
+      "yaw": 0,
+      "fixtureId": "L-twin"
+    },
+    {
+      "id": "U05-light-fixture-229",
+      "room": "U05",
+      "kind": "light-fixture",
+      "position": [
+        -3.4,
+        5.960000000000001,
+        -16.9
+      ],
+      "yaw": 0,
+      "fixtureId": "L-shared-cr"
+    },
+    {
+      "id": "U06-light-fixture-230",
+      "room": "U06",
+      "kind": "light-fixture",
+      "position": [
+        5.2,
+        6,
+        -18.7
+      ],
+      "yaw": 0,
+      "fixtureId": "L-master2-ceiling"
+    },
+    {
+      "id": "U06-light-fixture-231",
+      "room": "U06",
+      "kind": "light-fixture",
+      "position": [
+        7.18,
+        4.18,
+        -21.1
+      ],
+      "yaw": 0,
+      "fixtureId": "L-master2-bed"
+    }
+  ],
+  "colliders": [
+    {
+      "id": "collider-0",
+      "room": "F09",
+      "min": [
+        -7.6,
+        0,
+        -0.08
+      ],
+      "max": [
+        -1.4,
+        3.05,
+        0.08
+      ]
+    },
+    {
+      "id": "collider-1",
+      "room": "F01",
+      "min": [
+        -1.4,
+        0,
+        -0.08
+      ],
+      "max": [
+        -0.75,
+        3.05,
+        0.08
+      ]
+    },
+    {
+      "id": "collider-2",
+      "room": "F01",
+      "min": [
+        -0.75,
+        2.35,
+        -0.08
+      ],
+      "max": [
+        0.75,
+        3.05,
+        0.08
+      ]
+    },
+    {
+      "id": "collider-3",
+      "room": "F01",
+      "min": [
+        0.75,
+        0,
+        -0.08
+      ],
+      "max": [
+        1.4,
+        3.05,
+        0.08
+      ]
+    },
+    {
+      "id": "collider-4",
+      "room": "F02",
+      "min": [
+        1.4,
+        0,
+        -0.08
+      ],
+      "max": [
+        4.95,
+        3.05,
+        0.08
+      ]
+    },
+    {
+      "id": "collider-5",
+      "room": "F02",
+      "min": [
+        4.95,
+        0,
+        -0.08
+      ],
+      "max": [
+        7.45,
+        0.9,
+        0.08
+      ]
+    },
+    {
+      "id": "collider-6",
+      "room": "F02",
+      "min": [
+        4.95,
+        2.55,
+        -0.08
+      ],
+      "max": [
+        7.45,
+        3.05,
+        0.08
+      ]
+    },
+    {
+      "id": "collider-7",
+      "room": "F02",
+      "min": [
+        7.45,
+        0,
+        -0.08
+      ],
+      "max": [
+        9.4,
+        3.05,
+        0.08
+      ]
+    },
+    {
+      "id": "collider-8",
+      "room": "F09",
+      "min": [
+        -7.68,
+        0,
+        -7
+      ],
+      "max": [
+        -7.52,
+        3.05,
+        0
+      ]
+    },
+    {
+      "id": "collider-9",
+      "room": "F06",
+      "min": [
+        -7.68,
+        0,
+        -12
+      ],
+      "max": [
+        -7.52,
+        3.05,
+        -10.7
+      ]
+    },
+    {
+      "id": "collider-10",
+      "room": "F06",
+      "min": [
+        -7.68,
+        0,
+        -10.7
+      ],
+      "max": [
+        -7.52,
+        0.9,
+        -8.3
+      ]
+    },
+    {
+      "id": "collider-11",
+      "room": "F06",
+      "min": [
+        -7.68,
+        2.55,
+        -10.7
+      ],
+      "max": [
+        -7.52,
+        3.05,
+        -8.3
+      ]
+    },
+    {
+      "id": "collider-12",
+      "room": "F06",
+      "min": [
+        -7.68,
+        0,
+        -8.3
+      ],
+      "max": [
+        -7.52,
+        3.05,
+        -7
+      ]
+    },
+    {
+      "id": "collider-13",
+      "room": "F05",
+      "min": [
+        -7.68,
+        0,
+        -22
+      ],
+      "max": [
+        -7.52,
+        3.05,
+        -19.35
+      ]
+    },
+    {
+      "id": "collider-14",
+      "room": "F05",
+      "min": [
+        -7.68,
+        0,
+        -19.35
+      ],
+      "max": [
+        -7.52,
+        1.25,
+        -17.65
+      ]
+    },
+    {
+      "id": "collider-15",
+      "room": "F05",
+      "min": [
+        -7.68,
+        2.35,
+        -19.35
+      ],
+      "max": [
+        -7.52,
+        3.05,
+        -17.65
+      ]
+    },
+    {
+      "id": "collider-16",
+      "room": "F05",
+      "min": [
+        -7.68,
+        0,
+        -17.65
+      ],
+      "max": [
+        -7.52,
+        3.05,
+        -15
+      ]
+    },
+    {
+      "id": "collider-17",
+      "room": "F02",
+      "min": [
+        9.32,
+        0,
+        -7
+      ],
+      "max": [
+        9.48,
+        3.05,
+        -4.85
+      ]
+    },
+    {
+      "id": "collider-18",
+      "room": "F02",
+      "min": [
+        9.32,
+        0,
+        -4.85
+      ],
+      "max": [
+        9.48,
+        0.9,
+        -2.15
+      ]
+    },
+    {
+      "id": "collider-19",
+      "room": "F02",
+      "min": [
+        9.32,
+        2.55,
+        -4.85
+      ],
+      "max": [
+        9.48,
+        3.05,
+        -2.15
+      ]
+    },
+    {
+      "id": "collider-20",
+      "room": "F02",
+      "min": [
+        9.32,
+        0,
+        -2.15
+      ],
+      "max": [
+        9.48,
+        3.05,
+        0
+      ]
+    },
+    {
+      "id": "collider-21",
+      "room": "F07",
+      "min": [
+        9.32,
+        0,
+        -15
+      ],
+      "max": [
+        9.48,
+        3.05,
+        -9.525
+      ]
+    },
+    {
+      "id": "collider-22",
+      "room": "F07",
+      "min": [
+        9.32,
+        0,
+        -9.525
+      ],
+      "max": [
+        9.48,
+        1.65,
+        -8.675
+      ]
+    },
+    {
+      "id": "collider-23",
+      "room": "F07",
+      "min": [
+        9.32,
+        2.5,
+        -9.525
+      ],
+      "max": [
+        9.48,
+        3.05,
+        -8.675
+      ]
+    },
+    {
+      "id": "collider-24",
+      "room": "F07",
+      "min": [
+        9.32,
+        0,
+        -8.675
+      ],
+      "max": [
+        9.48,
+        3.05,
+        -7
+      ]
+    },
+    {
+      "id": "collider-25",
+      "room": "F04",
+      "min": [
+        9.32,
+        0,
+        -22
+      ],
+      "max": [
+        9.48,
+        3.05,
+        -19.7
+      ]
+    },
+    {
+      "id": "collider-26",
+      "room": "F04",
+      "min": [
+        9.32,
+        0,
+        -19.7
+      ],
+      "max": [
+        9.48,
+        0.9,
+        -17.5
+      ]
+    },
+    {
+      "id": "collider-27",
+      "room": "F04",
+      "min": [
+        9.32,
+        2.55,
+        -19.7
+      ],
+      "max": [
+        9.48,
+        3.05,
+        -17.5
+      ]
+    },
+    {
+      "id": "collider-28",
+      "room": "F04",
+      "min": [
+        9.32,
+        0,
+        -17.5
+      ],
+      "max": [
+        9.48,
+        3.05,
+        -15
+      ]
+    },
+    {
+      "id": "collider-29",
+      "room": "F05",
+      "min": [
+        -7.6,
+        0,
+        -22.08
+      ],
+      "max": [
+        -5.8,
+        3.05,
+        -21.92
+      ]
+    },
+    {
+      "id": "collider-30",
+      "room": "F05",
+      "min": [
+        -5.8,
+        0,
+        -22.08
+      ],
+      "max": [
+        -4.2,
+        1.25,
+        -21.92
+      ]
+    },
+    {
+      "id": "collider-31",
+      "room": "F05",
+      "min": [
+        -5.8,
+        2.35,
+        -22.08
+      ],
+      "max": [
+        -4.2,
+        3.05,
+        -21.92
+      ]
+    },
+    {
+      "id": "collider-32",
+      "room": "F05",
+      "min": [
+        -4.2,
+        0,
+        -22.08
+      ],
+      "max": [
+        -1.4,
+        3.05,
+        -21.92
+      ]
+    },
+    {
+      "id": "collider-33",
+      "room": "F08",
+      "min": [
+        -1.4,
+        0,
+        -22.08
+      ],
+      "max": [
+        1.4,
+        3.05,
+        -21.92
+      ]
+    },
+    {
+      "id": "collider-34",
+      "room": "F04",
+      "min": [
+        1.4,
+        0,
+        -22.08
+      ],
+      "max": [
+        4.55,
+        3.05,
+        -21.92
+      ]
+    },
+    {
+      "id": "collider-35",
+      "room": "F04",
+      "min": [
+        4.55,
+        0,
+        -22.08
+      ],
+      "max": [
+        6.65,
+        0.9,
+        -21.92
+      ]
+    },
+    {
+      "id": "collider-36",
+      "room": "F04",
+      "min": [
+        4.55,
+        2.55,
+        -22.08
+      ],
+      "max": [
+        6.65,
+        3.05,
+        -21.92
+      ]
+    },
+    {
+      "id": "collider-37",
+      "room": "F04",
+      "min": [
+        6.65,
+        0,
+        -22.08
+      ],
+      "max": [
+        9.4,
+        3.05,
+        -21.92
+      ]
+    },
+    {
+      "id": "collider-38",
+      "room": "F09",
+      "min": [
+        -1.48,
+        0,
+        -7
+      ],
+      "max": [
+        -1.32,
+        3.05,
+        -6.775
+      ]
+    },
+    {
+      "id": "collider-39",
+      "room": "F09",
+      "min": [
+        -1.48,
+        2.35,
+        -6.775
+      ],
+      "max": [
+        -1.32,
+        3.05,
+        -5.425
+      ]
+    },
+    {
+      "id": "collider-40",
+      "room": "F09",
+      "min": [
+        -1.48,
+        0,
+        -5.425
+      ],
+      "max": [
+        -1.32,
+        3.05,
+        0
+      ]
+    },
+    {
+      "id": "collider-41",
+      "room": "F06",
+      "min": [
+        -1.48,
+        0,
+        -12
+      ],
+      "max": [
+        -1.32,
+        3.05,
+        -9.875
+      ]
+    },
+    {
+      "id": "collider-42",
+      "room": "F06",
+      "min": [
+        -1.48,
+        2.35,
+        -9.875
+      ],
+      "max": [
+        -1.32,
+        3.05,
+        -8.525
+      ]
+    },
+    {
+      "id": "collider-43",
+      "room": "F06",
+      "min": [
+        -1.48,
+        0,
+        -8.525
+      ],
+      "max": [
+        -1.32,
+        3.05,
+        -7
+      ]
+    },
+    {
+      "id": "collider-44",
+      "room": "F08",
+      "min": [
+        -1.48,
+        0,
+        -15
+      ],
+      "max": [
+        -1.32,
+        3.05,
+        -14.15
+      ]
+    },
+    {
+      "id": "collider-45",
+      "room": "F08",
+      "min": [
+        -1.48,
+        2.35,
+        -14.15
+      ],
+      "max": [
+        -1.32,
+        3.05,
+        -12.85
+      ]
+    },
+    {
+      "id": "collider-46",
+      "room": "F08",
+      "min": [
+        -1.48,
+        0,
+        -12.85
+      ],
+      "max": [
+        -1.32,
+        3.05,
+        -12
+      ]
+    },
+    {
+      "id": "collider-47",
+      "room": "F05",
+      "min": [
+        -1.48,
+        0,
+        -22
+      ],
+      "max": [
+        -1.32,
+        3.05,
+        -18.875
+      ]
+    },
+    {
+      "id": "collider-48",
+      "room": "F05",
+      "min": [
+        -1.48,
+        2.35,
+        -18.875
+      ],
+      "max": [
+        -1.32,
+        3.05,
+        -17.525
+      ]
+    },
+    {
+      "id": "collider-49",
+      "room": "F05",
+      "min": [
+        -1.48,
+        0,
+        -17.525
+      ],
+      "max": [
+        -1.32,
+        3.05,
+        -15
+      ]
+    },
+    {
+      "id": "collider-50",
+      "room": "F07",
+      "min": [
+        1.32,
+        0,
+        -15
+      ],
+      "max": [
+        1.48,
+        3.05,
+        -9.875
+      ]
+    },
+    {
+      "id": "collider-51",
+      "room": "F07",
+      "min": [
+        1.32,
+        2.35,
+        -9.875
+      ],
+      "max": [
+        1.48,
+        3.05,
+        -8.525
+      ]
+    },
+    {
+      "id": "collider-52",
+      "room": "F07",
+      "min": [
+        1.32,
+        0,
+        -8.525
+      ],
+      "max": [
+        1.48,
+        3.05,
+        -7
+      ]
+    },
+    {
+      "id": "collider-53",
+      "room": "F04",
+      "min": [
+        1.32,
+        0,
+        -22
+      ],
+      "max": [
+        1.48,
+        3.05,
+        -18.875
+      ]
+    },
+    {
+      "id": "collider-54",
+      "room": "F04",
+      "min": [
+        1.32,
+        2.35,
+        -18.875
+      ],
+      "max": [
+        1.48,
+        3.05,
+        -17.525
+      ]
+    },
+    {
+      "id": "collider-55",
+      "room": "F04",
+      "min": [
+        1.32,
+        0,
+        -17.525
+      ],
+      "max": [
+        1.48,
+        3.05,
+        -15
+      ]
+    },
+    {
+      "id": "collider-56",
+      "room": "F09",
+      "min": [
+        -7.6,
+        0,
+        -7.08
+      ],
+      "max": [
+        -1.4,
+        3.05,
+        -6.92
+      ]
+    },
+    {
+      "id": "collider-57",
+      "room": "F06",
+      "min": [
+        -7.6,
+        0,
+        -12.08
+      ],
+      "max": [
+        -1.4,
+        3.05,
+        -11.92
+      ]
+    },
+    {
+      "id": "collider-58",
+      "room": "F05",
+      "min": [
+        -7.6,
+        0,
+        -15.08
+      ],
+      "max": [
+        -1.4,
+        3.05,
+        -14.92
+      ]
+    },
+    {
+      "id": "collider-59",
+      "room": "F02",
+      "min": [
+        1.4,
+        0,
+        -7.08
+      ],
+      "max": [
+        9.4,
+        3.05,
+        -6.92
+      ]
+    },
+    {
+      "id": "collider-60",
+      "room": "F04",
+      "min": [
+        1.4,
+        0,
+        -15.08
+      ],
+      "max": [
+        9.4,
+        3.05,
+        -14.92
+      ]
+    },
+    {
+      "id": "collider-61",
+      "room": "F07",
+      "min": [
+        6.02,
+        0,
+        -12
+      ],
+      "max": [
+        6.18,
+        3.05,
+        -9.825
+      ]
+    },
+    {
+      "id": "collider-62",
+      "room": "F07",
+      "min": [
+        6.02,
+        2.35,
+        -9.825
+      ],
+      "max": [
+        6.18,
+        3.05,
+        -8.575
+      ]
+    },
+    {
+      "id": "collider-63",
+      "room": "F07",
+      "min": [
+        6.02,
+        0,
+        -8.575
+      ],
+      "max": [
+        6.18,
+        3.05,
+        -7
+      ]
+    },
+    {
+      "id": "collider-64",
+      "room": "F07",
+      "min": [
+        6.1,
+        0,
+        -12.08
+      ],
+      "max": [
+        9.4,
+        3.05,
+        -11.92
+      ]
+    },
+    {
+      "id": "collider-65",
+      "room": "U00",
+      "min": [
+        -1.4,
+        3.24,
+        -0.08
+      ],
+      "max": [
+        3.4,
+        6.29,
+        0.08
+      ]
+    },
+    {
+      "id": "collider-66",
+      "room": "U02",
+      "min": [
+        -7.6,
+        3.24,
+        -0.08
+      ],
+      "max": [
+        -4.45,
+        6.29,
+        0.08
+      ]
+    },
+    {
+      "id": "collider-67",
+      "room": "U02",
+      "min": [
+        -4.45,
+        5.59,
+        -0.08
+      ],
+      "max": [
+        -3.15,
+        6.29,
+        0.08
+      ]
+    },
+    {
+      "id": "collider-68",
+      "room": "U02",
+      "min": [
+        -3.15,
+        3.24,
+        -0.08
+      ],
+      "max": [
+        -1.4,
+        6.29,
+        0.08
+      ]
+    },
+    {
+      "id": "collider-69",
+      "room": "U01",
+      "min": [
+        3.4,
+        3.24,
+        -0.08
+      ],
+      "max": [
+        5.225,
+        6.29,
+        0.08
+      ]
+    },
+    {
+      "id": "collider-70",
+      "room": "U01",
+      "min": [
+        5.225,
+        5.59,
+        -0.08
+      ],
+      "max": [
+        6.475,
+        6.29,
+        0.08
+      ]
+    },
+    {
+      "id": "collider-71",
+      "room": "U01",
+      "min": [
+        6.475,
+        3.24,
+        -0.08
+      ],
+      "max": [
+        7.75,
+        6.29,
+        0.08
+      ]
+    },
+    {
+      "id": "collider-72",
+      "room": "U01",
+      "min": [
+        7.75,
+        3.24,
+        -0.08
+      ],
+      "max": [
+        8.65,
+        4.94,
+        0.08
+      ]
+    },
+    {
+      "id": "collider-73",
+      "room": "U01",
+      "min": [
+        7.75,
+        5.74,
+        -0.08
+      ],
+      "max": [
+        8.65,
+        6.29,
+        0.08
+      ]
+    },
+    {
+      "id": "collider-74",
+      "room": "U01",
+      "min": [
+        8.65,
+        3.24,
+        -0.08
+      ],
+      "max": [
+        9.4,
+        6.29,
+        0.08
+      ]
+    },
+    {
+      "id": "collider-75",
+      "room": "U02",
+      "min": [
+        -7.68,
+        3.24,
+        -8.2
+      ],
+      "max": [
+        -7.52,
+        6.29,
+        -4.35
+      ]
+    },
+    {
+      "id": "collider-76",
+      "room": "U02",
+      "min": [
+        -7.68,
+        3.24,
+        -4.35
+      ],
+      "max": [
+        -7.52,
+        4.14,
+        -2.05
+      ]
+    },
+    {
+      "id": "collider-77",
+      "room": "U02",
+      "min": [
+        -7.68,
+        5.79,
+        -4.35
+      ],
+      "max": [
+        -7.52,
+        6.29,
+        -2.05
+      ]
+    },
+    {
+      "id": "collider-78",
+      "room": "U02",
+      "min": [
+        -7.68,
+        3.24,
+        -2.05
+      ],
+      "max": [
+        -7.52,
+        6.29,
+        0
+      ]
+    },
+    {
+      "id": "collider-79",
+      "room": "U04",
+      "min": [
+        -7.68,
+        3.24,
+        -14.8
+      ],
+      "max": [
+        -7.52,
+        6.29,
+        -12.85
+      ]
+    },
+    {
+      "id": "collider-80",
+      "room": "U04",
+      "min": [
+        -7.68,
+        3.24,
+        -12.85
+      ],
+      "max": [
+        -7.52,
+        4.14,
+        -10.55
+      ]
+    },
+    {
+      "id": "collider-81",
+      "room": "U04",
+      "min": [
+        -7.68,
+        5.79,
+        -12.85
+      ],
+      "max": [
+        -7.52,
+        6.29,
+        -10.55
+      ]
+    },
+    {
+      "id": "collider-82",
+      "room": "U04",
+      "min": [
+        -7.68,
+        3.24,
+        -10.55
+      ],
+      "max": [
+        -7.52,
+        6.29,
+        -8.2
+      ]
+    },
+    {
+      "id": "collider-83",
+      "room": "U05",
+      "min": [
+        -5.48,
+        3.24,
+        -19
+      ],
+      "max": [
+        -5.32,
+        6.29,
+        -17.25
+      ]
+    },
+    {
+      "id": "collider-84",
+      "room": "U05",
+      "min": [
+        -5.48,
+        3.24,
+        -17.25
+      ],
+      "max": [
+        -5.32,
+        4.89,
+        -16.35
+      ]
+    },
+    {
+      "id": "collider-85",
+      "room": "U05",
+      "min": [
+        -5.48,
+        5.74,
+        -17.25
+      ],
+      "max": [
+        -5.32,
+        6.29,
+        -16.35
+      ]
+    },
+    {
+      "id": "collider-86",
+      "room": "U05",
+      "min": [
+        -5.48,
+        3.24,
+        -16.35
+      ],
+      "max": [
+        -5.32,
+        6.29,
+        -14.8
+      ]
+    },
+    {
+      "id": "collider-87",
+      "room": "U01",
+      "min": [
+        9.32,
+        3.24,
+        -8.2
+      ],
+      "max": [
+        9.48,
+        6.29,
+        -6.2
+      ]
+    },
+    {
+      "id": "collider-88",
+      "room": "U01",
+      "min": [
+        9.32,
+        3.24,
+        -6.2
+      ],
+      "max": [
+        9.48,
+        4.14,
+        -3.8
+      ]
+    },
+    {
+      "id": "collider-89",
+      "room": "U01",
+      "min": [
+        9.32,
+        5.79,
+        -6.2
+      ],
+      "max": [
+        9.48,
+        6.29,
+        -3.8
+      ]
+    },
+    {
+      "id": "collider-90",
+      "room": "U01",
+      "min": [
+        9.32,
+        3.24,
+        -3.8
+      ],
+      "max": [
+        9.48,
+        6.29,
+        0
+      ]
+    },
+    {
+      "id": "collider-91",
+      "room": "U03",
+      "min": [
+        9.32,
+        3.24,
+        -14.8
+      ],
+      "max": [
+        9.48,
+        6.29,
+        -12.7
+      ]
+    },
+    {
+      "id": "collider-92",
+      "room": "U03",
+      "min": [
+        9.32,
+        3.24,
+        -12.7
+      ],
+      "max": [
+        9.48,
+        4.14,
+        -10.3
+      ]
+    },
+    {
+      "id": "collider-93",
+      "room": "U03",
+      "min": [
+        9.32,
+        5.79,
+        -12.7
+      ],
+      "max": [
+        9.48,
+        6.29,
+        -10.3
+      ]
+    },
+    {
+      "id": "collider-94",
+      "room": "U03",
+      "min": [
+        9.32,
+        3.24,
+        -10.3
+      ],
+      "max": [
+        9.48,
+        6.29,
+        -8.2
+      ]
+    },
+    {
+      "id": "collider-95",
+      "room": "U06",
+      "min": [
+        9.32,
+        3.24,
+        -22
+      ],
+      "max": [
+        9.48,
+        6.29,
+        -19.45
+      ]
+    },
+    {
+      "id": "collider-96",
+      "room": "U06",
+      "min": [
+        9.32,
+        3.24,
+        -19.45
+      ],
+      "max": [
+        9.48,
+        4.14,
+        -16.95
+      ]
+    },
+    {
+      "id": "collider-97",
+      "room": "U06",
+      "min": [
+        9.32,
+        5.79,
+        -19.45
+      ],
+      "max": [
+        9.48,
+        6.29,
+        -16.95
+      ]
+    },
+    {
+      "id": "collider-98",
+      "room": "U06",
+      "min": [
+        9.32,
+        3.24,
+        -16.95
+      ],
+      "max": [
+        9.48,
+        6.29,
+        -14.8
+      ]
+    },
+    {
+      "id": "collider-99",
+      "room": "U06",
+      "min": [
+        1.4,
+        3.24,
+        -22.08
+      ],
+      "max": [
+        4.4,
+        6.29,
+        -21.92
+      ]
+    },
+    {
+      "id": "collider-100",
+      "room": "U06",
+      "min": [
+        4.4,
+        3.24,
+        -22.08
+      ],
+      "max": [
+        6.8,
+        4.14,
+        -21.92
+      ]
+    },
+    {
+      "id": "collider-101",
+      "room": "U06",
+      "min": [
+        4.4,
+        5.79,
+        -22.08
+      ],
+      "max": [
+        6.8,
+        6.29,
+        -21.92
+      ]
+    },
+    {
+      "id": "collider-102",
+      "room": "U06",
+      "min": [
+        6.8,
+        3.24,
+        -22.08
+      ],
+      "max": [
+        9.4,
+        6.29,
+        -21.92
+      ]
+    },
+    {
+      "id": "collider-103",
+      "room": "U00",
+      "min": [
+        -1.4,
+        3.24,
+        -22.08
+      ],
+      "max": [
+        1.4,
+        6.29,
+        -21.92
+      ]
+    },
+    {
+      "id": "collider-104",
+      "room": "U00",
+      "min": [
+        -1.48,
+        3.24,
+        -22
+      ],
+      "max": [
+        -1.32,
+        6.29,
+        -16.925
+      ]
+    },
+    {
+      "id": "collider-105",
+      "room": "U00",
+      "min": [
+        -1.48,
+        5.59,
+        -16.925
+      ],
+      "max": [
+        -1.32,
+        6.29,
+        -15.675
+      ]
+    },
+    {
+      "id": "collider-106",
+      "room": "U00",
+      "min": [
+        -1.48,
+        3.24,
+        -15.675
+      ],
+      "max": [
+        -1.32,
+        6.29,
+        -11.25
+      ]
+    },
+    {
+      "id": "collider-107",
+      "room": "U00",
+      "min": [
+        -1.48,
+        5.59,
+        -11.25
+      ],
+      "max": [
+        -1.32,
+        6.29,
+        -9.95
+      ]
+    },
+    {
+      "id": "collider-108",
+      "room": "U00",
+      "min": [
+        -1.48,
+        3.24,
+        -9.95
+      ],
+      "max": [
+        -1.32,
+        6.29,
+        -1.5
+      ]
+    },
+    {
+      "id": "collider-109",
+      "room": "U00",
+      "min": [
+        -1.48,
+        5.59,
+        -1.5
+      ],
+      "max": [
+        -1.32,
+        6.29,
+        -0.2
+      ]
+    },
+    {
+      "id": "collider-110",
+      "room": "U00",
+      "min": [
+        -1.48,
+        3.24,
+        -0.2
+      ],
+      "max": [
+        -1.32,
+        6.29,
+        0
+      ]
+    },
+    {
+      "id": "collider-111",
+      "room": "U01",
+      "min": [
+        3.32,
+        3.24,
+        -8.2
+      ],
+      "max": [
+        3.48,
+        6.29,
+        -1.425
+      ]
+    },
+    {
+      "id": "collider-112",
+      "room": "U01",
+      "min": [
+        3.32,
+        5.59,
+        -1.425
+      ],
+      "max": [
+        3.48,
+        6.29,
+        -0.175
+      ]
+    },
+    {
+      "id": "collider-113",
+      "room": "U01",
+      "min": [
+        3.32,
+        3.24,
+        -0.175
+      ],
+      "max": [
+        3.48,
+        6.29,
+        0
+      ]
+    },
+    {
+      "id": "collider-114",
+      "room": "U00",
+      "min": [
+        1.32,
+        3.24,
+        -22
+      ],
+      "max": [
+        1.48,
+        6.29,
+        -17.65
+      ]
+    },
+    {
+      "id": "collider-115",
+      "room": "U00",
+      "min": [
+        1.32,
+        5.59,
+        -17.65
+      ],
+      "max": [
+        1.48,
+        6.29,
+        -16.35
+      ]
+    },
+    {
+      "id": "collider-116",
+      "room": "U00",
+      "min": [
+        1.32,
+        3.24,
+        -16.35
+      ],
+      "max": [
+        1.48,
+        6.29,
+        -11.25
+      ]
+    },
+    {
+      "id": "collider-117",
+      "room": "U00",
+      "min": [
+        1.32,
+        5.59,
+        -11.25
+      ],
+      "max": [
+        1.48,
+        6.29,
+        -9.95
+      ]
+    },
+    {
+      "id": "collider-118",
+      "room": "U00",
+      "min": [
+        1.32,
+        3.24,
+        -9.95
+      ],
+      "max": [
+        1.48,
+        6.29,
+        -8.2
+      ]
+    },
+    {
+      "id": "collider-119",
+      "room": "U02",
+      "min": [
+        -7.6,
+        3.24,
+        -8.28
+      ],
+      "max": [
+        -1.4,
+        6.29,
+        -8.12
+      ]
+    },
+    {
+      "id": "collider-120",
+      "room": "U04",
+      "min": [
+        -7.6,
+        3.24,
+        -14.88
+      ],
+      "max": [
+        -1.4,
+        6.29,
+        -14.72
+      ]
+    },
+    {
+      "id": "collider-121",
+      "room": "U05",
+      "min": [
+        -5.4,
+        3.24,
+        -19.08
+      ],
+      "max": [
+        -1.4,
+        6.29,
+        -18.92
+      ]
+    },
+    {
+      "id": "collider-122",
+      "room": "U01",
+      "min": [
+        1.4,
+        3.24,
+        -8.28
+      ],
+      "max": [
+        9.4,
+        6.29,
+        -8.12
+      ]
+    },
+    {
+      "id": "collider-123",
+      "room": "U03",
+      "min": [
+        1.4,
+        3.24,
+        -14.88
+      ],
+      "max": [
+        9.4,
+        6.29,
+        -14.72
+      ]
+    },
+    {
+      "id": "collider-124",
+      "room": "U01",
+      "min": [
+        6.62,
+        3.24,
+        -2.8
+      ],
+      "max": [
+        6.78,
+        6.29,
+        -1.575
+      ]
+    },
+    {
+      "id": "collider-125",
+      "room": "U01",
+      "min": [
+        6.62,
+        5.59,
+        -1.575
+      ],
+      "max": [
+        6.78,
+        6.29,
+        -0.425
+      ]
+    },
+    {
+      "id": "collider-126",
+      "room": "U01",
+      "min": [
+        6.62,
+        3.24,
+        -0.425
+      ],
+      "max": [
+        6.78,
+        6.29,
+        0
+      ]
+    },
+    {
+      "id": "collider-127",
+      "room": "U01",
+      "min": [
+        6.7,
+        3.24,
+        -2.88
+      ],
+      "max": [
+        9.4,
+        6.29,
+        -2.72
+      ]
+    },
+    {
+      "id": "stair-rail-1.47-0",
+      "room": "F03",
+      "min": [
+        1.42,
+        0.09000000000000001,
+        -6.1
+      ],
+      "max": [
+        1.52,
+        1.11,
+        -5.85
+      ]
+    },
+    {
+      "id": "stair-rail-3.33-0",
+      "room": "F03",
+      "min": [
+        3.2800000000000002,
+        0.09000000000000001,
+        -6.1
+      ],
+      "max": [
+        3.38,
+        1.11,
+        -5.85
+      ]
+    },
+    {
+      "id": "stair-rail-1.47-1",
+      "room": "F03",
+      "min": [
+        1.42,
+        0.27,
+        -5.85
+      ],
+      "max": [
+        1.52,
+        1.29,
+        -5.6
+      ]
+    },
+    {
+      "id": "stair-rail-3.33-1",
+      "room": "F03",
+      "min": [
+        3.2800000000000002,
+        0.27,
+        -5.85
+      ],
+      "max": [
+        3.38,
+        1.29,
+        -5.6
+      ]
+    },
+    {
+      "id": "stair-rail-1.47-2",
+      "room": "F03",
+      "min": [
+        1.42,
+        0.45000000000000007,
+        -5.6
+      ],
+      "max": [
+        1.52,
+        1.4700000000000002,
+        -5.35
+      ]
+    },
+    {
+      "id": "stair-rail-3.33-2",
+      "room": "F03",
+      "min": [
+        3.2800000000000002,
+        0.45000000000000007,
+        -5.6
+      ],
+      "max": [
+        3.38,
+        1.4700000000000002,
+        -5.35
+      ]
+    },
+    {
+      "id": "stair-rail-1.47-3",
+      "room": "F03",
+      "min": [
+        1.42,
+        0.63,
+        -5.35
+      ],
+      "max": [
+        1.52,
+        1.65,
+        -5.1
+      ]
+    },
+    {
+      "id": "stair-rail-3.33-3",
+      "room": "F03",
+      "min": [
+        3.2800000000000002,
+        0.63,
+        -5.35
+      ],
+      "max": [
+        3.38,
+        1.65,
+        -5.1
+      ]
+    },
+    {
+      "id": "stair-rail-1.47-4",
+      "room": "F03",
+      "min": [
+        1.42,
+        0.81,
+        -5.1
+      ],
+      "max": [
+        1.52,
+        1.83,
+        -4.85
+      ]
+    },
+    {
+      "id": "stair-rail-3.33-4",
+      "room": "F03",
+      "min": [
+        3.2800000000000002,
+        0.81,
+        -5.1
+      ],
+      "max": [
+        3.38,
+        1.83,
+        -4.85
+      ]
+    },
+    {
+      "id": "stair-rail-1.47-5",
+      "room": "F03",
+      "min": [
+        1.42,
+        0.99,
+        -4.85
+      ],
+      "max": [
+        1.52,
+        2.01,
+        -4.6
+      ]
+    },
+    {
+      "id": "stair-rail-3.33-5",
+      "room": "F03",
+      "min": [
+        3.2800000000000002,
+        0.99,
+        -4.85
+      ],
+      "max": [
+        3.38,
+        2.01,
+        -4.6
+      ]
+    },
+    {
+      "id": "stair-rail-1.47-6",
+      "room": "F03",
+      "min": [
+        1.42,
+        1.1700000000000002,
+        -4.6
+      ],
+      "max": [
+        1.52,
+        2.1900000000000004,
+        -4.35
+      ]
+    },
+    {
+      "id": "stair-rail-3.33-6",
+      "room": "F03",
+      "min": [
+        3.2800000000000002,
+        1.1700000000000002,
+        -4.6
+      ],
+      "max": [
+        3.38,
+        2.1900000000000004,
+        -4.35
+      ]
+    },
+    {
+      "id": "stair-rail-1.47-7",
+      "room": "F03",
+      "min": [
+        1.42,
+        1.35,
+        -4.35
+      ],
+      "max": [
+        1.52,
+        2.37,
+        -4.1
+      ]
+    },
+    {
+      "id": "stair-rail-3.33-7",
+      "room": "F03",
+      "min": [
+        3.2800000000000002,
+        1.35,
+        -4.35
+      ],
+      "max": [
+        3.38,
+        2.37,
+        -4.1
+      ]
+    },
+    {
+      "id": "stair-rail-1.47-8",
+      "room": "F03",
+      "min": [
+        1.42,
+        1.5300000000000002,
+        -4.1
+      ],
+      "max": [
+        1.52,
+        2.5500000000000003,
+        -3.8499999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-3.33-8",
+      "room": "F03",
+      "min": [
+        3.2800000000000002,
+        1.5300000000000002,
+        -4.1
+      ],
+      "max": [
+        3.38,
+        2.5500000000000003,
+        -3.8499999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-1.47-9",
+      "room": "F03",
+      "min": [
+        1.42,
+        1.71,
+        -3.8499999999999996
+      ],
+      "max": [
+        1.52,
+        2.73,
+        -3.5999999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-3.33-9",
+      "room": "F03",
+      "min": [
+        3.2800000000000002,
+        1.71,
+        -3.8499999999999996
+      ],
+      "max": [
+        3.38,
+        2.73,
+        -3.5999999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-1.47-10",
+      "room": "F03",
+      "min": [
+        1.42,
+        1.8900000000000001,
+        -3.5999999999999996
+      ],
+      "max": [
+        1.52,
+        2.91,
+        -3.3499999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-3.33-10",
+      "room": "F03",
+      "min": [
+        3.2800000000000002,
+        1.8900000000000001,
+        -3.5999999999999996
+      ],
+      "max": [
+        3.38,
+        2.91,
+        -3.3499999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-1.47-11",
+      "room": "F03",
+      "min": [
+        1.42,
+        2.0700000000000003,
+        -3.3499999999999996
+      ],
+      "max": [
+        1.52,
+        3.0900000000000003,
+        -3.0999999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-3.33-11",
+      "room": "F03",
+      "min": [
+        3.2800000000000002,
+        2.0700000000000003,
+        -3.3499999999999996
+      ],
+      "max": [
+        3.38,
+        3.0900000000000003,
+        -3.0999999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-1.47-12",
+      "room": "F03",
+      "min": [
+        1.42,
+        2.25,
+        -3.0999999999999996
+      ],
+      "max": [
+        1.52,
+        3.27,
+        -2.8499999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-3.33-12",
+      "room": "F03",
+      "min": [
+        3.2800000000000002,
+        2.25,
+        -3.0999999999999996
+      ],
+      "max": [
+        3.38,
+        3.27,
+        -2.8499999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-1.47-13",
+      "room": "F03",
+      "min": [
+        1.42,
+        2.43,
+        -2.8499999999999996
+      ],
+      "max": [
+        1.52,
+        3.45,
+        -2.5999999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-3.33-13",
+      "room": "F03",
+      "min": [
+        3.2800000000000002,
+        2.43,
+        -2.8499999999999996
+      ],
+      "max": [
+        3.38,
+        3.45,
+        -2.5999999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-1.47-14",
+      "room": "F03",
+      "min": [
+        1.42,
+        2.6100000000000003,
+        -2.5999999999999996
+      ],
+      "max": [
+        1.52,
+        3.6300000000000003,
+        -2.3499999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-3.33-14",
+      "room": "F03",
+      "min": [
+        3.2800000000000002,
+        2.6100000000000003,
+        -2.5999999999999996
+      ],
+      "max": [
+        3.38,
+        3.6300000000000003,
+        -2.3499999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-1.47-15",
+      "room": "F03",
+      "min": [
+        1.42,
+        2.7900000000000005,
+        -2.3499999999999996
+      ],
+      "max": [
+        1.52,
+        3.8100000000000005,
+        -2.0999999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-3.33-15",
+      "room": "F03",
+      "min": [
+        3.2800000000000002,
+        2.7900000000000005,
+        -2.3499999999999996
+      ],
+      "max": [
+        3.38,
+        3.8100000000000005,
+        -2.0999999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-1.47-16",
+      "room": "F03",
+      "min": [
+        1.42,
+        2.97,
+        -2.0999999999999996
+      ],
+      "max": [
+        1.52,
+        3.99,
+        -1.8499999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-3.33-16",
+      "room": "F03",
+      "min": [
+        3.2800000000000002,
+        2.97,
+        -2.0999999999999996
+      ],
+      "max": [
+        3.38,
+        3.99,
+        -1.8499999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-1.47-17",
+      "room": "F03",
+      "min": [
+        1.42,
+        3.1500000000000004,
+        -1.8499999999999996
+      ],
+      "max": [
+        1.52,
+        4.17,
+        -1.5999999999999996
+      ]
+    },
+    {
+      "id": "stair-rail-3.33-17",
+      "room": "F03",
+      "min": [
+        3.2800000000000002,
+        3.1500000000000004,
+        -1.8499999999999996
+      ],
+      "max": [
+        3.38,
+        4.17,
+        -1.5999999999999996
+      ]
+    },
+    {
+      "id": "upper-stair-guard",
+      "room": "U00",
+      "min": [
+        1.38,
+        3.24,
+        -6.15
+      ],
+      "max": [
+        1.5,
+        4.34,
+        -1.65
+      ]
+    },
+    {
+      "id": "collider-165",
+      "room": "U00",
+      "min": [
+        1.425,
+        3.24,
+        -6.23
+      ],
+      "max": [
+        3.375,
+        4.2,
+        -6.11
+      ]
+    },
+    {
+      "id": "terrace-front-rail",
+      "room": "U07",
+      "min": [
+        -7.6,
+        3.24,
+        2.35
+      ],
+      "max": [
+        9.4,
+        4.44,
+        2.5
+      ]
+    },
+    {
+      "id": "terrace-side--7.53",
+      "room": "U07",
+      "min": [
+        -7.59,
+        3.24,
+        0
+      ],
+      "max": [
+        -7.470000000000001,
+        4.44,
+        2.5
+      ]
+    },
+    {
+      "id": "terrace-side-9.33",
+      "room": "U07",
+      "min": [
+        9.27,
+        3.24,
+        0
+      ],
+      "max": [
+        9.39,
+        4.44,
+        2.5
+      ]
+    },
+    {
+      "id": "F02-sofa-001",
+      "room": "F02",
+      "center": [
+        6.45,
+        0.55,
+        -5.6
+      ],
+      "size": [
+        2.35,
+        1.1,
+        0.94
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F02-sofa-002",
+      "room": "F02",
+      "center": [
+        8.4,
+        0.55,
+        -3.15
+      ],
+      "size": [
+        2.35,
+        1.1,
+        0.94
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "F02-armchair-003",
+      "room": "F02",
+      "center": [
+        4.45,
+        0.55,
+        -3.8
+      ],
+      "size": [
+        0.98,
+        1.1,
+        0.94
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F02-coffee-table-004",
+      "room": "F02",
+      "center": [
+        6.15,
+        0.25,
+        -3.3
+      ],
+      "size": [
+        1.7,
+        0.5,
+        0.86
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F02-side-table-006",
+      "room": "F02",
+      "center": [
+        7.84,
+        0.325,
+        -5.6
+      ],
+      "size": [
+        0.52,
+        0.65,
+        0.54
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F02-piano-007",
+      "room": "F02",
+      "center": [
+        4.27,
+        0.7,
+        -6.48
+      ],
+      "size": [
+        1.7,
+        1.4,
+        1
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F02-display-cabinet-008",
+      "room": "F02",
+      "center": [
+        8.25,
+        1.25,
+        -6.5
+      ],
+      "size": [
+        1.85,
+        2.5,
+        0.46
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F04-dining-table-009",
+      "room": "F04",
+      "center": [
+        5.5,
+        0.42,
+        -18.5
+      ],
+      "size": [
+        1.35,
+        0.84,
+        3.6
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F04-dining-chair-010",
+      "room": "F04",
+      "center": [
+        4.27,
+        0.53,
+        -19.62
+      ],
+      "size": [
+        0.52,
+        1.06,
+        0.52
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F04-dining-chair-011",
+      "room": "F04",
+      "center": [
+        4.27,
+        0.53,
+        -18.5
+      ],
+      "size": [
+        0.52,
+        1.06,
+        0.52
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F04-dining-chair-012",
+      "room": "F04",
+      "center": [
+        4.27,
+        0.53,
+        -17.38
+      ],
+      "size": [
+        0.52,
+        1.06,
+        0.52
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F04-dining-chair-013",
+      "room": "F04",
+      "center": [
+        6.73,
+        0.53,
+        -19.62
+      ],
+      "size": [
+        0.52,
+        1.06,
+        0.52
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "F04-dining-chair-014",
+      "room": "F04",
+      "center": [
+        6.73,
+        0.53,
+        -18.5
+      ],
+      "size": [
+        0.52,
+        1.06,
+        0.52
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "F04-dining-chair-015",
+      "room": "F04",
+      "center": [
+        6.73,
+        0.53,
+        -17.38
+      ],
+      "size": [
+        0.52,
+        1.06,
+        0.52
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "F04-dining-chair-016",
+      "room": "F04",
+      "center": [
+        5.5,
+        0.53,
+        -20.93
+      ],
+      "size": [
+        0.52,
+        1.06,
+        0.52
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F04-dining-chair-017",
+      "room": "F04",
+      "center": [
+        5.5,
+        0.53,
+        -16.07
+      ],
+      "size": [
+        0.52,
+        1.06,
+        0.52
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "F06-sofa-026",
+      "room": "F06",
+      "center": [
+        -4.65,
+        0.55,
+        -7.62
+      ],
+      "size": [
+        2.35,
+        1.1,
+        0.94
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "F06-sofa-027",
+      "room": "F06",
+      "center": [
+        -6.82,
+        0.55,
+        -9.83
+      ],
+      "size": [
+        2.35,
+        1.1,
+        0.94
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F06-tv-table-028",
+      "room": "F06",
+      "center": [
+        -4.2,
+        0.6,
+        -11.4
+      ],
+      "size": [
+        1.5,
+        1.2,
+        0.75
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F06-side-table-030",
+      "room": "F06",
+      "center": [
+        -2.45,
+        0.31,
+        -7.65
+      ],
+      "size": [
+        0.55,
+        0.62,
+        0.6
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F07-bookshelf-032",
+      "room": "F07",
+      "center": [
+        3.8,
+        1.2,
+        -7.5
+      ],
+      "size": [
+        3.45,
+        2.4,
+        0.47
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "F07-toilet-033",
+      "room": "F07",
+      "center": [
+        8.65,
+        0.45,
+        -7.7
+      ],
+      "size": [
+        0.6,
+        0.9,
+        0.85
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "F07-basin-034",
+      "room": "F07",
+      "center": [
+        8.8,
+        0.95,
+        -10.5
+      ],
+      "size": [
+        0.78,
+        1.9,
+        0.55
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "F07-shower-035",
+      "room": "F07",
+      "center": [
+        6.9,
+        1.05,
+        -11.3
+      ],
+      "size": [
+        1.05,
+        2.1,
+        0.85
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F08-bar-cabinet-036",
+      "room": "F08",
+      "center": [
+        1,
+        1.25,
+        -13.5
+      ],
+      "size": [
+        2.05,
+        2.5,
+        0.48
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "F05-counter-037",
+      "room": "F05",
+      "center": [
+        -5,
+        0.47,
+        -21.5
+      ],
+      "size": [
+        3.65,
+        0.94,
+        0.82
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F05-stove-038",
+      "room": "F05",
+      "center": [
+        -2.35,
+        0.5,
+        -21.34
+      ],
+      "size": [
+        0.95,
+        1,
+        0.91
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F05-refrigerator-039",
+      "room": "F05",
+      "center": [
+        -6.94,
+        0.98,
+        -15.67
+      ],
+      "size": [
+        0.91,
+        1.96,
+        0.82
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "F09-car-043",
+      "room": "F09",
+      "center": [
+        -4.65,
+        0.825,
+        -3.05
+      ],
+      "size": [
+        2.05,
+        1.65,
+        4.2
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F09-mirror-044",
+      "room": "F09",
+      "center": [
+        -7.25,
+        0.95,
+        -5.85
+      ],
+      "size": [
+        0.9,
+        1.9,
+        0.26
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F09-workbench-045",
+      "room": "F09",
+      "center": [
+        -4.65,
+        0.45,
+        -6.57
+      ],
+      "size": [
+        2.1,
+        0.9,
+        0.65
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F09-damaged-cabinet-046",
+      "room": "F09",
+      "center": [
+        -2,
+        0.85,
+        -1.3
+      ],
+      "size": [
+        1.5,
+        1.7,
+        0.7
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "F09-box-047",
+      "room": "F09",
+      "center": [
+        -7,
+        0.325,
+        -0.9
+      ],
+      "size": [
+        0.58,
+        0.65,
+        0.6
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F09-box-048",
+      "room": "F09",
+      "center": [
+        -7,
+        0.325,
+        -1.8
+      ],
+      "size": [
+        0.58,
+        0.65,
+        0.6
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F09-box-049",
+      "room": "F09",
+      "center": [
+        -2.3,
+        0.325,
+        -3
+      ],
+      "size": [
+        0.58,
+        0.65,
+        0.6
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F09-covered-furniture-050",
+      "room": "F09",
+      "center": [
+        -6.9,
+        0.525,
+        -3.25
+      ],
+      "size": [
+        0.72,
+        1.05,
+        1.15
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U00-display-cabinet-054",
+      "room": "U00",
+      "center": [
+        -1.06,
+        4.29,
+        -2.15
+      ],
+      "size": [
+        0.98,
+        2.1,
+        0.44
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U00-display-cabinet-055",
+      "room": "U00",
+      "center": [
+        -1.06,
+        4.29,
+        -3.55
+      ],
+      "size": [
+        0.98,
+        2.1,
+        0.44
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U01-bookshelf-057",
+      "room": "U01",
+      "center": [
+        4.32,
+        4.365,
+        -1.93
+      ],
+      "size": [
+        1.38,
+        2.25,
+        0.46
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U01-bed-058",
+      "room": "U01",
+      "center": [
+        6.64,
+        3.99,
+        -6.7
+      ],
+      "size": [
+        2.18,
+        1.5,
+        2.7
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U01-wardrobe-059",
+      "room": "U01",
+      "center": [
+        4.13,
+        4.515000000000001,
+        -6.6
+      ],
+      "size": [
+        1.94,
+        2.55,
+        0.7
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U01-computer-060",
+      "room": "U01",
+      "center": [
+        8.83,
+        3.915,
+        -4.38
+      ],
+      "size": [
+        1.5,
+        1.35,
+        0.8
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "U01-bookshelf-061",
+      "room": "U01",
+      "center": [
+        8.75,
+        4.315,
+        -7.15
+      ],
+      "size": [
+        1.65,
+        2.15,
+        0.46
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "U01-bedside-table-062",
+      "room": "U01",
+      "center": [
+        5.2,
+        3.5650000000000004,
+        -7.25
+      ],
+      "size": [
+        0.48,
+        0.65,
+        0.55
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U01-toilet-063",
+      "room": "U01",
+      "center": [
+        8.85,
+        3.6900000000000004,
+        -0.6
+      ],
+      "size": [
+        0.6,
+        0.9,
+        0.85
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "U01-basin-064",
+      "room": "U01",
+      "center": [
+        8,
+        4.19,
+        -2.45
+      ],
+      "size": [
+        0.78,
+        1.9,
+        0.55
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U01-shower-065",
+      "room": "U01",
+      "center": [
+        8.85,
+        4.29,
+        -1.85
+      ],
+      "size": [
+        1.05,
+        2.1,
+        0.85
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "U02-bed-066",
+      "room": "U02",
+      "center": [
+        -6.48,
+        3.99,
+        -5.8
+      ],
+      "size": [
+        1.38,
+        1.5,
+        2.45
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U02-bed-067",
+      "room": "U02",
+      "center": [
+        -2.47,
+        3.99,
+        -5.8
+      ],
+      "size": [
+        1.38,
+        1.5,
+        2.45
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U02-computer-068",
+      "room": "U02",
+      "center": [
+        -4.6,
+        3.9400000000000004,
+        -7.6
+      ],
+      "size": [
+        1.5,
+        1.4,
+        0.8
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U02-bookshelf-069",
+      "room": "U02",
+      "center": [
+        -1.94,
+        4.465,
+        -3.3
+      ],
+      "size": [
+        2.15,
+        2.45,
+        0.46
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "U02-sofa-070",
+      "room": "U02",
+      "center": [
+        -6.77,
+        3.79,
+        -1.53
+      ],
+      "size": [
+        2,
+        1.1,
+        0.94
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U02-bookshelf-071",
+      "room": "U02",
+      "center": [
+        -6.3,
+        4.19,
+        -7.83
+      ],
+      "size": [
+        1.5,
+        1.9,
+        0.45
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U03-bed-072",
+      "room": "U03",
+      "center": [
+        6,
+        3.99,
+        -13.23
+      ],
+      "size": [
+        2.15,
+        1.5,
+        2.58
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U03-wardrobe-074",
+      "room": "U03",
+      "center": [
+        2.17,
+        4.515000000000001,
+        -13
+      ],
+      "size": [
+        2.12,
+        2.55,
+        0.7
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U03-bookshelf-075",
+      "room": "U03",
+      "center": [
+        8.78,
+        4.465,
+        -9.4
+      ],
+      "size": [
+        1.9,
+        2.45,
+        0.46
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "U03-bedside-table-076",
+      "room": "U03",
+      "center": [
+        7.46,
+        3.5900000000000003,
+        -13.8
+      ],
+      "size": [
+        0.56,
+        0.7,
+        0.57
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U04-bed-077",
+      "room": "U04",
+      "center": [
+        -6.35,
+        3.99,
+        -13.1
+      ],
+      "size": [
+        1.45,
+        1.5,
+        2.45
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U04-bed-078",
+      "room": "U04",
+      "center": [
+        -2.67,
+        3.99,
+        -13.1
+      ],
+      "size": [
+        1.45,
+        1.5,
+        2.45
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U04-dresser-079",
+      "room": "U04",
+      "center": [
+        -4.75,
+        3.865,
+        -8.65
+      ],
+      "size": [
+        1.5,
+        1.25,
+        0.72
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "U05-toilet-080",
+      "room": "U05",
+      "center": [
+        -4.45,
+        3.6900000000000004,
+        -18.35
+      ],
+      "size": [
+        0.6,
+        0.9,
+        0.85
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U05-basin-081",
+      "room": "U05",
+      "center": [
+        -2.25,
+        4.19,
+        -18.55
+      ],
+      "size": [
+        0.78,
+        1.9,
+        0.55
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U05-shower-082",
+      "room": "U05",
+      "center": [
+        -4.63,
+        4.29,
+        -15.62
+      ],
+      "size": [
+        1.05,
+        2.1,
+        0.85
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "U06-bed-083",
+      "room": "U06",
+      "center": [
+        5.62,
+        3.99,
+        -20.4
+      ],
+      "size": [
+        2.4,
+        1.5,
+        2.75
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U06-mirror-085",
+      "room": "U06",
+      "center": [
+        8.88,
+        4.29,
+        -16.3
+      ],
+      "size": [
+        1.03,
+        2.1,
+        0.3
+      ],
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "U06-wardrobe-086",
+      "room": "U06",
+      "center": [
+        2.15,
+        4.515000000000001,
+        -20.72
+      ],
+      "size": [
+        2.03,
+        2.55,
+        1.05
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U06-wardrobe-087",
+      "room": "U06",
+      "center": [
+        2.15,
+        4.515000000000001,
+        -18.57
+      ],
+      "size": [
+        2.03,
+        2.55,
+        1.05
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U06-bedside-table-088",
+      "room": "U06",
+      "center": [
+        7.18,
+        3.5650000000000004,
+        -21.1
+      ],
+      "size": [
+        0.57,
+        0.65,
+        0.58
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "F01-open-door-105",
+      "room": "F01",
+      "center": [
+        -0.92,
+        1.13,
+        -0.79
+      ],
+      "size": [
+        1.3299999999999998,
+        2.26,
+        0.055
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F01-open-door-106",
+      "room": "F01",
+      "center": [
+        -1.515,
+        1.13,
+        -7.489999999999999
+      ],
+      "size": [
+        1.18,
+        2.26,
+        0.055
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F01-open-door-107",
+      "room": "F01",
+      "center": [
+        -1.515,
+        1.13,
+        -10.590000000000002
+      ],
+      "size": [
+        1.18,
+        2.26,
+        0.055
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F08-open-door-108",
+      "room": "F08",
+      "center": [
+        -1.515,
+        1.13,
+        -14.840000000000002
+      ],
+      "size": [
+        1.13,
+        2.26,
+        0.055
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F08-open-door-109",
+      "room": "F08",
+      "center": [
+        -1.515,
+        1.13,
+        -19.589999999999996
+      ],
+      "size": [
+        1.18,
+        2.26,
+        0.055
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F01-open-door-110",
+      "room": "F01",
+      "center": [
+        1.515,
+        1.13,
+        -10.590000000000002
+      ],
+      "size": [
+        1.18,
+        2.26,
+        0.055
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F08-open-door-111",
+      "room": "F08",
+      "center": [
+        1.515,
+        1.13,
+        -19.589999999999996
+      ],
+      "size": [
+        1.18,
+        2.26,
+        0.055
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "F07-open-door-112",
+      "room": "F07",
+      "center": [
+        6.215,
+        1.13,
+        -10.49
+      ],
+      "size": [
+        1.0799999999999998,
+        2.26,
+        0.055
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U02-open-door-113",
+      "room": "U02",
+      "center": [
+        -5.14,
+        4.37,
+        0.115
+      ],
+      "size": [
+        1.13,
+        2.26,
+        0.055
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U01-open-door-114",
+      "room": "U01",
+      "center": [
+        4.56,
+        4.37,
+        0.115
+      ],
+      "size": [
+        1.0799999999999998,
+        2.26,
+        0.055
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U00-open-door-115",
+      "room": "U00",
+      "center": [
+        -1.515,
+        4.37,
+        -17.589999999999996
+      ],
+      "size": [
+        1.0799999999999998,
+        2.26,
+        0.055
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U00-open-door-116",
+      "room": "U00",
+      "center": [
+        -1.515,
+        4.37,
+        -11.940000000000001
+      ],
+      "size": [
+        1.13,
+        2.26,
+        0.055
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U00-open-door-117",
+      "room": "U00",
+      "center": [
+        -1.515,
+        4.37,
+        -2.19
+      ],
+      "size": [
+        1.13,
+        2.26,
+        0.055
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U00-open-door-118",
+      "room": "U00",
+      "center": [
+        3.515,
+        4.37,
+        -2.09
+      ],
+      "size": [
+        1.0799999999999998,
+        2.26,
+        0.055
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U00-open-door-119",
+      "room": "U00",
+      "center": [
+        1.515,
+        4.37,
+        -18.34
+      ],
+      "size": [
+        1.13,
+        2.26,
+        0.055
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U00-open-door-120",
+      "room": "U00",
+      "center": [
+        1.515,
+        4.37,
+        -11.940000000000001
+      ],
+      "size": [
+        1.13,
+        2.26,
+        0.055
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U01-open-door-121",
+      "room": "U01",
+      "center": [
+        6.815,
+        4.37,
+        -2.1899999999999995
+      ],
+      "size": [
+        0.9799999999999999,
+        2.26,
+        0.055
+      ],
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "U07-dead-plant-168",
+      "room": "U07",
+      "center": [
+        -6.7,
+        3.64,
+        1.35
+      ],
+      "size": [
+        0.4,
+        0.8,
+        0.4
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-dead-plant-169",
+      "room": "U07",
+      "center": [
+        8.65,
+        3.64,
+        1.15
+      ],
+      "size": [
+        0.4,
+        0.8,
+        0.4
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "U07-dead-plant-170",
+      "room": "U07",
+      "center": [
+        -0.7,
+        3.64,
+        1.95
+      ],
+      "size": [
+        0.4,
+        0.8,
+        0.4
+      ],
+      "yaw": 0
+    }
+  ],
+  "lights": [
+    {
+      "id": "L-living",
+      "room": "F02",
+      "position": [
+        6.2,
+        2.72,
+        -3.4
+      ],
+      "intensity": 2.2,
+      "range": 7,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 8,
+      "phase": 0,
+      "fixture": "pendant",
+      "electric": true
+    },
+    {
+      "id": "L-doll",
+      "room": "F02",
+      "position": [
+        7.84,
+        0.94,
+        -5.6
+      ],
+      "intensity": 0.65,
+      "range": 3,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 11.17,
+      "phase": 2.31,
+      "fixture": "lamp",
+      "electric": true
+    },
+    {
+      "id": "L-stairs",
+      "room": "F03",
+      "position": [
+        3.2,
+        2.95,
+        -4.2
+      ],
+      "intensity": 0.75,
+      "range": 4,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 14.34,
+      "phase": 4.62,
+      "fixture": "sconce",
+      "electric": true
+    },
+    {
+      "id": "L-dining",
+      "room": "F04",
+      "position": [
+        5.5,
+        2.2,
+        -18.5
+      ],
+      "intensity": 1.8,
+      "range": 6,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 17.509999999999998,
+      "phase": 6.93,
+      "fixture": "pendant",
+      "electric": true
+    },
+    {
+      "id": "L-kitchen",
+      "room": "F05",
+      "position": [
+        -4.5,
+        2.86,
+        -18.6
+      ],
+      "intensity": 1.35,
+      "range": 6,
+      "color": [
+        0.68,
+        0.79,
+        0.65
+      ],
+      "period": 8.68,
+      "phase": 9.24,
+      "fixture": "fluorescent",
+      "electric": true
+    },
+    {
+      "id": "L-tv",
+      "room": "F06",
+      "position": [
+        -2.45,
+        0.92,
+        -7.65
+      ],
+      "intensity": 0.95,
+      "range": 4.6,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 11.85,
+      "phase": 11.55,
+      "fixture": "lamp",
+      "electric": true
+    },
+    {
+      "id": "L-books",
+      "room": "F07",
+      "position": [
+        3.8,
+        2.7,
+        -10.2
+      ],
+      "intensity": 0.65,
+      "range": 5,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 15.02,
+      "phase": 13.86,
+      "fixture": "pendant",
+      "electric": true
+    },
+    {
+      "id": "L-cr-ground",
+      "room": "F07",
+      "position": [
+        7.8,
+        2.7,
+        -9.5
+      ],
+      "intensity": 0.6,
+      "range": 3.5,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 18.189999999999998,
+      "phase": 16.17,
+      "fixture": "bulb",
+      "electric": true
+    },
+    {
+      "id": "L-bar",
+      "room": "F08",
+      "position": [
+        0,
+        2.68,
+        -13.5
+      ],
+      "intensity": 0.9,
+      "range": 4,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 9.36,
+      "phase": 18.48,
+      "fixture": "pendant",
+      "electric": true
+    },
+    {
+      "id": "L-garage",
+      "room": "F09",
+      "position": [
+        -2.05,
+        2.72,
+        -6
+      ],
+      "intensity": 1,
+      "range": 4,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 12.530000000000001,
+      "phase": 20.79,
+      "fixture": "bulb",
+      "electric": true
+    },
+    {
+      "id": "H1",
+      "room": "U00",
+      "position": [
+        2.4,
+        5.880000000000001,
+        -0.83
+      ],
+      "intensity": 1.15,
+      "range": 4.4,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 15.7,
+      "phase": 23.1,
+      "fixture": "pendant",
+      "electric": true
+    },
+    {
+      "id": "H2",
+      "room": "U00",
+      "position": [
+        -0.05,
+        5.890000000000001,
+        -4.5
+      ],
+      "intensity": 0.8,
+      "range": 4.2,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 18.869999999999997,
+      "phase": 25.41,
+      "fixture": "pendant",
+      "electric": true
+    },
+    {
+      "id": "L-master-bed",
+      "room": "U01",
+      "position": [
+        5.2,
+        4.18,
+        -7.25
+      ],
+      "intensity": 0.9,
+      "range": 4.8,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 10.04,
+      "phase": 27.72,
+      "fixture": "lamp",
+      "electric": true
+    },
+    {
+      "id": "L-master-desk",
+      "room": "U01",
+      "position": [
+        8.73,
+        4.3100000000000005,
+        -3.8
+      ],
+      "intensity": 0.55,
+      "range": 3.2,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 13.21,
+      "phase": 30.03,
+      "fixture": "desk",
+      "electric": true
+    },
+    {
+      "id": "L-master-cr",
+      "room": "U01",
+      "position": [
+        8.25,
+        6,
+        -1.5
+      ],
+      "intensity": 0.5,
+      "range": 3,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 16.379999999999995,
+      "phase": 32.34,
+      "fixture": "bulb",
+      "electric": true
+    },
+    {
+      "id": "L-study",
+      "room": "U02",
+      "position": [
+        -4.2,
+        4.3100000000000005,
+        -7.6
+      ],
+      "intensity": 0.42,
+      "range": 4,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 19.549999999999997,
+      "phase": 34.65,
+      "fixture": "desk",
+      "electric": true
+    },
+    {
+      "id": "L-guest",
+      "room": "U03",
+      "position": [
+        7.46,
+        4.21,
+        -13.8
+      ],
+      "intensity": 0.7,
+      "range": 4.7,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 10.719999999999999,
+      "phase": 36.96,
+      "fixture": "lamp",
+      "electric": true
+    },
+    {
+      "id": "L-twin",
+      "room": "U04",
+      "position": [
+        -4.75,
+        4.74,
+        -8.65
+      ],
+      "intensity": 0.65,
+      "range": 5.2,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 13.89,
+      "phase": 39.27,
+      "fixture": "lamp",
+      "electric": true
+    },
+    {
+      "id": "L-shared-cr",
+      "room": "U05",
+      "position": [
+        -3.4,
+        5.960000000000001,
+        -16.9
+      ],
+      "intensity": 0.55,
+      "range": 3.4,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 17.060000000000002,
+      "phase": 41.58,
+      "fixture": "bulb",
+      "electric": true
+    },
+    {
+      "id": "L-master2-ceiling",
+      "room": "U06",
+      "position": [
+        5.2,
+        6,
+        -18.7
+      ],
+      "intensity": 0.8,
+      "range": 5.8,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 8.229999999999997,
+      "phase": 43.89,
+      "fixture": "pendant",
+      "electric": true
+    },
+    {
+      "id": "L-master2-bed",
+      "room": "U06",
+      "position": [
+        7.18,
+        4.18,
+        -21.1
+      ],
+      "intensity": 0.65,
+      "range": 3.7,
+      "color": [
+        1,
+        0.76,
+        0.49
+      ],
+      "period": 11.399999999999999,
+      "phase": 46.2,
+      "fixture": "lamp",
+      "electric": true
+    }
+  ],
+  "tour": [
+    {
+      "name": "Front entrance",
+      "x": 0,
+      "z": -0.55,
+      "floor": 0
+    },
+    {
+      "name": "Living room",
+      "x": 5.4,
+      "z": -2.2,
+      "floor": 0
+    },
+    {
+      "name": "TV room",
+      "x": -3,
+      "z": -9.2,
+      "floor": 0
+    },
+    {
+      "name": "Book passage",
+      "x": 4.9,
+      "z": -9.2,
+      "floor": 0
+    },
+    {
+      "name": "Ground-floor CR",
+      "x": 7.15,
+      "z": -9.2,
+      "floor": 0
+    },
+    {
+      "name": "Kitchen",
+      "x": -3.2,
+      "z": -18.2,
+      "floor": 0
+    },
+    {
+      "name": "Dining room",
+      "x": 3,
+      "z": -18.2,
+      "floor": 0
+    },
+    {
+      "name": "Garage entrance",
+      "x": -2.3,
+      "z": -6.1,
+      "floor": 0
+    },
+    {
+      "name": "Garage rear",
+      "x": -6.1,
+      "z": -1,
+      "floor": 0
+    },
+    {
+      "name": "Stair foot",
+      "x": 2.4,
+      "z": -6.55,
+      "floor": 0
+    },
+    {
+      "name": "Stair top",
+      "x": 2.4,
+      "z": -1.3,
+      "floor": 1
+    },
+    {
+      "name": "Upper landing",
+      "x": 0.3,
+      "z": -0.85,
+      "floor": 1
+    },
+    {
+      "name": "Cabinet approach",
+      "x": 0,
+      "z": -3.55,
+      "floor": 1
+    },
+    {
+      "name": "Breaker",
+      "x": -0.5,
+      "z": -4.65,
+      "floor": 1
+    },
+    {
+      "name": "Master 1 corridor",
+      "x": 4.45,
+      "z": -0.85,
+      "floor": 1
+    },
+    {
+      "name": "Private CR",
+      "x": 7.4,
+      "z": -1,
+      "floor": 1
+    },
+    {
+      "name": "Master 1 sleeping area",
+      "x": 5.2,
+      "z": -4.5,
+      "floor": 1
+    },
+    {
+      "name": "Master 1 terrace door",
+      "x": 5.85,
+      "z": -0.65,
+      "floor": 1
+    },
+    {
+      "name": "Terrace",
+      "x": 5.85,
+      "z": 1.3,
+      "floor": 1
+    },
+    {
+      "name": "Study terrace door",
+      "x": -3.8,
+      "z": 1.3,
+      "floor": 1
+    },
+    {
+      "name": "Study",
+      "x": -3.8,
+      "z": -1.4,
+      "floor": 1
+    },
+    {
+      "name": "Hallway return",
+      "x": 0,
+      "z": -0.85,
+      "floor": 1
+    },
+    {
+      "name": "Guest bedroom",
+      "x": 3,
+      "z": -10.6,
+      "floor": 1
+    },
+    {
+      "name": "Twin bedroom",
+      "x": -3,
+      "z": -10.6,
+      "floor": 1
+    },
+    {
+      "name": "Shared upstairs CR",
+      "x": -2.6,
+      "z": -16.3,
+      "floor": 1
+    },
+    {
+      "name": "Master bedroom 2",
+      "x": 3,
+      "z": -17,
+      "floor": 1
+    },
+    {
+      "name": "Landing return",
+      "x": 2.4,
+      "z": -1.25,
+      "floor": 1
+    },
+    {
+      "name": "Stair descent",
+      "x": 2.4,
+      "z": -6.55,
+      "floor": 0
+    },
+    {
+      "name": "Escape-exit area",
+      "x": 0,
+      "z": -13.5,
+      "floor": 0
+    },
+    {
+      "name": "Outside escape recess",
+      "x": -2.6,
+      "z": -13.5,
+      "floor": 0
+    }
+  ],
+  "stats": {
+    "meshBatches": 275,
+    "triangles": 146276,
+    "vertices": 209422,
+    "bytes": 10179228,
+    "materials": 27
+  }
+}

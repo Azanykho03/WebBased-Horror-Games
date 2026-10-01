@@ -1,0 +1,136 @@
+{
+  "format": "GLB 2.0",
+  "file_size_bytes": 10179228,
+  "triangles": 146276,
+  "vertices": 209422,
+  "mesh_count": 275,
+  "materials": 27,
+  "textures": true,
+  "embedded_images": 26,
+  "image_sizes": [
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      512,
+      512
+    ]
+  ],
+  "rigged": false,
+  "animated": false,
+  "bounds_metres": [
+    [
+      -7.800000190734863,
+      -0.20000000298023224,
+      -22.274999618530273
+    ],
+    [
+      9.600000381469727,
+      6.860000133514404,
+      2.5
+    ]
+  ],
+  "uvs": false,
+  "external_paths": false,
+  "validation": "basic structural, embedded-image and mesh checks; not Khronos conformance",
+  "sha256": "df9ecea1a11edc048ee6c156ac6b6968ad60efeb979d9c56983fbafb97ebbd35",
+  "textured_primitives_have_uvs": true,
+  "uv_note": "The optimizer removes unused UVs from untextured materials; uvs is false for that reason."
+}

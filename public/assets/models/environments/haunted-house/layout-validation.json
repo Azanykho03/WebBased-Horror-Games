@@ -1,0 +1,63 @@
+{
+  "phase": "final",
+  "passed": true,
+  "checks": [
+    {
+      "name": "17 stable room IDs and six main upper hallway doors",
+      "passed": true
+    },
+    {
+      "name": "Actual single staircase, 1.8 m wide, 18 treads at 180 mm",
+      "passed": true
+    },
+    {
+      "name": "Kitchen/dining face each other; garage faces stair approach",
+      "passed": true
+    },
+    {
+      "name": "Exterior windows and curtains in required rooms",
+      "passed": true
+    },
+    {
+      "name": "Master CR and terrace have separate adjacent doors",
+      "passed": true
+    },
+    {
+      "name": "Walls and terrace rail reject movement",
+      "passed": true
+    },
+    {
+      "name": "Exactly eight dining chairs: 3 + 3 + 1 + 1",
+      "passed": true
+    },
+    {
+      "name": "Required major furniture, exact bed and sofa counts",
+      "passed": true
+    },
+    {
+      "name": "Bar cabinet directly faces service exit",
+      "passed": true
+    },
+    {
+      "name": "Open door leaves do not intersect major furniture",
+      "passed": true
+    },
+    {
+      "name": "Hallway has exactly H1 and H2; local light budget declared",
+      "passed": true
+    },
+    {
+      "name": "Full continuous first-person route; all destinations reachable",
+      "passed": true
+    },
+    {
+      "name": "Terrace loop works in reverse without passing through the CR",
+      "passed": true
+    }
+  ],
+  "routeLegs": 29,
+  "routeMetres": 213.47,
+  "playerRadius": 0.23,
+  "bodyHeight": 1.78,
+  "limitations": "Geometric checks complement rendered first-person visual review; do not prove lighting or appearance."
+}

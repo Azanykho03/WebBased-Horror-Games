@@ -1,0 +1,34 @@
+{
+  "generator": "scripts/3d-generation/generate_house.py",
+  "method": "Deterministic blueprint-led native geometry; no remote generation",
+  "renderer": "Babylon.js 9.28.0",
+  "sourceManifest": "source/reference-manifest.json",
+  "sha256": "df9ecea1a11edc048ee6c156ac6b6968ad60efeb979d9c56983fbafb97ebbd35",
+  "stats": {
+    "meshBatches": 275,
+    "triangles": 146276,
+    "vertices": 209422,
+    "bytes": 10179228,
+    "materials": 27
+  },
+  "optional3dAssets": "Inspected MIT source; not used. Native meshes avoid a Three.js conversion dependency.",
+  "scope": "Environment inspection only; no gameplay",
+  "optimization": {
+    "method": "Exact vertex weld; material/texture deduplication; prune unused resources; no simplification or texture re-encoding",
+    "before": {
+      "bytes": 15447868,
+      "vertices": 438828
+    },
+    "after": {
+      "bytes": 10179228,
+      "vertices": 209422
+    },
+    "textureBytesPreserved": true,
+    "shadowMaps": 1,
+    "shadowMapPixels": 512,
+    "activeLocalLights": 6,
+    "maxTextureSize": 512,
+    "roomMaterialBatches": true,
+    "inactiveFloorCulling": true
+  }
+}
