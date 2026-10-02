@@ -1,0 +1,6 @@
+PASS · Actual Web Audio
+10 soundscapes · nonzero output (peak 0.000754)
+5 mixer controls mute · 20-voice cap
+vocal variants · pause / resume
+8 resets without duplication
+delayed sounds cleared · context closed

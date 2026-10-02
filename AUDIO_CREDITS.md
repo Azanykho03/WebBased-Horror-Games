@@ -1,0 +1,80 @@
+# Balay ni Corazon — audio palette and optional recordings
+
+The shipped ambience, adaptive score, weather, footsteps, heartbeat, breathing,
+interaction effects and supernatural textures are original Web Audio synthesis
+in `src/audio.ts`. They require no audio downloads. No commercial track, film/game
+sample, personal voice recording or external audio library has been added.
+
+Corazon's airy vocal textures are **synthesized placeholders, not spoken Bisaya**.
+The lines are readable as subtitles. The playable game does not require recordings,
+but a fully voiced release needs the clips below. Empty configuration entries do
+not request missing files. Do not create empty `.wav` files as substitutes.
+
+## Recording manifest
+
+Suggested location: `public/assets/audio/corazon/`. Register actual files in
+`VOICE_AUDIO` in `src/config.ts`; paths start with `audio/`, relative to
+`public/assets/`. Mono WAV or browser-supported Ogg is suitable for spatial voices.
+Keep recordings dry; the mixer supplies distance, wall filtering and reverb.
+Use comparable perceived levels and leave headroom. Avoid embedding a jump in
+loudness in the recording; the mixer supplies the scare impact separately.
+
+| Cue | Suggested filename | Content |
+| --- | --- | --- |
+| `whisper-1` | `whisper_01.wav` | Aria… |
+| `whisper-2` | `whisper_02.wav` | Ayaw'g dagan… |
+| `whisper-3` | `whisper_03.wav` | Naa ra ko diri… |
+| `whisper-4` | `whisper_04.wav` | Nakita tika… |
+| `whisper-5` | `whisper_05.wav` | Ngano nisulod man ka? |
+| `whisper-6` | `whisper_06.wav` | Balik diri… |
+| `whisper-7` | `whisper_07.wav` | Ayaw pagtan-aw… |
+| `whisper-8` | `whisper_08.wav` | Duol… |
+| `kitchen-player` | `kitchen_player.wav` / `kitchen_player_clean.wav` | Yawa / Aguy, unsa man tong tingoga? |
+| `kitchen-ghost` | `kitchen_ghost.wav` | Hoy! Nganong nisulod man ka diri?! |
+| `recognition` | `recognition.wav` / `recognition_clean.wav` | Yawa / Aguy, si Corazon ra diay! |
+| `spotted` | `spotted.wav` | Hoyyyy! Ari diri! |
+| `sprint` | `sprint.wav` | Ayaw dagan! |
+| `lost` | `lost.wav` | Paghulat ba! |
+| `exit` | `exit.wav` | Asa man ka padulong?! Balik diri! |
+| `hit` | `hit.wav` / `hit_clean.wav` | Yawa / Aguy, sakita oy! |
+| `cry`, `hum`, `laugh`, `scream` | `cry.wav`, `hum.wav`, `laugh.wav`, `scream.wav` | Short performed vocalizations, no copied character performance |
+
+For clips with no profanity, set both `normal` and `clean` to the same file.
+Clean mode deliberately never falls back to an unclean recording. New configured
+recordings are copied into the production build by the existing Vite asset plugin.
+Record with a consenting performer; retain the recording and redistribution terms.
+
+```ts
+// Example only; enable after the file exists.
+'whisper-1': {
+  normal: 'audio/corazon/whisper_01.wav',
+  clean: 'audio/corazon/whisper_01.wav',
+}
+```
+
+## Optional source searches
+
+The procedural effects are complete. These are optional replacement sources,
+not dependencies or assets already licensed for this project. Specific Bisaya
+lines are best recorded for the game. Verified source pages on 2026-10-02:
+
+| Category | Source and suggested search |
+| --- | --- |
+| Nonverbal whisper, cry, breath, cloth | [Freesound](https://freesound.org/help/faq/#licenses): `female whisper CC0`, `quiet sobbing CC0`, `cloth movement CC0` |
+| Rain, roof, wind and thunder | [Freesound](https://freesound.org/help/faq/#licenses): `rain roof seamless CC0`, `distant thunder CC0`, `wind window CC0` |
+| Creaks, footsteps, doors, window, object fall | [Sonniss GameAudioGDC](https://sonniss.com/gameaudiogdc/): `old wooden house creak`, `wood floor footsteps`, `window rattle`, `cabinet latch` |
+| Pickup and menu sounds | [Kenney Interface Sounds](https://kenney.nl/assets/interface-sounds): `interface select`, `item pickup` |
+| Alternate musical textures | [Freesound](https://freesound.org/help/faq/#licenses): `dark drone CC0`, `bowed metal texture CC0`; layer original phrases rather than a copied soundtrack |
+
+Freesound licenses vary by upload; check the individual page and prefer CC0.
+Kenney's linked pack lists CC0. Sonniss supplies its own game-audio license;
+check the bundle license, especially its restriction on standalone redistribution.
+None of these sites' files were downloaded or included in this change.
+
+## External asset credit ledger
+
+Currently empty. For each future recording or licensed sound, record the exact
+filename, original title, creator, source URL, license/version, modifications,
+required attribution, and performer permission where relevant. Preserve a copy
+of its license with the source asset. Existing model provenance stays with the
+models; this document covers audio only.

@@ -12,21 +12,21 @@ export interface HouseManifest {
   colliders: Collider[];
   doors: { id: string; source: string; destination: string; position: Vec3; width: number; height: number; axis: 'x' | 'z'; floor: Floor }[];
   lights: { id: string; room: string; position: Vec3; intensity: number; range: number; color: Vec3; period: number; phase: number; electric: boolean }[];
-  windows: { room: string; position: Vec3; height: number }[];
+  windows: { room: string; position: Vec3; height: number; width: number; axis: 'x' | 'z'; exterior: boolean }[];
   props: { id: string; room: string; kind: string; position: Vec3; yaw: number }[];
   tour: { name: string; x: number; z: number; floor: Floor }[];
 }
 export interface Settings {
-  volume: number; ambience: number; sensitivity: number; brightness: number;
+  volume: number; music: number; ambience: number; effects: number; voice: number; sensitivity: number; touchSensitivity: number; brightness: number;
   subtitles: boolean; reducedFlicker: boolean; reducedMotion: boolean; gentleScares: boolean;
-  cleanDialogue: boolean; quality: 'standard' | 'low';
+  cleanDialogue: boolean; quality: 'auto' | 'standard' | 'low';
 }
 export const DEFAULT_SETTINGS: Settings = {
-  volume: .65, ambience: .55, sensitivity: 1, brightness: 1,
+  volume: .65, music: .5, ambience: .55, effects: .75, voice: .8, sensitivity: 1, touchSensitivity: 1, brightness: 1,
   subtitles: true, reducedFlicker: true, reducedMotion: true, gentleScares: false,
-  cleanDialogue: false, quality: 'standard',
+  cleanDialogue: false, quality: 'auto',
 };
-export type Screen = 'loading' | 'menu' | 'ready' | 'playing' | 'paused' | 'journal' | 'settings' | 'credits' | 'caught' | 'won' | 'error';
+export type Screen = 'loading' | 'menu' | 'ready' | 'intro' | 'playing' | 'paused' | 'journal' | 'settings' | 'credits' | 'caught' | 'won' | 'error';
 export type Mission = 'M01' | 'M02' | 'M03' | 'M04' | 'M05';
 export type ItemId = 'flashlight' | 'note' | 'fuse' | 'locket' | 'letter' | 'music-box' | 'exit-key' | 'battery-kitchen' | 'battery-study' | 'battery-guest' | 'tsinelas';
 export type InteractionId = ItemId | 'breaker' | 'cabinet' | 'exit' | 'front-door' | 'bedroom-door' | 'hide-guest' | 'hide-master';

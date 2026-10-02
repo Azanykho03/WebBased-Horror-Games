@@ -1,0 +1,5 @@
+PASS · Full touch escape with live ghost
+multitouch diagonal / look / sprint / cancel → touch pause / resume → touch journal / resume → touch flashlight off / on → flashlight → note → fuse → touch throw → tsinelas → battery-kitchen → breaker → letter → locket → hide-guest → checkpoint restored → music-box → checkpoint restored → cabinet → exit-key → exit
+68.5s · 183.4m · 2 captures
+Ghost: Dormant, Patrol, Investigate, Chase, Search, Catch
+FPS avg 59 · min 34

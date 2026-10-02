@@ -1,6 +1,7 @@
 import type { World } from './world.ts';
 import { B } from './world.ts';
 import type { Position, Progress, Settings, Vec3 } from './types.ts';
+import { detectTouch } from './touch.ts';
 
 export class InputSystem {
   readonly keys = new Set<string>();
@@ -12,11 +13,18 @@ export class InputSystem {
   dragging = false;
   pointerLocked = false;
   lockFailed = false;
+  touchMode = detectTouch();
+  touchSprint = false;
+  moveX = 0;
+  moveForward = 0;
+  onModeChange: (touch: boolean) => void = () => {};
+  onClear: () => void = () => {};
 
   constructor(canvas: HTMLCanvasElement, onPause: () => void) {
     const signal = this.controller.signal;
     window.addEventListener('keydown', e => {
       if (!this.active) return;
+      if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowLeft', 'ArrowRight'].includes(e.code)) this.setTouchMode(false);
       if (['Tab', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
       if (!e.repeat) this.pressed.add(e.code);
       this.keys.add(e.code);
@@ -27,29 +35,42 @@ export class InputSystem {
     document.addEventListener('visibilitychange', () => { if (document.hidden) onPause(); }, { signal });
     document.addEventListener('pointerlockchange', () => {
       this.pointerLocked = document.pointerLockElement === canvas;
-      if (!this.pointerLocked && this.active && !this.lockFailed) onPause();
+      if (!this.pointerLocked && this.active && !this.lockFailed && !this.touchMode) onPause();
     }, { signal });
     document.addEventListener('pointerlockerror', () => { this.lockFailed = true; }, { signal });
     canvas.addEventListener('pointerdown', e => {
       if (!this.active) return;
+      if (e.pointerType === 'touch') { this.setTouchMode(true); return; }
+      this.setTouchMode(false);
       if (e.button === 0) this.pressed.add('Throw');
       if (e.button === 2) { this.dragging = true; canvas.setPointerCapture(e.pointerId); }
     }, { signal });
     canvas.addEventListener('pointerup', () => { this.dragging = false; }, { signal });
+    canvas.addEventListener('pointercancel', () => { this.dragging = false; }, { signal });
     canvas.addEventListener('contextmenu', e => e.preventDefault(), { signal });
     document.addEventListener('mousemove', e => {
-      if (this.active && (this.pointerLocked || this.dragging)) { this.lookX += e.movementX; this.lookY += e.movementY; }
+      if (this.active && !this.touchMode && (this.pointerLocked || this.dragging)) this.addLook(e.movementX, e.movementY);
     }, { signal });
+    document.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') this.setTouchMode(true); }, { signal, capture: true });
   }
   start(canvas: HTMLCanvasElement): void {
     this.clear(); this.active = true; this.lockFailed = false; canvas.focus();
+    if (this.touchMode) return;
     try {
       const request = canvas.requestPointerLock();
       if (request) void request.catch(() => { this.lockFailed = true; });
     } catch { this.lockFailed = true; }
   }
   stop(): void { this.active = false; this.clear(); if (document.pointerLockElement) document.exitPointerLock(); }
-  clear(): void { this.keys.clear(); this.pressed.clear(); this.lookX = this.lookY = 0; this.dragging = false; }
+  clear(): void { this.keys.clear(); this.pressed.clear(); this.lookX = this.lookY = this.moveX = this.moveForward = 0; this.dragging = this.touchSprint = false; this.onClear(); }
+  setTouchMode(touch: boolean): void {
+    if (this.touchMode === touch) return;
+    this.touchMode = touch; this.clear();
+    if (touch && document.pointerLockElement) document.exitPointerLock();
+    this.onModeChange(touch);
+  }
+  setMove(x: number, forward: number): void { this.moveX = x; this.moveForward = forward; }
+  addLook(x: number, y: number): void { this.lookX += x; this.lookY += y; }
   consume(key: string): boolean { const value = this.pressed.has(key); this.pressed.delete(key); return value; }
   queue(key: string): void { this.pressed.add(key); }
   look(): [number, number] { const value: [number, number] = [this.lookX, this.lookY]; this.lookX = this.lookY = 0; return value; }
@@ -79,19 +100,20 @@ export class Player {
   }
   update(dt: number, input: InputSystem, world: World, progress: Progress, settings: Settings, noise: (p: Position, radius: number) => void, footstep: () => void): void {
     const [dx, dy] = input.look();
-    this.yaw += dx * .0022 * settings.sensitivity;
-    this.pitch = Math.max(-1.35, Math.min(1.35, this.pitch - dy * .0022 * settings.sensitivity));
+    const sensitivity = input.touchMode ? settings.touchSensitivity : settings.sensitivity;
+    this.yaw += dx * .0022 * sensitivity;
+    this.pitch = Math.max(-1.35, Math.min(1.35, this.pitch - dy * .0022 * sensitivity));
     if (input.keys.has('ArrowLeft')) this.yaw -= dt * 1.5;
     if (input.keys.has('ArrowRight')) this.yaw += dt * 1.5;
     if (input.keys.has('ArrowUp')) this.pitch = Math.min(1.35, this.pitch + dt);
     if (input.keys.has('ArrowDown')) this.pitch = Math.max(-1.35, this.pitch - dt);
     if (input.consume('KeyF') && progress.collected.includes('flashlight')) this.flashlight = !this.flashlight;
     if (this.hidden) this.flashlight = false;
-    const forward = Number(input.keys.has('KeyW')) - Number(input.keys.has('KeyS'));
-    const side = Number(input.keys.has('KeyD')) - Number(input.keys.has('KeyA'));
+    const forward = Number(input.keys.has('KeyW')) - Number(input.keys.has('KeyS')) + (input.moveForward ?? 0);
+    const side = Number(input.keys.has('KeyD')) - Number(input.keys.has('KeyA')) + (input.moveX ?? 0);
     const norm = Math.hypot(forward, side);
-    this.sprinting = !this.hidden && norm > 0 && !this.exhausted && this.stamina > 0 && (input.keys.has('ShiftLeft') || input.keys.has('ShiftRight'));
-    const speed = this.sprinting ? 3.9 : 2.1;
+    this.sprinting = !this.hidden && norm > 0 && !this.exhausted && this.stamina > 0 && (input.touchSprint || input.keys.has('ShiftLeft') || input.keys.has('ShiftRight'));
+    const speed = (this.sprinting ? 3.9 : 2.1) * Math.min(1, norm);
     const before = this.position;
     if (norm > 0 && !this.hidden) this.position = world.nav.move(before, (Math.sin(this.yaw) * forward + Math.cos(this.yaw) * side) / norm * speed * dt, (-Math.cos(this.yaw) * forward + Math.sin(this.yaw) * side) / norm * speed * dt);
     const distance = Math.hypot(this.position.x - before.x, this.position.z - before.z);

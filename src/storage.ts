@@ -33,12 +33,12 @@ export function parseSettings(raw: string | null): Settings {
   try {
     const value: unknown = JSON.parse(raw ?? 'null');
     if (!record(value)) return result;
-    for (const key of ['volume', 'ambience', 'sensitivity', 'brightness'] as const) {
-      const bounds = key === 'sensitivity' ? [.3, 2.5] : key === 'brightness' ? [.6, 1.7] : [0, 1];
+    for (const key of ['volume', 'music', 'ambience', 'effects', 'voice', 'sensitivity', 'touchSensitivity', 'brightness'] as const) {
+      const bounds = key === 'sensitivity' || key === 'touchSensitivity' ? [.3, 2.5] : key === 'brightness' ? [.6, 1.7] : [0, 1];
       if (bounded(value[key], bounds[0], bounds[1])) result[key] = value[key];
     }
     for (const key of ['subtitles', 'reducedFlicker', 'reducedMotion', 'gentleScares', 'cleanDialogue'] as const) if (typeof value[key] === 'boolean') result[key] = value[key];
-    if (value.quality === 'low' || value.quality === 'standard') result.quality = value.quality;
+    if (value.quality === 'low' || value.quality === 'standard' || value.quality === 'auto') result.quality = value.quality;
   } catch { /* Unavailable/corrupt settings use conservative defaults. */ }
   return result;
 }

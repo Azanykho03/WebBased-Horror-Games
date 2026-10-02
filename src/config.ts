@@ -9,8 +9,9 @@ export const ASSETS = {
   key: 'models/items/keys/key.glb',
   face: 'models/enemies/ghost/source/ghost-face-reference.png',
 };
-export const GHOST_PROFILE = { name: 'Mayang', face: ASSETS.face, model: ASSETS.ghost };
-export type VoiceCue = 'kitchen-player' | 'kitchen-ghost' | 'recognition' | 'spotted' | 'sprint' | 'lost' | 'exit' | 'hit';
+export const GAME_TITLE = 'Balay ni Corazon';
+export const GHOST_PROFILE = { name: 'Corazon', face: ASSETS.face, model: ASSETS.ghost };
+export type VoiceCue = 'kitchen-player' | 'kitchen-ghost' | 'recognition' | 'spotted' | 'sprint' | 'lost' | 'exit' | 'hit' | `whisper-${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8}` | 'cry' | 'hum' | 'laugh' | 'scream';
 // Optional asset paths under public/assets. Captions and synthesized cues work
 // when recordings are absent. Clean mode never falls back to an unclean clip.
 export const VOICE_AUDIO: Partial<Record<VoiceCue, { normal?: string; clean?: string }>> = {};

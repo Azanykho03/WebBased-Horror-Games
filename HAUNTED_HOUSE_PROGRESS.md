@@ -1,3 +1,26 @@
+# Current continuation — 2026-10-02
+
+The audio, haunted-environment and mobile implementation is now saved directly in
+`C:\Users\asus\Documents\WebBased-Horror-Games` on `main`. The prior detached
+Codex worktree was only the source of the transfer; all 38 transferred files were
+SHA256-verified. Existing working assets and game progression were preserved.
+
+Both supplied Corazon reference documents are in the root. The active repository
+passes 23 tests, TypeScript and production/validation builds. Full desktop and
+touch-simulated escape routes, capture/retry and actual Web Audio lifecycle checks
+passed. Physical Android hardware/audio listening checks and optional spoken
+Bisaya recordings are still needed; these limits are documented rather than
+represented as completed.
+
+See [the current acceptance record](tests/corazon-validation.md) for implementation,
+tests, file lists and device limitations, and [audio credits](AUDIO_CREDITS.md) for
+the original synthesis and optional recording manifest.
+
+The older master-specification blocker below is historical context for an earlier
+request. This continuation uses the two later supplied audio/mobile documents.
+
+---
+
 # BALAY game and environment progress
 
 ## Current game scope — 2026-10-02

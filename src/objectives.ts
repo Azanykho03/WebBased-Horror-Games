@@ -63,7 +63,7 @@ export function interact(p: Progress, id: InteractionId): InteractionResult {
     flashlight: 'Flashlight taken. F switches it on or off. Read the warning on the wall.',
     note: 'Warning read. Find the kitchen fuse, then the breaker upstairs.',
     fuse: 'Kitchen fuse collected. The breaker is upstairs near Master 1.',
-    locket: 'Family locket found.', letter: 'Folded letter found.', 'music-box': 'The last notes fade. Music box found.',
+    locket: 'Corazon’s locket. The little portrait has been carefully kept.', letter: 'A folded letter: “Corazon, we left the light on for you.”', 'music-box': 'Corazon’s music box. One unfinished melody, then silence.',
     'exit-key': 'The red key is yours. The service exit is directly opposite.',
     tsinelas: 'Tsinelas ready. Left click to throw. It can be picked up again.',
   };

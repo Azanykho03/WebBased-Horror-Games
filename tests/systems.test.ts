@@ -70,6 +70,29 @@ test('actual tsinelas projectile hits the enemy once and resets cleanly on retry
     interactions.reset(freshProgress()); assert.equal(interactions.slipperInHand, false);
   } finally { cleanup(); }
 });
+
+test('touch analog input shares collisions, has no diagonal speed boost, and clamps camera pitch', () => {
+  const { world, player, progress, input, cleanup } = setup();
+  try {
+    input.touchMode = true; input.touchSprint = false;
+    const start: Position = { x: 0, y: 0, z: -3, level: 0 };
+    const travel = (side: number, forward: number) => {
+      player.reset(start); input.setMove = (x, y) => { input.moveX = x; input.moveForward = y; }; input.setMove(side, forward);
+      player.update(.05, input, world, progress, DEFAULT_SETTINGS, () => {}, () => {});
+      return Math.hypot(player.position.x - start.x, player.position.z - start.z);
+    };
+    const forward = travel(0, 1), diagonal = travel(1, 1), half = travel(0, .5), backward = travel(0, -1);
+    assert(Math.abs(diagonal - forward) < 1e-7); assert(Math.abs(half - forward / 2) < 1e-7); assert(Math.abs(backward - forward) < 1e-7);
+    input.moveX = -1; input.moveForward = 0; player.reset(start);
+    for (let i = 0; i < 100; i++) player.update(.05, input, world, progress, DEFAULT_SETTINGS, () => {}, () => {});
+    assert(player.position.x > -1.1, 'Touch cannot cross hallway collision');
+    input.moveX = 0; input.look = () => [100, -10000];
+    player.update(.05, input, world, progress, { ...DEFAULT_SETTINGS, touchSensitivity: 2 }, () => {}, () => {});
+    assert.equal(player.pitch, 1.35); assert(Math.abs(player.yaw - .44) < 1e-7);
+    input.look = () => [-100, 10000]; player.update(.05, input, world, progress, { ...DEFAULT_SETTINGS, touchSensitivity: 2 }, () => {}, () => {});
+    assert.equal(player.pitch, -1.35); assert(Math.abs(player.yaw) < 1e-7);
+  } finally { cleanup(); }
+});
 test('a wall blocks a thrown tsinelas and its miss remains reachable', () => {
   const { world, player, progress, cleanup } = setup();
   try {

@@ -1,4 +1,4 @@
-import { WARNING, assetUrl, GHOST_PROFILE } from './config.ts';
+import { WARNING, assetUrl, GHOST_PROFILE, GAME_TITLE } from './config.ts';
 import { keepsakeCount, mission, objective } from './objectives.ts';
 import type { GhostState, Progress, Screen, Settings } from './types.ts';
 
@@ -14,12 +14,13 @@ export class UI {
   private noticeTime = 0;
   private subtitleTime = 0;
   private hudText = '';
+  private touchMode = false;
   private abort = new AbortController();
   onAction: (action: string) => void = () => {};
   onSettings: (key: keyof Settings, value: number | boolean | string) => void = () => {};
   constructor(root: HTMLElement) {
     this.root = root;
-    root.innerHTML = '<div class="vignette"></div><div id="hud" hidden></div><div id="toast" role="status"></div><div id="subtitle" aria-live="polite"></div><div id="face-overlay" hidden><img alt="Mayang appears"/><span>HOY!</span></div><main id="panel"></main>';
+    root.innerHTML = '<div class="vignette"></div><div id="hud" hidden></div><div id="toast" role="status"></div><div id="subtitle" aria-live="polite"></div><div id="face-overlay" hidden><img alt="Corazon appears"/><span>HOY!</span></div><main id="panel"></main>';
     this.panel = root.querySelector('#panel')!; this.hud = root.querySelector('#hud')!; this.overlay = root.querySelector('#face-overlay')!;
     this.subtitle = root.querySelector('#subtitle')!; this.toast = root.querySelector('#toast')!;
     this.overlay.querySelector('img')!.src = assetUrl(GHOST_PROFILE.face);
@@ -36,6 +37,7 @@ export class UI {
   }
   screen(screen: Screen, progress: Progress, settings: Settings, saved: boolean, detail = ''): void {
     this.root.dataset.screen = screen;
+    this.root.dataset.reducedMotion = String(settings.reducedMotion);
     this.panel.hidden = screen === 'playing'; this.hud.hidden = screen !== 'playing';
     this.subtitle.hidden = screen !== 'playing' || !settings.subtitles;
     this.toast.hidden = screen !== 'playing';
@@ -44,11 +46,12 @@ export class UI {
     const heading = (eyebrow: string, title: string) => `<div class="eyebrow">${eyebrow}</div><h1>${title}</h1>`;
     const back = button('back', 'Back');
     let content = '';
-    if (screen === 'loading') content = `${heading('THE HOUSE IS WAKING', 'BALAY')}<p id="load-label">${escaped(detail)}</p><div class="loading-track"><i id="load-bar"></i></div><p class="fine">Preparing the house, Mayang, and your flashlight.</p>`;
-    if (screen === 'menu') content = `${heading('A BISAYA SURVIVAL HORROR', 'BALAY')}<p class="tagline">Ayaw Pagsulod.</p><p class="intro">You took the dare.<br>The house took you seriously.</p><nav>${button('new', saved ? 'Start a new night' : 'Enter the house', true)}${saved ? button('continue', 'Continue from checkpoint') : ''}${button('settings', 'Settings')}${button('credits', 'Credits')}</nav><div class="menu-footer">ONE HOUSE · ONE GHOST · FIND YOUR WAY OUT</div>`;
+    if (screen === 'loading') content = `${heading('THE HOUSE IS WAKING', GAME_TITLE)}<p id="load-label">${escaped(detail)}</p><div class="loading-track"><i id="load-bar"></i></div><p class="fine">Preparing the house, Corazon, and your flashlight.</p>`;
+    if (screen === 'menu') content = `${heading('A BISAYA SURVIVAL HORROR', GAME_TITLE)}<p class="tagline">Ayaw Pagsulod.</p><p class="intro">You took the dare.<br>Corazon’s house took you seriously.</p><nav>${button('new', saved ? 'Start a new night' : 'Enter the house', true)}${saved ? button('continue', 'Continue from checkpoint') : ''}${button('settings', 'Settings')}${button('credits', 'Credits')}</nav><div class="menu-footer">ONE HOUSE · ONE GHOST · FIND YOUR WAY OUT</div>`;
+    if (screen === 'intro') content = `${heading('THE RAIN HIDES YOUR FOOTSTEPS', GAME_TITLE)}<p class="intro-story">A dare brought you to Corazon’s door.<br>Her photographs still face the rooms.<br>Her keepsakes are still waiting.<br><em>Then the latch moves behind you.</em></p><nav>${button('skip-intro', 'Enter · skip intro')}</nav>`;
     if (screen === 'ready') {
       const returning = progress.collected.length > 0;
-      content = `${heading(returning ? 'CHECKPOINT RESTORED' : 'THE FRONT DOOR HAS LOCKED', returning ? 'One more chance.' : 'Stay quiet.')}<p>${returning ? escaped(objective(progress).detail) : 'Find the flashlight. Read the warning. Return what belongs to this house.'}</p>${this.controls()}<nav>${button('resume', 'Click to play', true)}${button('menu', 'Main menu')}</nav><p class="fine">A click enables sound and mouse look. If mouse lock is unavailable, hold right mouse to look or use the arrow keys.</p>`;
+      content = `${heading(returning ? 'CHECKPOINT RESTORED' : 'THE FRONT DOOR HAS LOCKED', returning ? 'One more chance.' : 'Stay quiet.')}<p>${returning ? escaped(objective(progress).detail) : 'Find the flashlight. Read the warning. Return what belongs to this house.'}</p>${this.controls()}<nav>${button('resume', this.touchMode ? 'Tap to play' : 'Click to play', true)}${button('menu', 'Main menu')}</nav><p class="fine">${this.touchMode ? 'Tap to enable sound. Move with the left stick and drag the right side to look. Landscape is recommended.' : 'A click enables sound and mouse look. If mouse lock is unavailable, hold right mouse to look or use the arrow keys.'}</p>`;
     }
     if (screen === 'paused') content = `${heading('TAKE A BREATH', 'Paused.')}<p>The house will wait.</p><nav>${button('resume', 'Continue', true)}${button('journal', 'Missions & inventory')}${button('settings', 'Settings')}${button('menu', 'Save & main menu')}</nav>${this.controls()}`;
     if (screen === 'journal') {
@@ -58,16 +61,17 @@ export class UI {
     if (screen === 'settings') {
       const range = (key: keyof Settings, label: string, min: number, max: number, step: number) => `<label class="range">${label}<input data-setting="${key}" aria-label="${label}" type="range" min="${min}" max="${max}" step="${step}" value="${settings[key]}"></label>`;
       const check = (key: keyof Settings, label: string) => `<label class="check"><input data-setting="${key}" type="checkbox" ${settings[key] ? 'checked' : ''}>${label}</label>`;
-      content = `${heading('MAKE THE NIGHT YOURS', 'Settings')}<div class="settings-grid">${range('volume', 'Master volume', 0, 1, .05)}${range('ambience', 'Ambience', 0, 1, .05)}${range('sensitivity', 'Mouse sensitivity', .3, 2.5, .1)}${range('brightness', 'Brightness', .6, 1.7, .05)}${check('subtitles', 'Subtitles and sound captions')}${check('reducedFlicker', 'Reduced flicker')}${check('reducedMotion', 'Reduced camera motion')}${check('gentleScares', 'Gentle scare presentation')}${check('cleanDialogue', 'Clean dialogue')}<label class="range">Graphics<select data-setting="quality" aria-label="Graphics"><option value="standard" ${settings.quality === 'standard' ? 'selected' : ''}>Standard</option><option value="low" ${settings.quality === 'low' ? 'selected' : ''}>Low · fewer lights, no shadows</option></select></label></div><nav>${back}</nav>`;
+      content = `${heading('MAKE THE NIGHT YOURS', 'Settings')}<div class="settings-grid">${range('volume', 'Master volume', 0, 1, .05)}${range('music', 'Music volume', 0, 1, .05)}${range('ambience', 'Ambience volume', 0, 1, .05)}${range('effects', 'Sound effects volume', 0, 1, .05)}${range('voice', 'Voice volume', 0, 1, .05)}${range('sensitivity', 'Mouse sensitivity', .3, 2.5, .1)}${range('touchSensitivity', 'Touch look sensitivity', .3, 2.5, .1)}${range('brightness', 'Brightness', .6, 1.7, .05)}${check('subtitles', 'Subtitles and sound captions')}${check('reducedFlicker', 'Reduced flicker and lightning')}${check('reducedMotion', 'Reduced camera and scare motion')}${check('gentleScares', 'Gentler visuals and scare audio')}${check('cleanDialogue', 'Clean dialogue')}<label class="range">Graphics<select data-setting="quality" aria-label="Graphics"><option value="auto" ${settings.quality === 'auto' ? 'selected' : ''}>Auto · adapt to device</option><option value="standard" ${settings.quality === 'standard' ? 'selected' : ''}>Standard</option><option value="low" ${settings.quality === 'low' ? 'selected' : ''}>Low · fewer lights, softer shadows</option></select></label></div><nav>${back}</nav>`;
     }
-    if (screen === 'credits') content = `${heading('INSIDE THE HOUSE', 'Credits')}<p>House: the existing blueprint-led Balay environment, furniture, and original procedural textures.</p><p>${escaped(GHOST_PROFILE.name)}, flashlight arm, and red key: the project’s preserved TRELLIS / TripoSR model assets. Original references and generation records remain with each asset.</p><p>Audio: original synthesis adapted from the house inspection palette. Bisaya dialogue is currently captioned with temporary sound cues; personal voice recordings are not included.</p><p>Babylon.js 9.28.0 · Apache 2.0. TypeScript and Vite.</p><nav>${back}</nav>`;
+    if (screen === 'credits') content = `${heading('INSIDE THE HOUSE', 'Credits')}<p>House: the existing blueprint-led Balay ni Corazon environment, furniture, and original procedural textures.</p><p>${escaped(GHOST_PROFILE.name)}, flashlight arm, and red key: the project’s preserved TRELLIS / TripoSR model assets. Original references and generation records remain with each asset.</p><p>Audio: original procedural rain, wind, room tones, adaptive score and physical effects. Corazon’s spoken lines are captioned; airy vocal textures stand in for optional voice recordings. No commercial music or personal voice recordings are included.</p><p>Babylon.js 9.28.0 · Apache 2.0. TypeScript and Vite.</p><nav>${back}</nav>`;
     if (screen === 'caught') content = `${heading('SHE HEARD YOU', 'Not this time.')}<p>Break her line of sight before hiding. Sprint to gain distance. A thrown tsinelas buys two seconds.</p><nav>${button('retry', 'Retry checkpoint', true)}${button('menu', 'Main menu')}</nav>`;
     if (screen === 'won') content = `${heading('YOU MADE IT OUT', 'Ayaw na og balik.')}<p class="result-time">${formatTime(progress.elapsed)}</p><p>“Nakuha nimo ang proof?”<br>“Oo. Dili na ko mobalik.”</p><p class="fine">The rain feels different outside.</p><nav>${button('new', 'Another night', true)}${button('menu', 'Main menu')}</nav>`;
     if (screen === 'error') content = `${heading('THE HOUSE COULD NOT OPEN', 'Something went wrong.')}<p>${escaped(detail)}</p><nav>${button('reload', 'Reload', true)}</nav>`;
-    this.panel.innerHTML = `<section class="panel-inner ${screen === 'settings' || screen === 'journal' ? 'wide' : ''}">${content}</section><div class="edition">BALAY / 01</div>`;
+    this.panel.innerHTML = `<section class="panel-inner ${screen === 'settings' || screen === 'journal' ? 'wide' : ''}">${content}</section><div class="edition">BALAY NI CORAZON / 01</div>`;
     if (screen !== 'playing' && screen !== 'loading') this.panel.querySelector<HTMLButtonElement>('button')?.focus();
   }
-  private controls(): string { return '<div class="controls"><span><kbd>W A S D</kbd> Move</span><span><kbd>Mouse</kbd> Look</span><span><kbd>E</kbd> Interact / hide</span><span><kbd>F</kbd> Flashlight</span><span><kbd>Shift</kbd> Sprint</span><span><kbd>Click</kbd> Throw tsinelas</span><span><kbd>Tab</kbd> Journal</span><span><kbd>Esc</kbd> Pause</span></div>'; }
+  inputMode(touch: boolean): void { this.touchMode = touch; this.root.dataset.input = touch ? 'touch' : 'desktop'; this.hudText = ''; }
+  private controls(): string { if (this.touchMode) return '<div class="controls touch-guide"><span>Left thumb · move</span><span>Right side · look</span><span>Interact · items / doors</span><span>Light · flashlight</span><span>Run · toggle sprint</span><span>Throw · tsinelas</span><span>Hide · at a hiding place</span><span>Journal · missions</span></div>'; return '<div class="controls"><span><kbd>W A S D</kbd> Move</span><span><kbd>Mouse</kbd> Look</span><span><kbd>E</kbd> Interact / hide</span><span><kbd>F</kbd> Flashlight</span><span><kbd>Shift</kbd> Sprint</span><span><kbd>Click</kbd> Throw tsinelas</span><span><kbd>Tab</kbd> Journal</span><span><kbd>Esc</kbd> Pause</span></div>'; }
   loading(text: string, percent: number): void {
     const label = this.panel.querySelector('#load-label'), bar = this.panel.querySelector<HTMLElement>('#load-bar');
     if (label) label.textContent = text; if (bar) bar.style.width = `${percent}%`;
@@ -85,7 +89,7 @@ export class UI {
   dispose(): void { this.abort.abort(); }
   update(progress: Progress, stamina: number, room: string, prompt: string, ghost: GhostState, hidden: boolean, slipper: boolean): void {
     const o = objective(progress);
-    const text = `<div class="objective"><span class="eyebrow">${mission(progress)} · ${keepsakeCount(progress)}/3 KEEPSAKES</span><h2>${o.title}</h2><p>${o.detail}</p></div><div class="crosshair" aria-hidden="true">·</div><div class="interact">${prompt ? `<kbd>E</kbd> ${escaped(prompt)}` : ''}</div><div class="location"><span class="eyebrow">${hidden ? 'HIDING · STAY QUIET' : 'INSIDE THE HOUSE'}</span><span>${escaped(room)}</span></div><div class="meters"><label>FLASHLIGHT <span>${Math.ceil(progress.battery)}%</span><meter min="0" max="100" value="${progress.battery}"></meter></label><label>STAMINA<meter min="0" max="6" value="${stamina}"></meter></label><small>${slipper ? 'TSINELAS READY · CLICK TO THROW' : 'TAB · MISSIONS & INVENTORY'}</small></div><div class="danger ${ghost === 'Chase' ? 'visible' : ''}">${ghost === 'Chase' ? 'She sees you. Break line of sight.' : ''}</div>`;
+    const text = `<div class="objective"><span class="eyebrow">${mission(progress)} · ${keepsakeCount(progress)}/3 KEEPSAKES</span><h2>${o.title}</h2><p>${o.detail}</p></div><div class="crosshair" aria-hidden="true">·</div><div class="interact">${prompt ? `${this.touchMode ? 'Tap Interact ·' : '<kbd>E</kbd>'} ${escaped(prompt)}` : ''}</div><div class="location"><span class="eyebrow">${hidden ? 'HIDING · STAY QUIET' : 'INSIDE THE HOUSE'}</span><span>${escaped(room)}</span></div><div class="meters"><label>FLASHLIGHT <span>${Math.ceil(progress.battery)}%</span><meter min="0" max="100" value="${progress.battery}"></meter></label><label>STAMINA<meter min="0" max="6" value="${stamina}"></meter></label><small>${this.touchMode ? (slipper ? 'TSINELAS READY · TAP THROW' : 'JOURNAL · MISSIONS') : (slipper ? 'TSINELAS READY · CLICK TO THROW' : 'TAB · MISSIONS & INVENTORY')}</small></div><div class="danger ${ghost === 'Chase' ? 'visible' : ''}">${ghost === 'Chase' ? 'She sees you. Break line of sight.' : ''}</div>`;
     if (text !== this.hudText) { this.hud.innerHTML = text; this.hudText = text; }
   }
 }

@@ -4,6 +4,9 @@ import type { Navigation } from '../scripts/3d-generation/house-navigation.mjs';
 import type { Collider, HouseManifest, Position, Progress, Settings, Vec3 } from './types.ts';
 import { assetUrl, ASSETS, GHOST_PROFILE } from './config.ts';
 import { worldHit } from './geometry.ts';
+import { HauntedEnvironment } from './haunting.ts';
+import { calmAtmosphere } from './horror.ts';
+import type { Atmosphere } from './horror.ts';
 
 export const B = (window as unknown as { BABYLON: typeof Babylon }).BABYLON;
 export const vector = (p: Vec3) => B.Vector3.FromArray(p);
@@ -23,7 +26,10 @@ export class World {
   private dynamic: Collider[] = [];
   private gateState = '';
   private shadow: Babylon.ShadowGenerator;
+  private shadowQuality = '';
   kitchenBlackout = false;
+  environment!: HauntedEnvironment;
+  atmosphere: Atmosphere = calmAtmosphere();
 
   constructor(engine: Babylon.Engine) {
     this.scene = new B.Scene(engine);
@@ -80,6 +86,7 @@ export class World {
     // Only the foreground arm clears depth; it cannot clip into a nearby wall.
     this.scene.setRenderingAutoClearDepthStencil(1, true, true, true);
     this.key.position.set(.58, 1.38, -13.5); this.key.scaling.setAll(1.6); this.key.setEnabled(false);
+    this.environment = new HauntedEnvironment(this);
     report('Waiting for textures', 94);
     // Fixtures start disabled. Compiling every room light at once can exceed
     // WebGL uniform limits before the first frame applies the light budget.
@@ -112,7 +119,7 @@ export class World {
         material.specularColor.set(.07, .065, .05); material.specularPower = 24; material.maxSimultaneousLights = 8;
         material.emissiveColor = old.emissiveColor.clone();
         if (!house) material.emissiveColor.set(.045, .045, .04);
-        if (old.name === 'window') material.emissiveColor.set(.09, .13, .13);
+        if (old.name === 'window') { material.emissiveColor.set(.06, .09, .10); material.alpha = .22; material.backFaceCulling = false; }
         if (old.name === 'stain' && material.diffuseTexture) { material.useAlphaFromDiffuseTexture = true; material.diffuseTexture.hasAlpha = true; material.backFaceCulling = false; material.disableLighting = true; }
         if (old.name === 'cabinet-glass') { material.alpha = .13; material.backFaceCulling = false; }
         converted.set(old, material);
@@ -159,9 +166,6 @@ export class World {
     return this.data.rooms.find(r => r.floor === p.level && r.id !== 'F03' && r.rects.some(([x0, x1, z0, z1]) => p.x >= x0 && p.x <= x1 && p.z >= z0 && p.z <= z1)) ?? { id: 'OUT', name: 'Outside' };
   }
   update(p: Position, direction: Babylon.Vector3, settings: Settings, progress: Progress, flashlightOn: boolean, time: number): void {
-    this.flashlight.position.copyFrom(this.camera.position); this.flashlight.direction.copyFrom(direction);
-    this.flashlight.intensity = flashlightOn && progress.battery > 0 ? 2.3 * settings.brightness : 0;
-    this.sky.intensity = .23 * settings.brightness;
     const room = this.room(p).id, upper = p.y > 2, nearStairs = p.x > -1.4 && p.x < 3.7 && p.z > -8;
     for (const mesh of this.meshes) {
       const name = mesh.name;
@@ -172,13 +176,37 @@ export class World {
       .sort((a, b) => a.distance - b.distance).slice(0, settings.quality === 'low' ? 4 : 6).map(x => x.f);
     for (const f of this.fixtures) {
       f.light.setEnabled(nearest.includes(f));
+    }
+    this.lighting(direction, settings, progress, flashlightOn, time);
+    if (this.shadowQuality !== settings.quality) {
+      this.shadowQuality = settings.quality;
+      this.shadow.mapSize = settings.quality === 'low' ? 256 : 512;
+      this.shadow.usePercentageCloserFiltering = settings.quality !== 'low';
+    }
+    this.flashlight.shadowEnabled = true;
+  }
+  lighting(direction: Babylon.Vector3, settings: Settings, progress: Progress, flashlightOn: boolean, time: number): void {
+    this.flashlight.position.copyFrom(this.camera.position); this.flashlight.direction.copyFrom(direction);
+    const e = this.environment;
+    this.flashlight.intensity = flashlightOn && progress.battery > 0 ? 2.3 * settings.brightness * (1 - (e?.flashlightDip ?? 0)) : 0;
+    this.sky.intensity = (.20 + (e?.lightning ?? 0) * .23) * settings.brightness;
+    for (const f of this.fixtures) {
       if (!f.light.isEnabled()) continue;
       const d = f.definition;
-      const power = d.electric && this.kitchenBlackout && d.room === 'F05' && !settings.reducedFlicker ? 0 : d.electric && !progress.power ? .3 : 1;
-      const flicker = settings.reducedFlicker || !d.electric ? 1 : .90 + .10 * Math.sin(time * Math.PI * 2 / d.period + d.phase);
-      f.light.intensity = d.intensity * power * flicker * settings.brightness;
+      const power = d.electric && this.kitchenBlackout && d.room === 'F05' && !settings.reducedFlicker ? .06 : d.electric && !progress.power ? .3 : 1;
+      const flicker = settings.reducedFlicker || !d.electric ? 1 : .94 + .06 * Math.sin(time * Math.PI * 2 / d.period + d.phase);
+      const dim = d.electric ? (1 - this.atmosphere.proximity * .18) * (1 - (e?.affectedRoom === d.room ? e.lightDip : 0)) : 1 + (e?.lightning ?? 0) * 2;
+      f.light.intensity = d.intensity * power * flicker * dim * settings.brightness;
     }
-    this.flashlight.shadowEnabled = settings.quality !== 'low';
+    const gate = this.gates.get('front');
+    if (gate) gate.mesh.rotation.y = settings.reducedMotion ? 0 : e?.doorShudder ?? 0;
   }
-  dispose(): void { this.scene.dispose(); }
+  weather(p: Position): { rainExposure: number; window: Vec3 | null } {
+    const room = this.room(p).id, windows = this.data.windows.filter(w => w.room === room);
+    windows.sort((a, b) => Math.hypot(a.position[0] - p.x, a.position[2] - p.z) - Math.hypot(b.position[0] - p.x, b.position[2] - p.z));
+    const nearest = windows[0];
+    return { window: nearest ? [nearest.position[0], nearest.position[1] + .7, nearest.position[2]] : null,
+      rainExposure: room === 'U07' || room === 'OUT' ? 1 : nearest ? Math.max(.1, .65 - Math.hypot(nearest.position[0] - p.x, nearest.position[2] - p.z) * .08) : .04 };
+  }
+  dispose(): void { this.environment?.dispose(); this.scene.dispose(); }
 }

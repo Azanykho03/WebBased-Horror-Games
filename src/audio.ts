@@ -1,109 +1,331 @@
-import type { Position, Settings, Vec3 } from './types.ts';
+import type { Position, Settings, Vec3, InteractionId, Hotspot } from './types.ts';
 import { assetUrl, VOICE_AUDIO } from './config.ts';
 import type { VoiceCue } from './config.ts';
+import { clamp } from './horror.ts';
+import type { Atmosphere, HauntEvent, Soundscape, Surface } from './horror.ts';
 
-// The room palette and synthesis are adapted from the existing house inspection audio.
-const zones: Record<string, [string, string]> = {
-  F01: ['wood', 'Wood settles near the entrance.'], F02: ['piano', 'A faint piano note resonates.'],
-  F03: ['wood', 'A stair tread creaks.'], F04: ['flies', 'A fly circles the abandoned meal.'],
-  F05: ['water', 'Water drips into the sink.'], F06: ['static', 'The CRT murmurs with static.'],
-  F07: ['water', 'A slow drip echoes beyond the books.'], F08: ['glass', 'Glass rattles inside the cabinet.'],
-  F09: ['metal', 'The car body ticks in the dark.'], U00: ['wood', 'Timber creaks along the hallway.'],
-  U01: ['paper', 'Paper rustles by the old computer.'], U02: ['paper', 'A page brushes the desk.'],
-  U03: ['wood', 'A quiet knock inside the wardrobe.'], U04: ['fabric', 'Old fabric brushes against wood.'],
-  U05: ['water', 'A tap drips into the cracked basin.'], U06: ['fabric', 'Hanging clothes rustle.'],
-  U07: ['metal', 'A railing fitting taps in the wind.'],
-};
+type Bus = 'music' | 'ambience' | 'effects' | 'voice';
+type Effect = 'pickup' | 'latch' | 'sting' | 'hit' | 'flashlight' | 'detect' | 'objective' | 'throw' | 'land' | 'ui';
+type Playing = { stop: () => void };
+export interface AudioFrame {
+  atmosphere: Atmosphere; eye: Vec3; direction: Vec3; room: string;
+  ghost: Position | null; ghostOccluded: boolean; ghostMoving: boolean;
+  rainExposure: number; window: Vec3 | null;
+}
+type Note = { frequency?: number; endFrequency?: number; duration: number; volume: number; bus: Bus; scare?: boolean;
+  noise?: boolean; filter?: number; q?: number; wave?: OscillatorType; at?: Vec3; delay?: number; attack?: number; occluded?: boolean; ghost?: boolean; buffer?: AudioBuffer };
+
+// Original procedural palette, one mixer and one AudioContext, including optional
+// local dialogue. No downloaded tracks or copied recordings are used.
 export class AudioSystem {
   private context: AudioContext | null = null;
   private master!: GainNode;
-  private ambience!: GainNode;
+  private buses!: Record<Bus, GainNode>;
+  private musicDuck!: GainNode;
+  private ambientDuck!: GainNode;
   private wind!: GainNode;
-  private chase!: GainNode;
-  private breath!: GainNode;
+  private rain!: GainNode;
+  private rainFilter!: BiquadFilterNode;
+  private weatherPanner!: PannerNode;
+  private roomtone!: GainNode;
+  private ghostBreath!: GainNode;
+  private ghostFilter!: BiquadFilterNode;
   private ghostPanner!: PannerNode;
-  private recording: HTMLAudioElement | null = null;
-  private settings: Settings;
+  private reverb!: ConvolverNode;
+  private layers!: Record<'drone' | 'tension' | 'nearby' | 'chase' | 'ending', GainNode>;
+  private noise!: AudioBuffer;
+  private reverse!: AudioBuffer;
   private active = false;
-  private nextAmbient = 14;
+  private disposed = false;
+  private settings: Settings;
+  private playing = new Set<Playing>();
+  private permanent: AudioScheduledSourceNode[] = [];
+  private buffers = new Map<string, Promise<AudioBuffer | null>>();
+  private pending = new AbortController();
+  private voiceToken = 0;
+  private voicePlaying: Playing | null = null;
+  private lastEffect = new Map<string, number>();
+  private variants = new Map<string, number>();
+  private beat = .5;
+  private breath = 1;
+  private pulse = 0;
+  private ghostStep = 1;
+  private vocal = 18;
+  private phrase = 0;
+  private dialogue = 0;
+  private stateName: Soundscape = 'CALM_EXPLORATION';
+  private mixTick = 0;
   constructor(settings: Settings) { this.settings = settings; }
   get state(): string { return this.context?.state ?? 'uninitialized'; }
+  get diagnostics() { return { state: this.state, soundtrack: this.stateName, transientVoices: this.playing.size, permanentSources: this.permanent.length, active: this.active }; }
   start(): void {
+    if (this.disposed) return;
     this.active = true;
     try {
       if (!this.context) this.setup();
       void this.context?.resume().then(() => { if (!this.active) void this.context?.suspend(); }).catch(() => {});
-      if (this.recording && !this.recording.ended) void this.recording.play().catch(() => {});
-    } catch { /* Captions and play remain available if audio is unavailable. */ }
+    } catch { /* Captions and gameplay remain available without Web Audio. */ }
   }
-  pause(): void { this.active = false; this.recording?.pause(); void this.context?.suspend().catch(() => {}); }
-  reset(): void { this.nextAmbient = 14; this.voice(); if (this.context) { this.chase.gain.setValueAtTime(0, this.context.currentTime); this.breath.gain.setValueAtTime(0, this.context.currentTime); } }
+  pause(): void { this.active = false; void this.context?.suspend().catch(() => {}); }
+  reset(): void {
+    this.voiceToken++; this.voicePlaying = null;
+    for (const sound of [...this.playing]) sound.stop();
+    this.lastEffect.clear(); this.variants.clear();
+    this.beat = .5; this.breath = 1; this.pulse = this.phrase = this.dialogue = this.mixTick = 0; this.ghostStep = 1; this.vocal = 18;
+    this.stateName = 'CALM_EXPLORATION';
+    if (this.context) {
+      for (const gain of [this.wind, this.rain, this.roomtone, this.ghostBreath, ...Object.values(this.layers)]) {
+        gain.gain.cancelScheduledValues(this.context.currentTime); gain.gain.setValueAtTime(0, this.context.currentTime);
+      }
+      this.musicDuck.gain.setValueAtTime(1, this.context.currentTime); this.ambientDuck.gain.setValueAtTime(1, this.context.currentTime);
+    }
+  }
+  private gain(destination: AudioNode, volume = 0): GainNode {
+    const gain = this.context!.createGain(); gain.gain.value = volume; gain.connect(destination); return gain;
+  }
+  private panner(destination: AudioNode): PannerNode {
+    const p = this.context!.createPanner(); p.panningModel = 'HRTF'; p.distanceModel = 'inverse';
+    p.refDistance = 2.2; p.maxDistance = 28; p.rolloffFactor = 1.4; p.connect(destination); return p;
+  }
+  private place(p: PannerNode, at: Vec3): void { p.positionX.value = at[0]; p.positionY.value = at[1]; p.positionZ.value = at[2]; }
   private setup(): void {
-    const context = this.context = new AudioContext();
-    this.master = context.createGain(); this.master.connect(context.destination);
-    this.ambience = context.createGain(); this.ambience.connect(this.master);
-    const buffer = context.createBuffer(1, context.sampleRate * 4, context.sampleRate), samples = buffer.getChannelData(0);
-    let previous = 0;
-    for (let i = 0; i < samples.length; i++) { previous = (previous + (Math.random() * 2 - 1) * .015) / 1.015; samples[i] = previous; }
-    const source = context.createBufferSource(); source.buffer = buffer; source.loop = true;
-    const filter = context.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 380;
-    this.wind = context.createGain(); this.wind.gain.value = .38;
-    source.connect(filter); filter.connect(this.wind); this.wind.connect(this.ambience); source.start();
-    this.breath = context.createGain(); this.breath.gain.value = 0;
-    this.ghostPanner = context.createPanner(); this.ghostPanner.panningModel = 'HRTF';
-    this.ghostPanner.distanceModel = 'inverse'; this.ghostPanner.refDistance = 1.5; this.ghostPanner.maxDistance = 15; this.ghostPanner.rolloffFactor = 2;
-    source.connect(this.breath); this.breath.connect(this.ghostPanner); this.ghostPanner.connect(this.ambience);
-    const oscillator = context.createOscillator(); oscillator.type = 'sine'; oscillator.frequency.value = 49;
-    this.chase = context.createGain(); this.chase.gain.value = 0;
-    oscillator.connect(this.chase); this.chase.connect(this.master); oscillator.start();
+    const c = this.context = new AudioContext();
+    this.master = this.gain(c.destination, 0);
+    const limiter = c.createDynamicsCompressor();
+    limiter.threshold.value = -12; limiter.knee.value = 12; limiter.ratio.value = 8; limiter.attack.value = .003; limiter.release.value = .25;
+    limiter.connect(this.master);
+    this.buses = { music: this.gain(limiter), ambience: this.gain(limiter), effects: this.gain(limiter), voice: this.gain(limiter) };
+    this.musicDuck = this.gain(this.buses.music, 1); this.ambientDuck = this.gain(this.buses.ambience, 1);
+    this.noise = c.createBuffer(1, c.sampleRate * 8, c.sampleRate);
+    const samples = this.noise.getChannelData(0), edge = c.sampleRate * .035;
+    for (let i = 0; i < samples.length; i++) samples[i] = (Math.random() * 2 - 1) * Math.min(1, i / edge, (samples.length - 1 - i) / edge);
+    this.reverse = c.createBuffer(1, c.sampleRate * 2, c.sampleRate);
+    const texture = this.reverse.getChannelData(0);
+    for (let i = 0; i < texture.length; i++) { const t = i / texture.length; texture[i] = Math.sin(i / c.sampleRate * 2 * Math.PI * (90 + 12 * t)) * Math.sin(Math.PI * t) ** 3 * t; }
+    const noise = c.createBufferSource(); noise.buffer = this.noise; noise.loop = true; noise.start(); this.permanent.push(noise);
+    const bed = (frequency: number, q: number, destination: AudioNode) => {
+      const filter = c.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = frequency; filter.Q.value = q;
+      const gain = this.gain(destination); noise.connect(filter); filter.connect(gain); return { gain, filter };
+    };
+    this.wind = bed(190, .6, this.ambientDuck).gain;
+    this.roomtone = bed(72, 1.6, this.ambientDuck).gain;
+    this.weatherPanner = this.panner(this.ambientDuck); this.weatherPanner.refDistance = 7; this.weatherPanner.rolloffFactor = .4;
+    const rain = bed(1800, .45, this.weatherPanner); this.rain = rain.gain; this.rainFilter = rain.filter;
+    this.ghostPanner = this.panner(this.buses.voice);
+    this.ghostFilter = c.createBiquadFilter(); this.ghostFilter.type = 'lowpass'; this.ghostFilter.frequency.value = 2200; this.ghostFilter.connect(this.ghostPanner);
+    this.ghostBreath = bed(620, 1.8, this.ghostFilter).gain;
+    const reverb = this.reverb = c.createConvolver(), impulse = c.createBuffer(2, c.sampleRate * .85, c.sampleRate);
+    for (let channel = 0; channel < 2; channel++) {
+      const data = impulse.getChannelData(channel);
+      for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / data.length, 3) * .13;
+    }
+    reverb.buffer = impulse; this.ghostPanner.connect(reverb); reverb.connect(this.gain(this.buses.voice, .16));
+    this.layers = { drone: this.gain(this.musicDuck), tension: this.gain(this.musicDuck), nearby: this.gain(this.musicDuck), chase: this.gain(this.musicDuck), ending: this.gain(this.musicDuck) };
+    const layer = (name: keyof typeof this.layers, frequencies: number[], wave: OscillatorType) => {
+      const filter = c.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = name === 'chase' ? 460 : 900; filter.connect(this.layers[name]);
+      for (const f of frequencies) { const oscillator = c.createOscillator(); oscillator.frequency.value = f; oscillator.type = wave; oscillator.connect(filter); oscillator.start(); this.permanent.push(oscillator); }
+    };
+    layer('drone', [49, 73.55], 'sine'); layer('tension', [98, 103.7], 'triangle'); layer('nearby', [196, 207.6], 'sine');
+    layer('chase', [49, 50.3], 'sawtooth'); layer('ending', [130.81, 196], 'sine');
     this.apply(this.settings);
+    // Only configured critical clips are prefetched. Empty placeholders make no requests.
+    for (const cue of ['kitchen-ghost', 'spotted', 'scream'] as const) { const path = this.path(cue); if (path) void this.load(path); }
   }
   apply(settings: Settings): void {
+    const cleanChanged = this.settings.cleanDialogue !== settings.cleanDialogue;
     this.settings = settings;
+    if (cleanChanged) { this.voiceToken++; this.voicePlaying?.stop(); this.voicePlaying = null; }
     if (!this.context) return;
-    this.master.gain.setTargetAtTime(settings.volume * .5, this.context.currentTime, .1);
-    this.ambience.gain.setTargetAtTime(settings.ambience, this.context.currentTime, .1);
-    if (this.recording) this.recording.volume = settings.volume;
+    const t = this.context.currentTime;
+    this.master.gain.setTargetAtTime(clamp(settings.volume) * .7, t, .08);
+    for (const key of ['music', 'ambience', 'effects', 'voice'] as const) this.buses[key].gain.setTargetAtTime(clamp(settings[key]), t, .08);
   }
-  voice(cue?: VoiceCue): void {
-    this.recording?.pause(); this.recording = null;
-    if (!cue || !this.active) return;
-    const entry = VOICE_AUDIO[cue], path = this.settings.cleanDialogue ? entry?.clean : entry?.normal;
-    if (!path) return;
-    this.recording = new Audio(assetUrl(path)); this.recording.volume = this.settings.volume;
-    void this.recording.play().catch(() => { /* The subtitle remains usable. */ });
+  private path(cue: VoiceCue): string | undefined { const entry = VOICE_AUDIO[cue]; return this.settings.cleanDialogue ? entry?.clean : entry?.normal; }
+  private load(path: string): Promise<AudioBuffer | null> {
+    if (!this.buffers.has(path)) this.buffers.set(path, fetch(assetUrl(path), { signal: this.pending.signal })
+      .then(response => { if (!response.ok) throw new Error(`Audio ${response.status}`); return response.arrayBuffer(); })
+      .then(bytes => this.context!.decodeAudioData(bytes)).catch(() => null));
+    return this.buffers.get(path)!;
   }
-  effect(type: 'step' | 'pickup' | 'latch' | 'sting' | 'hit'): void {
-    const frequency = { step: 85, pickup: 523, latch: 180, sting: 65, hit: 130 }[type];
-    this.tone(frequency, type === 'sting' ? .9 : .22, type === 'sting' ? .16 : .09);
+  voice(cue?: VoiceCue, at?: Vec3, level = 1, occluded = false): void {
+    const token = ++this.voiceToken; this.voicePlaying?.stop(); this.voicePlaying = null;
+    if (!cue || !this.active || !this.context) return;
+    this.dialogue = 3;
+    const path = this.path(cue), ghost = cue !== 'kitchen-player' && cue !== 'recognition';
+    const fallback = () => {
+      // Formant/hum placeholder, not spoken dialogue. Supplied clips replace it.
+      if (!ghost) return;
+      const parts: (Playing | null)[] = [], length = cue.startsWith('whisper') ? 2 : cue === 'cry' ? 2.6 : cue === 'hum' ? 3 : .9;
+      for (let i = 0; i < (cue === 'laugh' ? 3 : 1); i++) parts.push(this.note({ noise: true, filter: cue === 'scream' ? 1550 : cue === 'cry' ? 550 : 740 + i * 60, q: 2.5, duration: cue === 'laugh' ? .24 : length, delay: i * .3, volume: (cue === 'scream' ? .19 : cue === 'hum' ? .04 : .11) * level, attack: .16, bus: 'voice', at, ghost: !at, occluded, scare: cue === 'scream' }));
+      parts.push(this.note({ frequency: cue === 'hum' ? 196 : 174.6, endFrequency: cue === 'cry' ? 116.5 : 147, duration: length, volume: .023 * level, attack: .22, bus: 'voice', at, ghost: !at, occluded, scare: cue === 'scream' }));
+      this.voicePlaying = { stop: () => { for (const part of parts) part?.stop(); } };
+    };
+    if (!path) { fallback(); return; }
+    void this.load(path).then(buffer => {
+      if (token !== this.voiceToken || !this.active || this.disposed) return;
+      if (!buffer) { fallback(); return; }
+      this.dialogue = Math.min(20, buffer.duration);
+      this.voicePlaying = this.note({ buffer, duration: buffer.duration, volume: .75 * level, bus: 'voice', at, ghost: ghost && !at, attack: .01, occluded });
+    });
   }
-  private tone(frequency: number, duration: number, volume: number): void {
+  private note(options: Note): Playing | null {
+    const c = this.context;
+    if (!c || !this.active || c.state !== 'running' || this.playing.size >= 20) return null;
+    const t = c.currentTime + (options.delay ?? 0), duration = Math.max(.04, options.duration), end = t + duration;
+    const nodes: AudioNode[] = [], gain = c.createGain(); nodes.push(gain);
+    const volume = options.volume * (this.settings.gentleScares && (options.scare || this.stateName === 'JUMPSCARE' || options.volume > .2) ? .4 : 1);
+    gain.gain.setValueAtTime(0, c.currentTime); gain.gain.setValueAtTime(.0001, t);
+    gain.gain.linearRampToValueAtTime(Math.max(.0001, volume), t + Math.min(options.attack ?? .008, duration * .45));
+    // Recorded lines retain their level until a short release; synthesized hits decay.
+    if (options.buffer && options.bus === 'voice') gain.gain.setValueAtTime(Math.max(.0001, volume), Math.max(t + .02, end - .045));
+    gain.gain.exponentialRampToValueAtTime(.0001, end);
+    let destination: AudioNode = options.bus === 'music' ? this.musicDuck : options.bus === 'ambience' ? this.ambientDuck : this.buses[options.bus];
+    if (options.ghost) destination = this.ghostFilter;
+    else if (options.at) {
+      const p = this.panner(destination); this.place(p, options.at); nodes.push(p); destination = p;
+      if (options.bus === 'voice') { const send = this.gain(this.reverb, .08 + Math.random() * .1); p.connect(send); nodes.push(send); }
+    }
+    if (options.occluded) { const low = c.createBiquadFilter(); low.type = 'lowpass'; low.frequency.value = 700; low.connect(destination); nodes.push(low); destination = low; }
+    gain.connect(destination);
+    let source: AudioBufferSourceNode | OscillatorNode;
+    if (options.noise || options.buffer) { const buffer = c.createBufferSource(); buffer.buffer = options.buffer ?? this.noise; buffer.loop = !options.buffer; source = buffer; }
+    else {
+      const oscillator = c.createOscillator(); oscillator.type = options.wave ?? 'sine'; oscillator.frequency.setValueAtTime(options.frequency ?? 110, t);
+      if (options.endFrequency) oscillator.frequency.exponentialRampToValueAtTime(options.endFrequency, end); source = oscillator;
+    }
+    if (options.filter) {
+      const filter = c.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = options.filter; filter.Q.value = options.q ?? .8;
+      source.connect(filter); filter.connect(gain); nodes.push(filter);
+    } else source.connect(gain);
+    let ended = false;
+    const cleanup = () => { if (ended) return; ended = true; source.disconnect(); for (const node of nodes) node.disconnect(); this.playing.delete(handle); };
+    const handle: Playing = { stop: () => { try { source.stop(); } catch { /* Already stopped. */ } cleanup(); } };
+    this.playing.add(handle); source.onended = cleanup;
+    if (options.noise && !options.buffer) (source as AudioBufferSourceNode).start(t, Math.random() * 5); else source.start(t);
+    source.stop(end + .025); return handle;
+  }
+  private ready(key: string, cooldown: number): boolean {
+    if (!this.active || !this.context || this.context.state !== 'running') return false;
+    const now = this.context.currentTime;
+    if (now - (this.lastEffect.get(key) ?? -Infinity) < cooldown) return false;
+    this.lastEffect.set(key, now); return true;
+  }
+  footstep(surface: Surface, sprint: boolean, at?: Vec3): void {
+    if (!this.ready('step', .12)) return;
+    const previous = this.variants.get(surface) ?? -1, variant = (previous + 1 + Math.floor(Math.random() * 3)) % 4; this.variants.set(surface, variant);
+    const frequencies = { wood: 145, tile: 820, concrete: 430, metal: 1150, dirt: 280 }, scale = sprint ? 1 : .65, variation = .88 + variant * .08;
+    this.note({ noise: true, filter: frequencies[surface] * variation, q: surface === 'wood' ? 2 : .6, duration: .16 + variant * .016, volume: .22 * scale, bus: 'effects', at });
+    this.note({ frequency: (surface === 'wood' ? 85 : 120) * variation, endFrequency: 48, duration: .11, volume: .085 * scale, bus: 'effects', at });
+    if (surface === 'wood' && variant === 2) this.note({ noise: true, filter: 240, q: 12, duration: .37, volume: .045, bus: 'effects', at });
+  }
+  effect(type: Effect, at?: Vec3): void {
+    if (!this.ready(type, type === 'sting' ? 2.5 : type === 'detect' ? 5 : .12)) return;
+    const tone = (frequency: number, duration: number, volume: number, delay = 0) => this.note({ frequency, endFrequency: frequency * .7, duration, volume, bus: 'effects', at, delay, scare: type === 'sting' });
+    if (type === 'sting') { this.note({ noise: true, filter: 900, q: .65, duration: .65, volume: .24, bus: 'effects', scare: true }); tone(55, .9, .17); tone(277, .42, .035); this.dialogue = 1; return; }
+    if (type === 'detect') { tone(146.8, .6, .095); tone(155.6, .5, .06); return; }
+    if (type === 'objective') { tone(196, 1.5, .045); tone(207.6, 1.2, .025, .22); return; }
+    if (type === 'pickup') { tone(740, .22, .05); tone(1113, .16, .02, .06); return; }
+    if (type === 'ui') { tone(220, .09, .026); return; }
+    const filter = { latch: 350, hit: 160, flashlight: 2100, throw: 900, land: 180 }[type];
+    this.note({ noise: true, filter, duration: type === 'throw' ? .23 : type === 'flashlight' ? .045 : .22, volume: type === 'flashlight' ? .12 : .2, bus: 'effects', at });
+    if (type !== 'flashlight' && type !== 'throw') tone(85, .15, .08);
+  }
+  interaction(id: InteractionId, kind: Hotspot['kind'], changed: boolean, at: Vec3): void {
+    if (!changed && kind !== 'door' && id !== 'cabinet') return;
+    if (!this.ready(`interaction-${id}`, .35)) return;
+    if (kind === 'door') { this.effect('latch', at); if (changed) this.note({ noise: true, filter: 240, q: 14, duration: 1.2, volume: .16, attack: .13, bus: 'effects', at }); }
+    else if (id === 'cabinet') { this.note({ noise: true, filter: changed ? 500 : 1900, q: 4, duration: changed ? .8 : .24, volume: .13, bus: 'effects', at }); if (changed) this.effect('latch', at); }
+    else if (id === 'breaker') { this.effect('latch', at); this.note({ frequency: 60, duration: .75, volume: .055, bus: 'effects', at }); }
+    else if (id === 'note' || id === 'letter') this.note({ noise: true, filter: 2700, duration: .35, volume: .11, bus: 'effects', at });
+    else if (id === 'exit-key' || id === 'locket' || id === 'fuse') this.effect('pickup', at);
+    else if (id === 'music-box') for (const [i, frequency] of [523.25, 493.88, 369.99].entries()) this.note({ frequency, duration: .9, volume: .06, bus: 'effects', at, delay: i * .28 });
+    else this.note({ noise: true, filter: 700, duration: .18, volume: .16, bus: 'effects', at });
+  }
+  event(event: HauntEvent, occluded = false): void {
+    const at = event.position, volume = event.strength;
+    const noise = (filter: number, duration: number, scale: number, delay = 0, q = 1) => this.note({ noise: true, filter, duration, volume: scale * volume, bus: 'ambience', at, delay, q, occluded });
+    if (event.kind === 'whisper') { this.voice(event.voice, at, event.strength, occluded); return; }
+    if (event.kind === 'silence' || event.kind === 'light' || event.kind === 'shadow') return;
+    if (event.kind === 'thunder') { noise(85, 3.5, .7, event.delay); noise(220, 1.8, .25, event.delay); return; }
+    if (['piano', 'drip', 'glass', 'metal'].includes(event.kind)) {
+      const base = ({ piano: 130.81, drip: 920, glass: 1661, metal: 277 } as Record<string, number>)[event.kind];
+      for (const harmonic of [1, 2.01, 3.97]) this.note({ frequency: base * harmonic, endFrequency: event.kind === 'drip' ? base * harmonic * .5 : undefined, duration: event.kind === 'drip' ? .25 : 1.7, volume: .055 * volume / harmonic, bus: 'ambience', at, occluded });
+      return;
+    }
+    if (event.kind === 'paper') { noise(2400, .8, .13); return; }
+    if (event.kind === 'footsteps' || event.kind === 'knock') for (let i = 0; i < 3; i++) noise(event.kind === 'knock' ? 380 : 140, .17, .3, i * (event.kind === 'knock' ? .32 : .62), 3);
+    else if (event.kind === 'window') { noise(1700, .65, .2); noise(830, .4, .16, .23, 12); }
+    else if (event.kind === 'radio') { noise(1900, 3, .2); this.note({ frequency: 830, endFrequency: 510, duration: 1.4, volume: .018, bus: 'ambience', at }); }
+    else if (event.kind === 'object' || event.kind === 'door') { noise(160, .3, .45); noise(320, .8, .14, .2, 9); }
+    else if (event.kind === 'apparition') this.note({ buffer: this.reverse, duration: 2, volume: .08, bus: 'voice', at });
+    else noise(event.kind === 'curtain' ? 1400 : event.kind === 'scratch' ? 2500 : 190, 1.6, .14, 0, event.kind === 'creak' ? 16 : 2);
+  }
+  update(dt: number, frame: AudioFrame): void {
     const c = this.context;
     if (!c || !this.active || c.state !== 'running') return;
-    const osc = c.createOscillator(), gain = c.createGain(), t = c.currentTime;
-    osc.type = 'triangle'; osc.frequency.setValueAtTime(frequency, t); osc.frequency.exponentialRampToValueAtTime(frequency * .55, t + duration);
-    gain.gain.setValueAtTime(.0001, t); gain.gain.exponentialRampToValueAtTime(volume, t + .02); gain.gain.exponentialRampToValueAtTime(.0001, t + duration);
-    osc.connect(gain); gain.connect(this.master); osc.start(); osc.stop(t + duration + .05);
-    osc.onended = () => { osc.disconnect(); gain.disconnect(); };
-  }
-  update(dt: number, room: string, chasing: boolean, eye: Vec3, direction: Vec3, ghost: Position | null, caption: (text: string) => void): void {
-    const c = this.context;
-    if (!c || !this.active) return;
-    this.wind.gain.setTargetAtTime(room === 'U07' ? .75 : .32, c.currentTime, .5);
-    this.chase.gain.setTargetAtTime(chasing ? .11 : 0, c.currentTime, .35);
+    const a = frame.atmosphere, old = this.stateName; this.stateName = a.state;
+    if (old !== a.state && a.state === 'CHASE') this.pulse = 0;
+    if (old !== a.state && a.state === 'CORAZON_DETECTED_PLAYER') this.effect('detect');
+    this.dialogue = Math.max(0, this.dialogue - dt);
     const listener = c.listener;
-    listener.positionX.value = eye[0]; listener.positionY.value = eye[1]; listener.positionZ.value = eye[2];
-    listener.forwardX.value = direction[0]; listener.forwardY.value = direction[1]; listener.forwardZ.value = direction[2];
-    listener.upX.value = 0; listener.upY.value = 1; listener.upZ.value = 0;
-    this.breath.gain.setTargetAtTime(ghost ? .8 : 0, c.currentTime, .3);
-    if (ghost) { this.ghostPanner.positionX.value = ghost.x; this.ghostPanner.positionY.value = ghost.y + 1.4; this.ghostPanner.positionZ.value = ghost.z; }
-    this.nextAmbient -= dt;
-    if (this.nextAmbient > 0) return;
-    this.nextAmbient = 18 + Math.random() * 20;
-    const [type, cue] = zones[room] ?? zones.F01;
-    caption(cue);
-    const frequency = ({ piano: 130.81, water: 880, glass: 1661, metal: 277, wood: 110, flies: 220, static: 1400, paper: 2400, fabric: 680 } as Record<string, number>)[type];
-    this.tone(frequency, 1.7, .045 * this.settings.ambience);
+    if (listener.positionX) {
+      listener.positionX.value = frame.eye[0]; listener.positionY.value = frame.eye[1]; listener.positionZ.value = frame.eye[2];
+      listener.forwardX.value = frame.direction[0]; listener.forwardY.value = frame.direction[1]; listener.forwardZ.value = frame.direction[2];
+      const horizontal = Math.hypot(frame.direction[0], frame.direction[2]) || 1;
+      listener.upX.value = -frame.direction[0] * frame.direction[1] / horizontal; listener.upY.value = horizontal; listener.upZ.value = -frame.direction[2] * frame.direction[1] / horizontal;
+    } else { listener.setPosition(...frame.eye); listener.setOrientation(...frame.direction, 0, 1, 0); }
+    if (frame.ghost) this.place(this.ghostPanner, [frame.ghost.x, frame.ghost.y + 1.4, frame.ghost.z]);
+    this.place(this.weatherPanner, frame.window ?? [frame.eye[0], frame.eye[1] + 5, frame.eye[2]]);
+    this.mixTick -= dt;
+    const chase = a.state === 'CHASE', scare = a.state === 'JUMPSCARE', ending = a.state === 'ENDING', over = a.state === 'GAME_OVER';
+    if (this.mixTick <= 0 || old !== a.state) {
+      this.mixTick = .1;
+      const set = (gain: GainNode, value: number, fade = .7) => gain.gain.setTargetAtTime(value, c.currentTime, fade);
+      set(this.musicDuck, (scare ? .08 : this.dialogue > 0 ? .42 : 1) * (1 - a.silence * .92), scare ? .025 : 1.4);
+      set(this.ambientDuck, (scare ? .08 : chase ? .35 : 1) * (1 - a.silence * .97), scare ? .025 : 1.8);
+      set(this.wind, (.085 + frame.rainExposure * .07) * (.8 + Math.sin(c.currentTime * .16) * .2));
+      set(this.rain, .07 + frame.rainExposure * .19); this.rainFilter.frequency.setTargetAtTime(650 + frame.rainExposure * 2100, c.currentTime, 1);
+      set(this.roomtone, .1); set(this.layers.drone, ending ? .005 : over ? .025 : .012);
+      set(this.layers.tension, a.state === 'UNEASY' ? .025 : a.state === 'CORAZON_DETECTED_PLAYER' ? .065 : a.state === 'CORAZON_NEARBY' ? .035 : 0, 1.6);
+      set(this.layers.nearby, a.state === 'CORAZON_NEARBY' ? .015 : a.state === 'HIDING' ? .004 : 0, 2);
+      set(this.layers.chase, chase ? .027 : 0, chase ? .3 : 2.2); set(this.layers.ending, ending ? .027 : 0, 2);
+      set(this.ghostBreath, frame.ghost && !ending && !over ? (.04 + .08 * a.proximity) * (.55 + .45 * Math.sin(c.currentTime * 1.1) ** 2) : 0);
+      this.ghostFilter.frequency.setTargetAtTime(frame.ghostOccluded ? 550 : 2600, c.currentTime, .25);
+    }
+    if (ending || over) {
+      if (old !== a.state) { this.voiceToken++; this.voicePlaying?.stop(); this.phrase = 0; this.pulse = 0; }
+      this.pulse -= dt;
+      if (ending && this.pulse <= 0 && this.phrase < 8) { this.pulse = 1.8; this.note({ frequency: [261.63, 293.66, 196, 220][this.phrase++ % 4], duration: 3, volume: .065, attack: .1, bus: 'music' }); }
+      return;
+    }
+    this.beat -= dt; this.breath -= dt; this.pulse -= dt; this.ghostStep -= dt; this.vocal -= dt;
+    const fear = a.fear, exertion = a.exertion, hiding = a.state === 'HIDING';
+    if (!scare && this.beat <= 0) {
+      this.beat = 60 / (58 + fear * 83 + exertion * 12);
+      if (fear > .12) for (let i = 0; i < 2; i++) this.note({ frequency: i ? 48 : 63, endFrequency: 36, duration: .14, volume: (.02 + fear * .095) * (i ? .7 : 1) * (hiding ? 1.12 : 1), bus: 'effects', delay: i * .14 });
+    }
+    if (!scare && this.breath <= 0) {
+      this.breath = 3.8 - Math.max(fear, exertion) * 2.25;
+      const effort = Math.max(exertion, fear * .85);
+      if (effort > .14) this.note({ noise: true, filter: 630 + effort * 310, q: 1.4, duration: .9, attack: .22, volume: .12 * effort * (hiding ? .75 : 1), bus: 'effects' });
+    }
+    if (this.pulse <= 0) {
+      this.pulse = chase ? .43 : 8 + Math.random() * 10;
+      if (chase) { this.note({ frequency: this.phrase++ % 4 === 0 ? 73.4 : 49, endFrequency: 38, duration: .28, volume: .15, bus: 'music' }); this.note({ noise: true, filter: 1500, duration: .08, volume: .07, bus: 'music' }); }
+      else if (a.state === 'UNEASY' || a.state === 'CORAZON_NEARBY') this.note({ buffer: this.reverse, duration: 2, volume: .055, bus: 'music' });
+    }
+    if (this.ghostStep <= 0) {
+      this.ghostStep = chase ? .55 : 1.3 + Math.random() * 1.4;
+      if (frame.ghost && frame.ghostMoving && Math.random() > .32) this.note({ noise: true, filter: 390, duration: .7, volume: .13, bus: 'voice', ghost: true, attack: .09 });
+    }
+    if (this.vocal <= 0) {
+      this.vocal = 22 + Math.random() * 26;
+      if (frame.ghost && a.proximity > .12 && this.dialogue === 0 && !scare) this.voice(chase ? 'laugh' : Math.random() < .5 ? 'hum' : 'cry');
+    }
   }
-  dispose(): void { this.active = false; this.voice(); void this.context?.close(); }
+  dispose(): void {
+    this.disposed = true; this.active = false; this.pending.abort(); this.reset();
+    for (const source of this.permanent) { try { source.stop(); } catch { /* Already stopped. */ } source.disconnect(); }
+    this.permanent = []; this.buffers.clear(); void this.context?.close().catch(() => {}); this.context = null;
+  }
 }

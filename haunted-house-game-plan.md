@@ -1,4 +1,4 @@
-# BALAY: Ayaw Pagsulod
+# Balay ni Corazon
 
 ## 1. Project overview
 
