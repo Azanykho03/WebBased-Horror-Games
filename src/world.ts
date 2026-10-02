@@ -7,6 +7,7 @@ import { worldHit } from './geometry.ts';
 import { HauntedEnvironment } from './haunting.ts';
 import { calmAtmosphere } from './horror.ts';
 import type { Atmosphere } from './horror.ts';
+import { AbandonedInterior } from './decay.ts';
 
 export const B = (window as unknown as { BABYLON: typeof Babylon }).BABYLON;
 export const vector = (p: Vec3) => B.Vector3.FromArray(p);
@@ -29,20 +30,22 @@ export class World {
   private shadowQuality = '';
   kitchenBlackout = false;
   environment!: HauntedEnvironment;
+  interior?: AbandonedInterior;
   atmosphere: Atmosphere = calmAtmosphere();
 
   constructor(engine: Babylon.Engine) {
     this.scene = new B.Scene(engine);
     this.scene.useRightHandedSystem = true;
-    this.scene.clearColor = new B.Color4(.016, .025, .022, 1);
+    this.scene.clearColor = new B.Color4(.012, .017, .018, 1);
     this.scene.fogMode = B.Scene.FOGMODE_EXP2;
-    this.scene.fogDensity = .014;
-    this.scene.fogColor = new B.Color3(.025, .037, .032);
+    this.scene.fogDensity = .018;
+    this.scene.fogColor = new B.Color3(.029, .034, .033);
     this.camera = new B.FreeCamera('player-camera', vector([0, 1.65, -2.5]), this.scene);
     this.camera.minZ = .045; this.camera.maxZ = 80; this.camera.fov = 1.16;
     this.scene.activeCamera = this.camera;
     this.sky = new B.HemisphericLight('ambient', vector([.1, 1, .2]), this.scene);
-    this.sky.groundColor = new B.Color3(.20, .25, .23);
+    this.sky.diffuse.set(.74, .8, .83);
+    this.sky.groundColor = new B.Color3(.14, .16, .14);
     this.flashlight = new B.SpotLight('player-flashlight', this.camera.position.clone(), vector([0, 0, -1]), 1.08, 18, this.scene);
     this.flashlight.diffuse = new B.Color3(.94, .90, .74); this.flashlight.range = 14;
     this.shadow = new B.ShadowGenerator(512, this.flashlight);
@@ -66,9 +69,12 @@ export class World {
       mesh.freezeWorldMatrix(); mesh.receiveShadows = true;
       if (!/floor|ceiling|stain|roof/.test(mesh.name)) this.shadow.addShadowCaster(mesh);
     }
+    report('Settling dust in the abandoned rooms', 49);
+    this.interior = new AbandonedInterior(this);
+    this.meshes.push(...this.interior.meshes);
     report('Preparing the rooms and lights', 55);
     for (const definition of this.data.lights) this.addLight(definition);
-    for (const [i, w] of this.data.windows.entries()) this.addLight({ id: `window-${i}`, room: w.room, position: [w.position[0], w.position[1] + w.height * .6, w.position[2]], intensity: .45, range: 4.5, color: [.44, .59, .63], period: 18, phase: i, electric: false });
+    for (const [i, w] of this.data.windows.entries()) this.addLight({ id: `window-${i}`, room: w.room, position: [w.position[0], w.position[1] + w.height * .6, w.position[2]], intensity: .58, range: 4.5, color: [.49, .63, .71], period: 18, phase: i, electric: false });
     this.createGate('front', 'outside-front--F01');
     this.createGate('exit', 'F08--outside-escape');
     this.createGate('bedroom', 'U00--U06');
@@ -177,6 +183,7 @@ export class World {
     for (const f of this.fixtures) {
       f.light.setEnabled(nearest.includes(f));
     }
+    this.interior?.update(p, settings);
     this.lighting(direction, settings, progress, flashlightOn, time);
     if (this.shadowQuality !== settings.quality) {
       this.shadowQuality = settings.quality;
@@ -189,14 +196,14 @@ export class World {
     this.flashlight.position.copyFrom(this.camera.position); this.flashlight.direction.copyFrom(direction);
     const e = this.environment;
     this.flashlight.intensity = flashlightOn && progress.battery > 0 ? 2.3 * settings.brightness * (1 - (e?.flashlightDip ?? 0)) : 0;
-    this.sky.intensity = (.20 + (e?.lightning ?? 0) * .23) * settings.brightness;
+    this.sky.intensity = (.19 + (e?.lightning ?? 0) * .23) * settings.brightness;
     for (const f of this.fixtures) {
       if (!f.light.isEnabled()) continue;
       const d = f.definition;
       const power = d.electric && this.kitchenBlackout && d.room === 'F05' && !settings.reducedFlicker ? .06 : d.electric && !progress.power ? .3 : 1;
       const flicker = settings.reducedFlicker || !d.electric ? 1 : .94 + .06 * Math.sin(time * Math.PI * 2 / d.period + d.phase);
       const dim = d.electric ? (1 - this.atmosphere.proximity * .18) * (1 - (e?.affectedRoom === d.room ? e.lightDip : 0)) : 1 + (e?.lightning ?? 0) * 2;
-      f.light.intensity = d.intensity * power * flicker * dim * settings.brightness;
+      f.light.intensity = d.intensity * power * flicker * dim * settings.brightness * (d.electric ? .82 : 1);
     }
     const gate = this.gates.get('front');
     if (gate) gate.mesh.rotation.y = settings.reducedMotion ? 0 : e?.doorShudder ?? 0;

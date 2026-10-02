@@ -112,6 +112,28 @@ Babylon.js 9.28.0 is Apache-2.0; its license is preserved with the vendor files.
 
 ## Validation
 
+The abandoned interior uses the existing house and furniture with an additional
+room-batched decay layer (`src/decay.ts`). Shared 512px surface maps and one 1024px
+decal atlas add weathered timber, damp plaster, dust, mold, cracks, cobwebs, torn
+curtains and fabric. Selected chair backs, a cabinet panel and the coffee-table
+top are damaged in memory; the source GLB and collision manifest remain intact.
+Debris gathers beneath damage and beside storage rather than across walkways.
+The central passages, stairs, door approaches, hiding spots and objective pickups
+have explicit clearance rules.
+
+Standard graphics includes subtle, depth-tested moonlight sheets and up to 48
+flashlight dust motes. Low/Android Auto keeps the decay materials and props, uses
+12 motes, disables the light sheets, and reduces decoration visibility distance.
+No additional shadow maps or real-time lights are allocated. Reduced motion holds
+dust drift still, and the existing reduced-flicker setting still governs light events.
+The apparent floorboard gaps are shallow visual recesses over the original safe floor.
+
+During development, open `http://127.0.0.1:5173/tests/interior-review.html` for fixed
+views of twelve rooms, Standard/Low comparison, flashlight and power toggles,
+rendering diagnostics and PNG export. This review page is outside the production
+build and does not change saves or gameplay. See
+[tests/decay-validation.md](tests/decay-validation.md) for the acceptance record.
+
 `npm test` exercises objective order, save validation, all item approaches, both
 floors, gates, ghost perception/navigation, battery/stamina, projectile collision
 and recovery. `npm run build` includes strict TypeScript checking.

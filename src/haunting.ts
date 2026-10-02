@@ -3,6 +3,7 @@ import { B, vector } from './world.ts';
 import type { World } from './world.ts';
 import type { HauntEvent } from './horror.ts';
 import type { Position, Settings, Vec3 } from './types.ts';
+import { worldHit } from './geometry.ts';
 
 // Temporary, non-colliding details layered onto the existing room/material batches.
 // The original furniture, colliders, textures and GLBs stay intact.
@@ -15,7 +16,9 @@ export class HauntedEnvironment {
   private drops: { start: Babylon.Vector3; end: Babylon.Vector3; x: number; z: number; y: number; height: number; phase: number; room: string }[] = [];
   private lines: Babylon.Vector3[][];
   private dust: Babylon.Mesh;
-  private dustMatrices = new Float32Array(32 * 16);
+  private dustMatrices = new Float32Array(48 * 16);
+  private dustSightTick = 0;
+  private dustReach = 4;
   private matrix = B.Matrix.Identity();
   private dustPosition = new B.Vector3();
   private apparition: Babylon.TransformNode | null;
@@ -38,7 +41,7 @@ export class HauntedEnvironment {
     this.lines = this.drops.map(d => [d.start, d.end]);
     this.rain = B.MeshBuilder.CreateLineSystem('exterior-rain', { lines: this.lines, updatable: true }, world.scene);
     this.rain.color.set(.48, .63, .7); this.rain.alpha = .4; this.rain.isPickable = false; this.rain.alwaysSelectAsActiveMesh = true;
-    this.dust = B.MeshBuilder.CreateSphere('flashlight-dust', { diameter: .012, segments: 3 }, world.scene);
+    this.dust = B.MeshBuilder.CreateSphere('flashlight-dust', { diameter: .006, segments: 3 }, world.scene);
     const dust = new B.StandardMaterial('dust-motes', world.scene); dust.disableLighting = true; dust.emissiveColor.set(.46, .43, .32); dust.alpha = .23;
     this.dust.material = dust; this.dust.isPickable = false; this.dust.alwaysSelectAsActiveMesh = true;
     this.dust.thinInstanceSetBuffer('matrix', this.dustMatrices, 16, false);
@@ -101,11 +104,20 @@ export class HauntedEnvironment {
       d.start.set(d.x, y, d.z); d.end.set(d.x + (visible ? .028 : 0), y - (visible ? .21 : 0), d.z);
     }
     B.MeshBuilder.CreateLineSystem('exterior-rain', { lines: this.lines, instance: this.rain });
-    this.dust.setEnabled(flashlight && !low);
-    if (flashlight && !low) {
-      for (let i = 0; i < 32; i++) {
-        const depth = 1 + (i * .317 % 1) * 3;
-        this.dustPosition.set(p.x + direction.x * depth + Math.sin(i * 8.73 + time * .09) * .65, p.y + 1.65 + direction.y * depth + Math.sin(i * 3.12 + time * .13) * .55, p.z + direction.z * depth + Math.cos(i * 5.37 + time * .09) * .65);
+    this.dust.setEnabled(flashlight);
+    if (flashlight) {
+      this.dustSightTick -= dt;
+      if (this.dustSightTick <= 0) {
+        this.dustSightTick = .2;
+        const eye: Vec3 = [p.x, p.y + 1.65, p.z], end: Vec3 = [eye[0] + direction.x * 4.3, eye[1] + direction.y * 4.3, eye[2] + direction.z * 4.3];
+        this.dustReach = Math.max(.12, Math.min(4, (worldHit(eye, end, this.world.colliders) ?? 1) * 4.3 - .2));
+      }
+      const count = low ? 12 : 48, drift = settings.reducedMotion ? 0 : time;
+      this.dust.setEnabled(this.dustReach > .75);
+      this.dust.thinInstanceCount = count;
+      for (let i = 0; i < count; i++) {
+        const depth = .75 + (i * .317 % 1) * Math.max(0, this.dustReach - .75), spread = Math.min(.55, depth * .15);
+        this.dustPosition.set(p.x + direction.x * depth + Math.sin(i * 8.73 + drift * .09) * spread, p.y + 1.65 + direction.y * depth + Math.sin(i * 3.12 + drift * .13) * spread, p.z + direction.z * depth + Math.cos(i * 5.37 + drift * .09) * spread);
         B.Matrix.TranslationToRef(this.dustPosition.x, this.dustPosition.y, this.dustPosition.z, this.matrix); this.matrix.copyToArray(this.dustMatrices, i * 16);
       }
       this.dust.thinInstanceBufferUpdated('matrix');
