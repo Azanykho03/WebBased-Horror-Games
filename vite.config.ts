@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import { cp, mkdir } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
-import { ASSETS, GHOST_PROFILE, VOICE_AUDIO } from './src/config.ts';
+import { ASSETS, GHOST_PROFILE, MUSIC_AUDIO, VOICE_AUDIO } from './src/config.ts';
 
 // Ship only runtime assets; generation sources, references and model weights stay local.
 const runtimeAssets = new Set([
@@ -10,6 +10,7 @@ const runtimeAssets = new Set([
   'models/environments/haunted-house/vendor/babylonjs.loaders.min.js',
   'models/environments/haunted-house/vendor/BABYLON-LICENSE.md',
   GHOST_PROFILE.model, GHOST_PROFILE.face, ASSETS.key, ASSETS.arms,
+  ...Object.values(MUSIC_AUDIO),
   ...Object.values(VOICE_AUDIO).flatMap(clip => [clip.normal, clip.clean]).filter((path): path is string => Boolean(path)),
 ]);
 

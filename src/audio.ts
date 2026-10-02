@@ -1,6 +1,8 @@
 import type { Position, Settings, Vec3, InteractionId, Hotspot } from './types.ts';
-import { assetUrl, VOICE_AUDIO } from './config.ts';
+import { assetUrl, MUSIC_AUDIO, VOICE_AUDIO } from './config.ts';
 import type { VoiceCue } from './config.ts';
+import { BackgroundMusic } from './music.ts';
+import type { MusicTrack } from './music.ts';
 import { clamp } from './horror.ts';
 import type { Atmosphere, HauntEvent, Soundscape, Surface } from './horror.ts';
 
@@ -15,10 +17,12 @@ export interface AudioFrame {
 type Note = { frequency?: number; endFrequency?: number; duration: number; volume: number; bus: Bus; scare?: boolean;
   noise?: boolean; filter?: number; q?: number; wave?: OscillatorType; at?: Vec3; delay?: number; attack?: number; occluded?: boolean; ghost?: boolean; buffer?: AudioBuffer };
 
-// Original procedural palette, one mixer and one AudioContext, including optional
-// local dialogue. No downloaded tracks or copied recordings are used.
+// One mixer and AudioContext for the supplied music, original procedural horror
+// palette and optional local dialogue.
 export class AudioSystem {
   private context: AudioContext | null = null;
+  private background: BackgroundMusic | null = null;
+  private musicTrack: MusicTrack | null = null;
   private master!: GainNode;
   private buses!: Record<Bus, GainNode>;
   private musicDuck!: GainNode;
@@ -57,16 +61,18 @@ export class AudioSystem {
   private mixTick = 0;
   constructor(settings: Settings) { this.settings = settings; }
   get state(): string { return this.context?.state ?? 'uninitialized'; }
-  get diagnostics() { return { state: this.state, soundtrack: this.stateName, transientVoices: this.playing.size, permanentSources: this.permanent.length, active: this.active }; }
+  get diagnostics() { return { state: this.state, soundtrack: this.stateName, transientVoices: this.playing.size, permanentSources: this.permanent.length, active: this.active, background: this.background?.diagnostics ?? null }; }
+  setMusic(track: MusicTrack | null): void { this.musicTrack = track; this.background?.select(track); }
   start(): void {
     if (this.disposed) return;
     this.active = true;
     try {
       if (!this.context) this.setup();
-      void this.context?.resume().then(() => { if (!this.active) void this.context?.suspend(); }).catch(() => {});
+      if (this.context?.state !== 'running') void this.context?.resume().then(() => { if (!this.active) void this.context?.suspend().catch(() => {}); }).catch(() => {});
+      this.background?.resume();
     } catch { /* Captions and gameplay remain available without Web Audio. */ }
   }
-  pause(): void { this.active = false; void this.context?.suspend().catch(() => {}); }
+  pause(): void { this.active = false; this.background?.pause(); void this.context?.suspend().catch(() => {}); }
   reset(): void {
     this.voiceToken++; this.voicePlaying = null;
     for (const sound of [...this.playing]) sound.stop();
@@ -77,7 +83,9 @@ export class AudioSystem {
       for (const gain of [this.wind, this.rain, this.roomtone, this.ghostBreath, ...Object.values(this.layers)]) {
         gain.gain.cancelScheduledValues(this.context.currentTime); gain.gain.setValueAtTime(0, this.context.currentTime);
       }
-      this.musicDuck.gain.setValueAtTime(1, this.context.currentTime); this.ambientDuck.gain.setValueAtTime(1, this.context.currentTime);
+      for (const gain of [this.musicDuck, this.ambientDuck]) {
+        gain.gain.cancelScheduledValues(this.context.currentTime); gain.gain.setValueAtTime(1, this.context.currentTime);
+      }
     }
   }
   private gain(destination: AudioNode, volume = 0): GainNode {
@@ -96,6 +104,12 @@ export class AudioSystem {
     limiter.connect(this.master);
     this.buses = { music: this.gain(limiter), ambience: this.gain(limiter), effects: this.gain(limiter), voice: this.gain(limiter) };
     this.musicDuck = this.gain(this.buses.music, 1); this.ambientDuck = this.gain(this.buses.ambience, 1);
+    this.background = new BackgroundMusic(c, this.musicDuck, { menu: assetUrl(MUSIC_AUDIO.menu), game: assetUrl(MUSIC_AUDIO.game) });
+    this.background.select(this.musicTrack);
+    c.addEventListener('statechange', () => {
+      if (c.state !== 'running') this.background?.pause();
+      else if (this.active) this.background?.resume();
+    }, { signal: this.pending.signal });
     this.noise = c.createBuffer(1, c.sampleRate * 8, c.sampleRate);
     const samples = this.noise.getChannelData(0), edge = c.sampleRate * .035;
     for (let i = 0; i < samples.length; i++) samples[i] = (Math.random() * 2 - 1) * Math.min(1, i / edge, (samples.length - 1 - i) / edge);
@@ -325,6 +339,7 @@ export class AudioSystem {
   }
   dispose(): void {
     this.disposed = true; this.active = false; this.pending.abort(); this.reset();
+    this.background?.dispose(); this.background = null;
     for (const source of this.permanent) { try { source.stop(); } catch { /* Already stopped. */ } source.disconnect(); }
     this.permanent = []; this.buffers.clear(); void this.context?.close().catch(() => {}); this.context = null;
   }

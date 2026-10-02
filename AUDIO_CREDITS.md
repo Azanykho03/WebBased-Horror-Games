@@ -1,9 +1,30 @@
-# Balay ni Corazon — audio palette and optional recordings
+# Balay ni Corazon — background music, audio palette and optional recordings
 
-The shipped ambience, adaptive score, weather, footsteps, heartbeat, breathing,
+## Supplied background music
+
+| Use | Original filename under `public/assets/audio/` |
+| --- | --- |
+| Menu, settings/credits opened from the menu, and pre-game ready screen | `MELANCHOLIA Music Box Sad, creepy song.mp3` |
+| House intro and gameplay, including caught/ending screens | `ILI ILI Tulog Anay Scary Version Music Box Cover.mp3` |
+
+These are the user's existing recordings, copied once from Downloads because
+this checkout contained neither file. Filenames and file bytes are unchanged;
+no transcoding, trimming or replacement was performed. `MUSIC_AUDIO` in
+`src/config.ts` registers them for both development and production builds.
+
+One streaming audio element loops the current recording through the existing
+music bus, contextual ducking and master volume. A track change fades out for
+0.8 seconds, switches the source at silence, then fades the next recording in
+for 0.8 seconds after playback starts. The recordings never overlap. A first
+click, tap or key press enables audio; later interactions retry browser-blocked
+playback. Pause/backgrounding freezes the track and resumes at its position.
+
+## Original effects and optional dialogue
+
+The shipped ambience, adaptive tension cues, weather, footsteps, heartbeat, breathing,
 interaction effects and supernatural textures are original Web Audio synthesis
-in `src/audio.ts`. They require no audio downloads. No commercial track, film/game
-sample, personal voice recording or external audio library has been added.
+in `src/audio.ts`. These effects remain alongside the two recordings and require
+no audio downloads. No external audio library has been added.
 
 Corazon's airy vocal textures are **synthesized placeholders, not spoken Bisaya**.
 The lines are readable as subtitles. The playable game does not require recordings,
@@ -73,7 +94,11 @@ None of these sites' files were downloaded or included in this change.
 
 ## External asset credit ledger
 
-Currently empty. For each future recording or licensed sound, record the exact
+The two background tracks above were supplied by the user as local MP3s. Creator,
+source URL and license metadata were not supplied; no attribution or license is
+inferred from the filenames. Both files are included without modification.
+
+For each future recording or licensed sound, record the exact
 filename, original title, creator, source URL, license/version, modifications,
 required attribution, and performer permission where relevant. Preserve a copy
 of its license with the source asset. Existing model provenance stays with the

@@ -10,12 +10,14 @@ import { canEscape } from '../src/objectives.ts';
 import type { Atmosphere, HauntEvent } from '../src/horror.ts';
 import { TouchDriver } from './touch-driver.ts';
 import { attachAudioAudit } from './audio-audit.ts';
+import { attachMusicAudit } from './music-audit.ts';
+import type { AudioSystem } from '../src/audio.ts';
 
 interface JourneyHost {
   world: World; player: Player; input: InputSystem; ghost: GhostStateMachine; interactions: InteractionSystem;
   progress(): Progress; screen(): Screen; revealing(): boolean; action(action: string): void;
   audioState(): string;
-  audioDiagnostics(): { state: string; soundtrack: string; transientVoices: number; permanentSources: number; active: boolean };
+  audioDiagnostics(): AudioSystem['diagnostics'];
   atmosphere(): Atmosphere;
   haunt(event: HauntEvent): void;
   touchSensitivity(): number;
@@ -27,7 +29,8 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
   panel.innerHTML = '<details open><summary>DEVELOPMENT VALIDATION</summary><div><p>Normal collision, objectives and live enemy.</p><button>Run full journey</button><button id="journey-touch">Run touch journey</button><button id="journey-mode">Preview touch controls</button><button id="journey-saved">Resume saved journey</button><button id="journey-retry" hidden>Continue journey from checkpoint</button><pre style="white-space:pre-wrap" role="status">Ready</pre></div></details>';
   document.body.append(panel);
   const content = panel.querySelector('details > div')!;
-  attachAudioAudit(content);
+  attachAudioAudit(content, () => host.action('journal'));
+  attachMusicAudit(content, () => host.action('journal'));
   const mix = document.createElement('pre'); mix.setAttribute('aria-label', 'Audio diagnostics'); content.append(mix);
   const audition = document.createElement('button'); audition.textContent = 'Audition weather / haunt'; content.append(audition);
   let auditionIndex = 0, mixTime = 0;
@@ -106,7 +109,7 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
   }
   return dt => {
     mixTime += dt;
-    if (mixTime > .25) { mixTime = 0; const a = host.audioDiagnostics(); mix.textContent = `${a.soundtrack} · ${a.state}\nVoices ${a.transientVoices}/20 · loops ${a.permanentSources}\nFear ${host.atmosphere().fear.toFixed(2)} · proximity ${host.atmosphere().proximity.toFixed(2)}`; }
+    if (mixTime > .25) { mixTime = 0; const a = host.audioDiagnostics(); mix.textContent = `${a.soundtrack} · ${a.state}\nBGM ${a.background?.track ?? 'none'} → ${a.background?.requested ?? 'none'} · ${a.background?.playing ? 'playing' : 'paused'} · ${(a.background?.time ?? 0).toFixed(1)} s\nVoices ${a.transientVoices}/20 · loops ${a.permanentSources}\nFear ${host.atmosphere().fear.toFixed(2)} · proximity ${host.atmosphere().proximity.toFixed(2)}`; }
     if (!running) return;
     if (host.screen() === 'intro') return;
     seenStates.add(host.ghost.state);

@@ -28,6 +28,7 @@ export class Game {
   private touch: TouchControls;
   private performanceProfile = new PerformanceProfile();
   private audio: AudioSystem;
+  private audioUnlocked = false;
   private horror!: HorrorDirector;
   private introPlayed = false;
   private introTime = 0;
@@ -69,6 +70,12 @@ export class Game {
       this.applyResolution();
       if (this.loaded) this.world.update(this.player.position, this.player.direction, this.renderSettings, this.progress, this.player.flashlight && has(this.progress, 'flashlight'), this.progress.elapsed);
     };
+    const unlockAudio = () => { this.audioUnlocked = true; this.syncAudio(); };
+    // Touch browsers may grant activation only at the end of the tap. Keep these
+    // listeners for recovery after OS interruptions or a rejected play promise.
+    for (const event of ['pointerdown', 'pointerup', 'touchend', 'keydown', 'click']) {
+      document.addEventListener(event, unlockAudio, { capture: true, passive: true, signal: this.abort.signal });
+    }
     window.addEventListener('beforeunload', () => { if (this.loaded && this.screen !== 'won' && this.screen !== 'menu') this.save(); }, { signal: this.abort.signal });
     window.addEventListener('keydown', event => {
       if (this.screen === 'intro' && event.code === 'Escape') { event.preventDefault(); this.action('skip-intro'); }
@@ -79,11 +86,11 @@ export class Game {
     window.addEventListener('blur', () => { this.presentationPaused = true; this.audio.pause(); }, { signal: this.abort.signal });
     window.addEventListener('focus', () => {
       this.presentationPaused = false;
-      if (['intro', 'caught', 'won'].includes(this.screen) && !document.hidden) this.audio.start();
+      this.syncAudio();
     }, { signal: this.abort.signal });
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) { this.presentationPaused = true; this.audio.pause(); }
-      else { this.presentationPaused = false; if (['intro', 'caught', 'won'].includes(this.screen)) this.audio.start(); }
+      else { this.presentationPaused = false; this.syncAudio(); }
     }, { signal: this.abort.signal });
   }
   async init(): Promise<void> {
@@ -126,10 +133,18 @@ export class Game {
   private show(screen: Screen, detail = ''): void {
     this.screen = screen;
     if (screen !== 'playing') this.input.stop();
-    if (!['playing', 'intro', 'caught', 'won'].includes(screen)) this.audio.pause();
-    if (screen === 'caught' || screen === 'won') { this.audio.reset(); this.audio.start(); }
+    if (screen === 'menu' || screen === 'caught' || screen === 'won') this.audio.reset();
+    this.syncAudio();
     this.ui.screen(screen, this.progress, this.settings, this.storage.load() !== null, detail);
     this.syncTouch();
+  }
+  private syncAudio(): void {
+    const menu = ['loading', 'menu', 'ready'].includes(this.screen)
+      || (this.screen === 'settings' || this.screen === 'credits') && this.returnScreen === 'menu';
+    const game = ['playing', 'intro', 'caught', 'won'].includes(this.screen);
+    if (menu || game) this.audio.setMusic(menu ? 'menu' : 'game');
+    if (this.audioUnlocked && !this.presentationPaused && !document.hidden && (menu || game)) this.audio.start();
+    else this.audio.pause();
   }
   private action(action: string): void {
     if (action === 'reload') { location.reload(); return; }
@@ -137,11 +152,12 @@ export class Game {
     if (action === 'new') { this.storage.clear(); this.begin(freshProgress()); }
     if (action === 'continue' || action === 'retry') this.begin(this.storage.load() ?? freshProgress());
     if (action === 'resume' || action === 'skip-intro') {
-      this.presentationPaused = false; this.audio.start(); this.audio.effect('ui'); this.last = performance.now();
+      this.presentationPaused = false; this.last = performance.now();
       this.performanceProfile.resetSamples();
       if (!this.introPlayed && action !== 'skip-intro') {
         this.introPlayed = true; this.introTime = 0; this.show('intro');
       } else { this.introPlayed = true; this.show('playing'); this.input.start(this.canvas); }
+      this.audio.effect('ui');
     }
     if (action === 'menu') {
       if (!['menu', 'won', 'caught'].includes(this.screen)) this.save();

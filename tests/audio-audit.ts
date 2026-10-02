@@ -4,11 +4,12 @@ import { DEFAULT_SETTINGS } from '../src/types.ts';
 import type { Soundscape } from '../src/horror.ts';
 
 // Real Web Audio graph validation, included only in the validation build.
-export function attachAudioAudit(panel: Element): void {
+export function attachAudioAudit(panel: Element, pauseGame: () => void): void {
   const button = document.createElement('button'); button.textContent = 'Check audio lifecycle';
   const status = document.createElement('pre'); status.setAttribute('aria-label', 'Audio audit result'); status.style.whiteSpace = 'pre-wrap';
   panel.append(button, status);
   button.addEventListener('click', async () => {
+    pauseGame();
     button.disabled = true; status.textContent = 'Checking actual Web Audio graph…';
     const audio = new AudioSystem({ ...DEFAULT_SETTINGS, volume: .015 });
     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

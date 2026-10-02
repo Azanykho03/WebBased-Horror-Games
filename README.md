@@ -76,9 +76,15 @@ items and put the enemy away from the player with a recovery window.
 - Navigation: `scripts/3d-generation/house-navigation.mjs`; reused by the game,
   environment viewer and validation, with dynamic gates and collision-query caching.
 - Audio: one Web Audio context with master, music, ambience, effects and voice
-  controls; original procedural rain/wind, adaptive score, directional ghost
+  controls; the supplied MELANCHOLIA recording loops on the menu and pre-game
+  screens, then fades out before ILI ILI loops during the intro and gameplay.
+  A single streaming player feeds the music/master mixer, with 0.8-second fades
+  on each side of a track change. Sound unlocks on the first click, tap or key
+  press; menu settings/credits keep menu music, while pause and backgrounding
+  freeze playback. Resume keeps the current position; returning to the menu
+  restores MELANCHOLIA. Original procedural rain/wind, adaptive tension, directional ghost
   movement/voices, heartbeat, exertion breathing, varied surface steps, doors and
-  object sounds. Music crossfades through ten gameplay states; pauses suspend it.
+  object sounds remain, including contextual ducking through ten gameplay states.
 - Horror director: bounded, room-aware events, recent-event memory, silence before
   whispers, weather, cloth/window movement, falling picture moulding, a flickering
   CRT, moving shadows and brief Corazon afterimages that disappear under the light.
@@ -131,6 +137,11 @@ flashlight, throw and hiding, then follows the full escape route with the live g
 Use a phone-sized viewport. This is browser simulation, not a physical Android test.
 **Check audio lifecycle** exercises actual Web Audio output, all ten soundscapes,
 mixer mute, the voice budget, suspension, eight resets and cleanup.
+**Check background music** plays the supplied MP3s through the real mixer, seeks
+to each recording's end to verify looping, checks sequential fades and independent
+music/master mute, then tests pause/resume, resets and disposal during a fade.
+See [tests/background-music-validation.md](tests/background-music-validation.md)
+for the results and the physical-device testing limit.
 **Preview touch controls** enables a manual layout preview on a desktop browser.
 Collapse the validation panel to see the HUD unobstructed.
 
