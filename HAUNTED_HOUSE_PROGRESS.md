@@ -1,4 +1,96 @@
-# Haunted house environment
+# BALAY game and environment progress
+
+## Current game scope — 2026-10-02
+
+STATUS: PLAYABLE GAME IMPLEMENTED AND VALIDATED; GOAL BLOCKED ON MISSING MASTER SPECIFICATION
+
+The earlier COMPLETE status below applies only to the finished environment.
+The current request extends that work into a playable escape game.
+
+### Audit and specification
+
+- Inspected the existing project inventory, generation scripts, source documents,
+  AGENTS.md, local TypeSafe skill and model metadata/previews before coding.
+- The project initially contained the environment inspection page and generation
+  tools, with no root package.json or TypeScript game. No working game system was
+  replaced. Existing collision/navigation and the local Babylon runtime were reused.
+- Read the supplied environment guide and the Downloads copy of
+  `haunted-house-game-plan.md`; the latter is now preserved in the project root.
+- `BALAY-Codex-Full-Game-Master-Prompt.md` was not available in the accessible
+  chat/project attachments or local searches. Main-spec alignment remains
+  unverified. The user's later continuation explicitly said to use it once located.
+- Read the installed TypeSafe/JEV skill and current documentation. Its guidance
+  keeps exact rules in code: strict TypeScript, deterministic systems and validation
+  fit this offline game. No runtime inference or global skill installation was added.
+
+### Implemented
+
+- Root Vite entry, strict TypeScript, loading/error screens, menu, controls,
+  journal/inventory, pause, settings, credits, capture/retry and escape ending.
+- First-person movement through both floors and stairs; sprint stamina, flashlight
+  battery/replacement batteries, right-drag/arrow-key fallback and focus-loss pause.
+- Five ordered missions using the real house: foyer flashlight/note, kitchen fuse,
+  upstairs breaker, three keepsakes, display cabinet, red key and service exit.
+  Existing blueprint locations take precedence over the compact plan's generic
+  utility-room/front-exit locations. Front, final bedroom and exit gates share
+  collision, line of sight and enemy navigation.
+- One ghost with Dormant/Patrol/Investigate/Chase/Search/Stunned/Catch states,
+  view cone and wall checks, noise investigation, stair navigation and hiding rules.
+- Kitchen face reveal, captioned Bisaya dialogue, configurable identity/optional
+  recordings, clean dialogue, safe reveal spawn and recovery window.
+- Swept tsinelas collision, two-second stun, immunity and accessible drop recovery.
+- Versioned save/settings validation, fair checkpoints and inventory preservation;
+  no scene/listener/audio duplication on retry.
+- Original synthesized ambience adapted from the viewer, positional ghost sound,
+  sound captions, chase cues and pause suspension.
+- Six nearby room lights (four on Low), a 512px flashlight shadow map, floor
+  visibility management and bounded loading. Build includes only runtime assets.
+
+### Evidence so far
+
+- `npm run typecheck`, `npm test` (15 tests) and production build pass.
+- All 13 original environment geometry/navigation checks pass with the updated
+  shared navigator; tested against a temporary manifest copy so original reports
+  and geometry were preserved. The collision-safe route is 209.63 m across 29 legs.
+- Every authored interaction has a reachable approach and unobstructed use ray.
+- Babylon NullEngine tests exercise actual player stamina/collision, tsinelas hit
+  and miss recovery, safe reveal positions, cabinet/key focus and cross-floor AI.
+- Browser journey completed the five missions, verified capture and checkpoint
+  retry, collected the key, unlocked the exit and reached the ending with the
+  live enemy active. It used normal controller movement and interaction input,
+  without teleporting, granting items or disabling the ghost.
+- Browser errors found and fixed: too many lights during shader compilation,
+  one battery inside furniture, opened cabinet stealing key interaction focus.
+- Other fixes: repeated noise no longer restarts every enemy route step; retry
+  resets the slipper mesh as well as its pickup position; Tab closes the journal.
+- The house/ghost/key/arm GLB hashes still match the original audit. No asset
+  generation was run. `tests/escape-validation.png` records the browser ending.
+
+### Final browser evidence and remaining verification
+
+- Pause comparison passed for gameplay timers, player, enemy, battery/stamina and
+  audio. Tab opens/closes the journal. Settings persist after browser reload.
+- Real reload retained eight items and the completed kitchen encounter; a resumed
+  run reached the ending. Screenshots and exact observations are in
+  `tests/gameplay-validation.md` and its neighboring evidence files.
+- Production startup/first-person view passed with empty error/warning logs.
+  Standard graphics averaged about 58 FPS in the sampled opening route; hardware
+  identification was unavailable. See the acceptance record for measurement limits.
+- Reconcile the implementation against the master prompt when it is accessible.
+  Rechecked accessible chat artifacts and the project/Downloads file inventory on
+  2026-10-02 after implementation and browser validation; the file is still absent.
+  Further specification work requires its contents or an accessible local path.
+- Record separate face/voice permission information if personal media is supplied;
+  this repository currently retains generation provenance, not a permission record.
+  Current dialogue uses captions and synthesized placeholders.
+
+Run commands, controls, configuration and the separate browser validation build
+are documented in README.md. The final acceptance record belongs in
+`tests/gameplay-validation.md`.
+
+---
+
+# Historical environment delivery
 
 STATUS: COMPLETE
 

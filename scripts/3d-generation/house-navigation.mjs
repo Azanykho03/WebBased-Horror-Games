@@ -2,7 +2,26 @@
 // Collision uses metre-sized circles against oriented furniture boxes, not mesh picking.
 export function createNavigation(data) {
  const radius=data.playerRadius, rise=data.floorRise, body=data.bodyHeight;
- const stair=data.stair.rect, solids=data.colliders;
+ const stair=data.stair.rect; let solids=data.colliders;
+ // Room-sized buckets keep frequent movement and enemy route queries local.
+ // Bounds include the player's radius so narrow doorway checks stay exact.
+ const bucketSize=2, buckets=new Map();
+ function indexSolids(){
+  buckets.clear();
+  for(const c of solids){
+   const co=Math.cos(c.yaw??0),si=Math.sin(c.yaw??0);
+   const halfX=c.center?(Math.abs(co)*c.size[0]+Math.abs(si)*c.size[2])/2:0;
+   const halfZ=c.center?(Math.abs(si)*c.size[0]+Math.abs(co)*c.size[2])/2:0;
+   const minX=(c.center?c.center[0]-halfX:c.min[0])-radius;
+   const maxX=(c.center?c.center[0]+halfX:c.max[0])+radius;
+   const minZ=(c.center?c.center[2]-halfZ:c.min[2])-radius;
+   const maxZ=(c.center?c.center[2]+halfZ:c.max[2])+radius;
+   for(let x=Math.floor(minX/bucketSize);x<=Math.floor(maxX/bucketSize);x++)for(let z=Math.floor(minZ/bucketSize);z<=Math.floor(maxZ/bucketSize);z++){
+    const key=`${x},${z}`;if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(c);
+   }
+  }
+ }
+ indexSolids();
  const rects=[[],[]];
  for(const room of data.rooms) if(room.id!=='F03') rects[room.floor].push(...room.rects);
  rects[0].push([-4.6,-1.4,-15,-12],[-1.4,1.4,0,2]);
@@ -12,7 +31,7 @@ export function createNavigation(data) {
   return rects[level].some(b=>inside(x,z,b)) ? level*rise : null;
  }
  function blocked(x,y,z){
-  for(const c of solids){
+  for(const c of buckets.get(`${Math.floor(x/bucketSize)},${Math.floor(z/bucketSize)}`)??[]){
    let px=x,pz=z, minX,maxX,minZ,maxZ,minY,maxY;
    if(c.center){
     const dx=x-c.center[0],dz=z-c.center[2],co=Math.cos(c.yaw),si=Math.sin(c.yaw);
@@ -39,7 +58,7 @@ export function createNavigation(data) {
   return cur;
  }
  function segment(a,b){const q=move(a,b.x-a.x,b.z-a.z,false);return Math.hypot(q.x-b.x,q.z-b.z)<.005&&Math.abs(q.y-b.y)<.08;}
- const cell=.2, cache=new Map();
+ const cell=.2, cache=new Map(), edges=new Map();
  function grid(ix,iz,level){
   const key=`${ix},${iz},${level}`;
   if(cache.has(key))return cache.get(key);
@@ -56,6 +75,7 @@ export function createNavigation(data) {
  function path(start,end){
   const sp=point(start.x,start.z,start.floor??start.level),ep=point(end.x,end.z,end.floor??end.level);
   if(!sp||!ep)throw Error(`Blocked route endpoint: ${!sp?start.name??JSON.stringify(start):end.name??JSON.stringify(end)}`);
+  if(segment(sp,ep))return [sp,ep];
   const s=snap(sp),e=snap(ep);if(!s||!e)throw Error('Endpoint has no clear grid connection');
   const heap=[],cost=new Map([[s.key,0]]),prev=new Map(),closed=new Set();
   function push(v){heap.push(v);let i=heap.length-1;while(i){const j=(i-1)>>1;if(heap[j].f<=v.f)break;heap[i]=heap[j];i=j;}heap[i]=v;}
@@ -65,14 +85,23 @@ export function createNavigation(data) {
   while(heap.length){
    const {p}=pop();if(closed.has(p.key))continue;closed.add(p.key);
    if(p.key===e.key){let q=p,result=[ep];while(q){result.push({x:q.x,y:q.y,z:q.z,level:q.level});q=prev.get(q.key);}result.push(sp);return result.reverse();}
-   for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]])for(const level of [p.level,1-p.level]){
-    const q=grid(p.ix+dx,p.iz+dz,level);
-    if(!q||closed.has(q.key)||Math.abs(q.y-p.y)>.20||!segment(p,q))continue;
+   if(!edges.has(p.key)){
+    const neighbors=[];
+    for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]])for(const level of [p.level,1-p.level]){
+     const q=grid(p.ix+dx,p.iz+dz,level);
+     if(q&&Math.abs(q.y-p.y)<=.20&&segment(p,q))neighbors.push(q);
+    }
+    edges.set(p.key,neighbors);
+   }
+   for(const q of edges.get(p.key)){
+    if(closed.has(q.key))continue;
     const g=cost.get(p.key)+Math.hypot(q.x-p.x,q.y-p.y,q.z-p.z);
     if(g<(cost.get(q.key)??Infinity)){cost.set(q.key,g);prev.set(q.key,p);push({p:q,f:g+heuristic(q)});}
    }
   }
   throw Error(`No collision-safe route: ${start.name} → ${end.name}`);
  }
- return {point,move,path,blocked,height,segment,radius};
+ // Gameplay gates share the same collision and pathfinding as the house preview.
+ function setDynamicColliders(extra){solids=data.colliders.concat(extra);cache.clear();edges.clear();indexSolids();}
+ return {point,move,path,blocked,height,segment,radius,setDynamicColliders};
 }

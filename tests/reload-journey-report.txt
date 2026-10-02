@@ -1,0 +1,5 @@
+PASS · Full escape with live ghost
+loaded checkpoint (8 items, kitchen completed) → cabinet → exit-key → exit
+5.4s · 18.4m · 0 captures
+Ghost: Patrol
+FPS avg 58 · min 58

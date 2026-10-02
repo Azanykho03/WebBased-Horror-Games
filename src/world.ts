@@ -1,0 +1,184 @@
+import type * as Babylon from 'babylonjs';
+import { createNavigation } from '../scripts/3d-generation/house-navigation.mjs';
+import type { Navigation } from '../scripts/3d-generation/house-navigation.mjs';
+import type { Collider, HouseManifest, Position, Progress, Settings, Vec3 } from './types.ts';
+import { assetUrl, ASSETS, GHOST_PROFILE } from './config.ts';
+import { worldHit } from './geometry.ts';
+
+export const B = (window as unknown as { BABYLON: typeof Babylon }).BABYLON;
+export const vector = (p: Vec3) => B.Vector3.FromArray(p);
+export class World {
+  readonly scene: Babylon.Scene;
+  readonly camera: Babylon.FreeCamera;
+  readonly flashlight: Babylon.SpotLight;
+  readonly sky: Babylon.HemisphericLight;
+  data!: HouseManifest;
+  nav!: Navigation;
+  meshes: Babylon.AbstractMesh[] = [];
+  ghost!: Babylon.TransformNode;
+  arms!: Babylon.TransformNode;
+  key!: Babylon.TransformNode;
+  private fixtures: { definition: HouseManifest['lights'][number]; light: Babylon.PointLight }[] = [];
+  private gates = new Map<string, { mesh: Babylon.Mesh; collider: Collider }>();
+  private dynamic: Collider[] = [];
+  private gateState = '';
+  private shadow: Babylon.ShadowGenerator;
+  kitchenBlackout = false;
+
+  constructor(engine: Babylon.Engine) {
+    this.scene = new B.Scene(engine);
+    this.scene.useRightHandedSystem = true;
+    this.scene.clearColor = new B.Color4(.016, .025, .022, 1);
+    this.scene.fogMode = B.Scene.FOGMODE_EXP2;
+    this.scene.fogDensity = .014;
+    this.scene.fogColor = new B.Color3(.025, .037, .032);
+    this.camera = new B.FreeCamera('player-camera', vector([0, 1.65, -2.5]), this.scene);
+    this.camera.minZ = .045; this.camera.maxZ = 80; this.camera.fov = 1.16;
+    this.scene.activeCamera = this.camera;
+    this.sky = new B.HemisphericLight('ambient', vector([.1, 1, .2]), this.scene);
+    this.sky.groundColor = new B.Color3(.20, .25, .23);
+    this.flashlight = new B.SpotLight('player-flashlight', this.camera.position.clone(), vector([0, 0, -1]), 1.08, 18, this.scene);
+    this.flashlight.diffuse = new B.Color3(.94, .90, .74); this.flashlight.range = 14;
+    this.shadow = new B.ShadowGenerator(512, this.flashlight);
+    this.shadow.usePercentageCloserFiltering = true;
+    this.shadow.filteringQuality = B.ShadowGenerator.QUALITY_LOW;
+    this.shadow.bias = .003; this.shadow.normalBias = .025;
+  }
+
+  async load(report: (text: string, percent: number) => void): Promise<void> {
+    report('Reading the house layout', 8);
+    const response = await fetch(assetUrl(ASSETS.manifest));
+    if (!response.ok) throw new Error(`House manifest could not load (${response.status}).`);
+    this.data = await response.json() as HouseManifest;
+    if (this.data.version !== 1 || !Array.isArray(this.data.colliders) || this.data.rooms.length !== 17) throw new Error('The house manifest is incompatible.');
+    this.nav = createNavigation(this.data);
+    report('Opening the old house', 20);
+    const house = await this.import(ASSETS.house);
+    this.meshes = house.meshes.filter(m => m.getTotalVertices() > 0);
+    this.standardMaterials(this.meshes, true);
+    for (const mesh of this.meshes) {
+      mesh.freezeWorldMatrix(); mesh.receiveShadows = true;
+      if (!/floor|ceiling|stain|roof/.test(mesh.name)) this.shadow.addShadowCaster(mesh);
+    }
+    report('Preparing the rooms and lights', 55);
+    for (const definition of this.data.lights) this.addLight(definition);
+    for (const [i, w] of this.data.windows.entries()) this.addLight({ id: `window-${i}`, room: w.room, position: [w.position[0], w.position[1] + w.height * .6, w.position[2]], intensity: .45, range: 4.5, color: [.44, .59, .63], period: 18, phase: i, electric: false });
+    this.createGate('front', 'outside-front--F01');
+    this.createGate('exit', 'F08--outside-escape');
+    this.createGate('bedroom', 'U00--U06');
+    report(`Loading ${GHOST_PROFILE.name}, your flashlight, and the red key`, 65);
+    [this.ghost, this.arms, this.key] = await Promise.all([
+      this.model(GHOST_PROFILE.model, 'ghost'), this.model(ASSETS.arms, 'flashlight-arm'), this.model(ASSETS.key, 'exit-key'),
+    ]);
+    this.ghost.setEnabled(false);
+    for (const mesh of this.ghost.getChildMeshes()) this.shadow.addShadowCaster(mesh);
+    this.arms.parent = this.camera;
+    this.arms.position.set(.23, -.34, -.47);
+    this.arms.scaling.setAll(.8);
+    this.arms.setEnabled(false);
+    for (const mesh of this.arms.getChildMeshes()) { mesh.renderingGroupId = 1; mesh.isPickable = false; }
+    // Only the foreground arm clears depth; it cannot clip into a nearby wall.
+    this.scene.setRenderingAutoClearDepthStencil(1, true, true, true);
+    this.key.position.set(.58, 1.38, -13.5); this.key.scaling.setAll(1.6); this.key.setEnabled(false);
+    report('Waiting for textures', 94);
+    // Fixtures start disabled. Compiling every room light at once can exceed
+    // WebGL uniform limits before the first frame applies the light budget.
+    await new Promise<void>((resolve, reject) => {
+      const timeout = window.setTimeout(() => reject(new Error('The renderer could not prepare the house. Reload the page or try a browser with WebGL 2 support.')), 30000);
+      this.scene.whenReadyAsync().then(() => { window.clearTimeout(timeout); resolve(); }, error => { window.clearTimeout(timeout); reject(error); });
+    });
+    report('Ready', 100);
+  }
+
+  private import(path: string) {
+    const url = assetUrl(path), slash = url.lastIndexOf('/');
+    return B.SceneLoader.ImportMeshAsync(null, url.slice(0, slash + 1), url.slice(slash + 1), this.scene);
+  }
+  private async model(path: string, name: string): Promise<Babylon.TransformNode> {
+    const result = await this.import(path), root = new B.TransformNode(name, this.scene);
+    for (const mesh of result.meshes) if (!mesh.parent) mesh.parent = root;
+    this.standardMaterials(result.meshes.filter(m => m.getTotalVertices() > 0), false);
+    return root;
+  }
+  private standardMaterials(meshes: Babylon.AbstractMesh[], house: boolean): void {
+    const converted = new Map<Babylon.Material, Babylon.StandardMaterial>();
+    for (const mesh of meshes) {
+      if (!(mesh.material instanceof B.PBRMaterial)) continue;
+      const old = mesh.material;
+      let material = converted.get(old);
+      if (!material) {
+        material = new B.StandardMaterial(`${old.name}-game`, this.scene);
+        material.diffuseColor = old.albedoColor.clone(); material.diffuseTexture = old.albedoTexture;
+        material.specularColor.set(.07, .065, .05); material.specularPower = 24; material.maxSimultaneousLights = 8;
+        material.emissiveColor = old.emissiveColor.clone();
+        if (!house) material.emissiveColor.set(.045, .045, .04);
+        if (old.name === 'window') material.emissiveColor.set(.09, .13, .13);
+        if (old.name === 'stain' && material.diffuseTexture) { material.useAlphaFromDiffuseTexture = true; material.diffuseTexture.hasAlpha = true; material.backFaceCulling = false; material.disableLighting = true; }
+        if (old.name === 'cabinet-glass') { material.alpha = .13; material.backFaceCulling = false; }
+        converted.set(old, material);
+      }
+      mesh.material = material;
+    }
+    for (const old of converted.keys()) old.dispose(false, false);
+  }
+  private addLight(definition: HouseManifest['lights'][number]): void {
+    const light = new B.PointLight(definition.id, vector(definition.position), this.scene);
+    light.setEnabled(false);
+    light.diffuse = B.Color3.FromArray(definition.color); light.range = definition.range; light.radius = .3;
+    light.includedOnlyMeshes = this.meshes.filter(m => m.name.startsWith(definition.room) || definition.room === 'U00' && m.name.startsWith('F03') || m.name === 'F00-ceiling__plaster');
+    this.fixtures.push({ definition, light });
+  }
+  private createGate(id: string, doorId: string): void {
+    const d = this.data.doors.find(door => door.id === doorId);
+    if (!d) throw new Error(`Missing existing doorway ${doorId}.`);
+    const size: Vec3 = d.axis === 'x' ? [d.width, d.height, .10] : [.10, d.height, d.width];
+    const center: Vec3 = [d.position[0], d.position[1] + d.height / 2, d.position[2]];
+    const mesh = B.MeshBuilder.CreateBox(`latched-${id}`, { width: size[0], height: size[1], depth: size[2] }, this.scene);
+    mesh.position.copyFromFloats(...center);
+    mesh.material = this.scene.materials.find(m => m.name === (id === 'exit' ? 'damp-game' : 'wood-game')) ?? null;
+    mesh.receiveShadows = true;
+    this.shadow.addShadowCaster(mesh);
+    this.gates.set(id, { mesh, collider: { id: `gate-${id}`, room: d.source, center, size, yaw: 0 } });
+  }
+  syncProgress(p: Progress): void {
+    const state = `${p.power}:${p.exitUnlocked}`;
+    if (this.gateState !== state) {
+      this.gateState = state; this.dynamic = [];
+      for (const [id, gate] of this.gates) {
+        const closed = id === 'front' || id === 'exit' && !p.exitUnlocked || id === 'bedroom' && !p.power;
+        gate.mesh.setEnabled(closed); if (closed) this.dynamic.push(gate.collider);
+      }
+      this.nav.setDynamicColliders(this.dynamic);
+    }
+    this.key.setEnabled(p.cabinet && !p.collected.includes('exit-key'));
+  }
+  get colliders(): Collider[] { return this.data.colliders.concat(this.dynamic); }
+  clearSight(a: Vec3, b: Vec3): boolean { const hit = worldHit(a, b, this.colliders); return hit === null || hit > .985; }
+  room(p: Position): { id: string; name: string } {
+    if (p.y > .05 && p.y < this.data.floorRise - .05) return { id: 'F03', name: 'Hardwood staircase' };
+    return this.data.rooms.find(r => r.floor === p.level && r.id !== 'F03' && r.rects.some(([x0, x1, z0, z1]) => p.x >= x0 && p.x <= x1 && p.z >= z0 && p.z <= z1)) ?? { id: 'OUT', name: 'Outside' };
+  }
+  update(p: Position, direction: Babylon.Vector3, settings: Settings, progress: Progress, flashlightOn: boolean, time: number): void {
+    this.flashlight.position.copyFrom(this.camera.position); this.flashlight.direction.copyFrom(direction);
+    this.flashlight.intensity = flashlightOn && progress.battery > 0 ? 2.3 * settings.brightness : 0;
+    this.sky.intensity = .23 * settings.brightness;
+    const room = this.room(p).id, upper = p.y > 2, nearStairs = p.x > -1.4 && p.x < 3.7 && p.z > -8;
+    for (const mesh of this.meshes) {
+      const name = mesh.name;
+      mesh.setEnabled(!name.startsWith('roof') && (!name.startsWith('U') || upper || nearStairs) && (!name.startsWith('F') || !upper || nearStairs || name.startsWith('F03') || name.includes('ceiling')));
+    }
+    const nearest = this.fixtures.filter(f => (f.definition.room.startsWith('U') ? 1 : 0) === (upper ? 1 : 0) || f.definition.room === 'F03')
+      .map(f => ({ f, distance: B.Vector3.Distance(f.light.position, this.camera.position) + (f.definition.room === room ? -3 : 0) }))
+      .sort((a, b) => a.distance - b.distance).slice(0, settings.quality === 'low' ? 4 : 6).map(x => x.f);
+    for (const f of this.fixtures) {
+      f.light.setEnabled(nearest.includes(f));
+      if (!f.light.isEnabled()) continue;
+      const d = f.definition;
+      const power = d.electric && this.kitchenBlackout && d.room === 'F05' && !settings.reducedFlicker ? 0 : d.electric && !progress.power ? .3 : 1;
+      const flicker = settings.reducedFlicker || !d.electric ? 1 : .90 + .10 * Math.sin(time * Math.PI * 2 / d.period + d.phase);
+      f.light.intensity = d.intensity * power * flicker * settings.brightness;
+    }
+    this.flashlight.shadowEnabled = settings.quality !== 'low';
+  }
+  dispose(): void { this.scene.dispose(); }
+}
