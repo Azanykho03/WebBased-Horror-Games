@@ -107,7 +107,7 @@ export class AudioSystem {
   }
   reset(preserveJumpscare = false): void {
     this.nearby = false; this.recordings?.proximity.stop();
-    // The capture picture lasts .7s; let the supplied one-shot finish its tail
+    // Let the supplied one-shot finish its tail after the 3D capture sequence
     // on the caught screen. A new run/menu/disposal cancels it and rearms.
     if (!preserveJumpscare) { this.jumpscareLatched = false; this.recordings?.jumpscare.stop(); }
     this.voiceToken++; this.voicePlaying = null;

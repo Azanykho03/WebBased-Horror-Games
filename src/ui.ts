@@ -19,7 +19,6 @@ export class UI {
   private touchMode = false;
   private abort = new AbortController();
   onAction: (action: string, userGesture: boolean) => void = () => {};
-  onFaceReveal: () => void = () => {};
   onSettings: (key: keyof Settings, value: number | boolean | string) => void = () => {};
   constructor(root: HTMLElement) {
     this.root = root;
@@ -44,7 +43,9 @@ export class UI {
     this.panel.hidden = screen === 'playing'; this.hud.hidden = screen !== 'playing';
     this.subtitle.hidden = screen !== 'playing' || !settings.subtitles;
     this.toast.hidden = screen !== 'playing';
-    if (screen !== 'playing') this.face(false, settings.gentleScares);
+    // Pause/settings hide the presentation through CSS, retaining its reveal
+    // latch and vignette so resuming does not create another visual/audio event.
+    if (!['playing', 'paused', 'journal', 'settings'].includes(screen)) this.face(false, settings.gentleScares);
     const button = (action: string, label: string, primary = false, disabled = false) => `<button data-action="${action}" class="${primary ? 'primary' : ''}" ${disabled ? 'disabled' : ''}>${label}<span aria-hidden="true">↗</span></button>`;
     const heading = (eyebrow: string, title: string) => `<div class="eyebrow">${eyebrow}</div><h1>${title}</h1>`;
     const back = button('back', 'Back');
@@ -92,9 +93,13 @@ export class UI {
   notice(text: string, seconds = 4): void { this.toast.textContent = text; this.noticeTime = seconds; }
   say(text: string, seconds = 3): void { this.subtitle.textContent = text; this.subtitleTime = seconds; }
   face(visible: boolean, gentle: boolean): void {
-    const appearing = visible && this.overlay.hidden;
     this.overlay.hidden = !visible; this.overlay.classList.toggle('gentle', gentle);
-    if (appearing) this.onFaceReveal();
+  }
+  cinematic(active: boolean): void { this.root.dataset.cinematic = String(active); this.overlay.classList.add('spatial'); }
+  scareFade(amount: number): void {
+    let fade = this.root.querySelector<HTMLElement>('#capture-fade');
+    if (!fade) { fade = document.createElement('div'); fade.id = 'capture-fade'; fade.setAttribute('aria-hidden', 'true'); this.root.prepend(fade); }
+    fade.style.opacity = String(amount);
   }
   tick(dt: number, subtitles: boolean): void {
     this.noticeTime -= dt; this.subtitleTime -= dt;

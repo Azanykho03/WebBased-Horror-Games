@@ -89,7 +89,17 @@ items and put the enemy away from the player with a recovery window.
 - House: `public/assets/models/environments/haunted-house/`; blueprint-led
   procedural geometry, furniture, textures, collision manifest and local renderer.
 - Ghost: `public/assets/models/enemies/ghost/`; existing TRELLIS body/head assembly
-  and supplied face reference. It moves as a floating static mesh; no rig was supplied.
+  and supplied face reference, preserved byte-for-byte. The GLB contains separate
+  static head/body meshes, with no skeleton or clips. `src/corazon.ts` animates
+  those unchanged meshes with a neck pivot, blended body sway, attack lean and
+  distance-driven floating pursuit. Its +Z face is mapped to the gameplay heading;
+  shortest-arc turns, acceleration and forward-only travel prevent backwards chases.
+  The kitchen face attack lasts 1.75 seconds; the capture lasts 2.2 seconds before
+  fading into the existing Game Over menu. Both use camera-relative face framing,
+  a single reveal/audio event, pause-safe timing, and restored camera/model state.
+  The supplied Slendrina GLBs were inspected as motion references only; they are
+  neither loaded by the game nor included in its build. Their arm animation cannot
+  be applied to Corazon's unrigged body without changing that assembly.
 - Player: `public/assets/models/player/arms/flashlight-arms/`; existing combined
   arm and flashlight model.
 - Key: `public/assets/models/items/keys/`; existing red key.
@@ -152,6 +162,16 @@ reference or personal voice recordings. No personal voice recordings are include
 Babylon.js 9.28.0 is Apache-2.0; its license is preserved with the vendor files.
 
 ## Validation
+
+Open `http://127.0.0.1:5173/tests/corazon-review.html` during development to scrub
+the actual Corazon presentation at different camera directions and pitches,
+including reduced-motion and gentle modes. `npm run build:validation` and
+`npm run preview:validation` expose the existing full desktop/touch journeys,
+plus six deliberate capture fixtures and the audio checks. These fixtures enter
+the real capture/game-over flow; they are separate from the ordinary journey.
+No validation UI or reference assets enter the production build. See
+[Corazon motion validation](tests/corazon-motion-validation.md) for reference
+observations and the latest verification record.
 
 The abandoned interior uses the existing house and furniture with an additional
 room-batched decay layer (`src/decay.ts`). Shared 512px surface maps and one 1024px

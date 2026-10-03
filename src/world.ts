@@ -10,6 +10,7 @@ import { calmAtmosphere } from './horror.ts';
 import type { Atmosphere } from './horror.ts';
 import { AbandonedInterior } from './decay.ts';
 import { PlayerCollision } from './player-physics.ts';
+import { CorazonPresentation } from './corazon.ts';
 
 export const B = (window as unknown as { BABYLON: typeof Babylon }).BABYLON;
 export const vector = (p: Vec3) => B.Vector3.FromArray(p);
@@ -24,6 +25,7 @@ export class World {
   get collision(): PlayerCollision { return this.playerCollision ??= new PlayerCollision(this.data, this.nav); }
   meshes: Babylon.AbstractMesh[] = [];
   ghost!: Babylon.TransformNode;
+  corazon!: CorazonPresentation;
   arms!: Babylon.TransformNode;
   viewmodel!: FlashlightViewmodel;
   key!: Babylon.TransformNode;
@@ -92,6 +94,7 @@ export class World {
       this.model(ASSETS.flashlight, 'held-flashlight', true), this.model(ASSETS.key, 'exit-key'),
     ]);
     this.ghost = ghost; this.key = key;
+    this.corazon = new CorazonPresentation(this.scene, this.camera, ghost);
     this.viewmodel = new FlashlightViewmodel(this.scene, this.camera, rig, flashlight);
     this.arms = this.viewmodel.root;
     this.ghost.setEnabled(false);

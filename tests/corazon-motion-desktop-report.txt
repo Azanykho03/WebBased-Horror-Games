@@ -1,0 +1,7 @@
+PASS · Full desktop escape with live ghost
+flashlight → note → fuse → tsinelas → battery-kitchen → breaker → letter → locket → music-box → checkpoint restored → cabinet → exit-key → exit
+64.9s · 167.1m · 1 captures
+Ghost: Dormant, Patrol, Investigate, Chase, Catch
+FPS avg 59 · min 30
+PASS · Face event 2: audio started in the face-visibility frame (starts 2)
+Sequence finished · one audio trigger · tail playing

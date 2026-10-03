@@ -47,6 +47,9 @@ export class HauntedEnvironment {
     this.dust.thinInstanceSetBuffer('matrix', this.dustMatrices, 16, false);
     this.apparition = world.ghost.clone('corazon-afterimage', null, false);
     if (this.apparition) {
+      // The real ghost now uses quaternions; this independent afterimage still
+      // uses its original Euler look-at animation.
+      this.apparition.rotationQuaternion = null;
       for (const mesh of this.apparition.getChildMeshes()) {
         mesh.isPickable = false; mesh.receiveShadows = false;
         if (mesh.material instanceof B.StandardMaterial) {

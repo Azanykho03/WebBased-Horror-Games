@@ -1,6 +1,7 @@
 // This driver is included only by `vite build --mode validation`.
-// It supplies ordinary movement, look and interaction input. It never teleports,
-// grants items, freezes the enemy, bypasses gates or writes progress/save data.
+// Its full journeys supply ordinary movement, look and interaction input: no
+// teleports, item grants, frozen enemy or gate/save bypasses. Deliberate capture
+// fixtures live separately in corazon-audit.ts and have their own button.
 import type { World } from '../src/world.ts';
 import type { Player, InputSystem } from '../src/player.ts';
 import type { GhostStateMachine } from '../src/ghost.ts';
@@ -16,6 +17,9 @@ import type { AudioSystem } from '../src/audio.ts';
 import { attachJumpAudit } from './jump-audit.ts';
 import { attachDisplayAudit } from './display-audit.ts';
 import { attachCorazonAudioAudit } from './corazon-audio-audit.ts';
+import { attachCorazonAudit } from './corazon-audit.ts';
+import type { Settings } from '../src/types.ts';
+import type { ScareKind } from '../src/corazon-motion.ts';
 
 interface JourneyHost {
   world: World; player: Player; input: InputSystem; ghost: GhostStateMachine; interactions: InteractionSystem;
@@ -25,6 +29,8 @@ interface JourneyHost {
   atmosphere(): Atmosphere;
   haunt(event: HauntEvent): void;
   touchSensitivity(): number;
+  settings(): Settings;
+  startScare(kind: ScareKind): void;
 }
 export function attachJourney(host: JourneyHost): (dt: number) => void {
   const panel = document.createElement('aside');
@@ -34,6 +40,7 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
   document.body.append(panel);
   const content = panel.querySelector('details > div')!;
   const jumpAudit = attachJumpAudit(content, host);
+  const corazonAudit = attachCorazonAudit(content, host);
   attachDisplayAudit(content, host.world);
   attachAudioAudit(content, () => host.action('journal'));
   attachMusicAudit(content, () => host.action('journal'));
@@ -130,6 +137,7 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
     return p.collected.some(item => item === id);
   }
   return dt => {
+    corazonAudit(dt);
     jumpAudit(dt);
     if (mixTime + dt > .25) {
       const clips = host.audioDiagnostics().recordings;
@@ -168,6 +176,7 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
     prior = { ...host.player.position };
     if (elapsed > 360) { stop(`FAIL · Timed out at ${steps[index] ?? 'escape'}`); return; }
     host.input.keys.clear();
+    if (host.world.corazon.active) { touch.release(); return; }
     if (touchMode && !controlsChecked) {
       checkTime += dt;
       if (checkStage === 0) { startYaw = host.player.yaw; startPitch = host.player.pitch; touch.move(.7, .7); touch.drag(30, -20); touch.sprint(); checkStage = 1; return; }

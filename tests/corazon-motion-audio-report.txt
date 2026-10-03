@@ -1,0 +1,10 @@
+PASS · Four Corazon audio integrations
+Menu RMS: breeze 0.00142 + MELANCHOLIA 0.02568
+Decoded durations: menu 15.16s, gameplay 9.01s, proximity 8.22s, jumpscare 7.44s
+Recording RMS before gain: menu 0.02314, gameplay 0.09761, proximity 0.05837, jumpscare 0.68605
+All three native recording loops produce samples across their boundaries
+Gameplay RMS: girl 0.00456 / ILI ILI 0.02198 / Mixkit 0.00737; mixed peak 0.00718
+Curse: 8m entry / 11m exit; occluded, louder near, stable boundary, reversed fade, far stop
+Jumpscare: immediate samples, non-looping, 20 duplicate calls ignored, full tail on caught screen, no replay before sequence completion, next event + gentle mode, tail replacement without overlap
+Pause/resume keeps clocks and sources; mixer mute; end stops new loops; return restores menu pair
+All sources disposed

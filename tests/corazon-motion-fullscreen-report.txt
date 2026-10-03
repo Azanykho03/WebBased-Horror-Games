@@ -1,0 +1,1 @@
+PASS: browser granted fullscreen; canvas 1551×831; camera aspect 1.867; 3 resize events. Mobile capability simulated.

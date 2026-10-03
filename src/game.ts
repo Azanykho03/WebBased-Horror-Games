@@ -18,6 +18,8 @@ import { PerformanceProfile } from './performance.ts';
 import { difficultySettings, isDifficulty } from './difficulty.ts';
 import type { Difficulty } from './difficulty.ts';
 import { MobileDisplay } from './mobile-display.ts';
+import { CORAZON_SCARE, scareFrame } from './corazon-motion.ts';
+import type { ScareKind } from './corazon-motion.ts';
 
 export class Game {
   private engine!: Babylon.Engine;
@@ -55,7 +57,6 @@ export class Game {
   private revealTime = -1;
   private revealStage = -1;
   private subtitleCooldown = 0;
-  private captureTime = 0;
   private sprintVoiceCooldown = 0;
   private canvas: HTMLCanvasElement;
   private abort = new AbortController();
@@ -63,7 +64,6 @@ export class Game {
   constructor(canvas: HTMLCanvasElement, root: HTMLElement) {
     this.canvas = canvas; this.ui = new UI(root); this.settings = this.storage.settings();
     this.audio = new AudioSystem(this.settings); this.input = new InputSystem(canvas, () => this.pause());
-    this.ui.onFaceReveal = () => this.audio.jumpscare();
     this.touch = new TouchControls(root, this.input, () => this.pause());
     this.display = new MobileDisplay(() => {
       this.input.clear(); this.performanceProfile.resetSamples(); this.applyResolution();
@@ -96,12 +96,12 @@ export class Game {
     }, { signal: this.abort.signal });
     window.addEventListener('blur', () => { this.presentationPaused = true; this.audio.pause(); }, { signal: this.abort.signal });
     window.addEventListener('focus', () => {
-      this.presentationPaused = false;
+      this.presentationPaused = false; this.last = performance.now();
       this.syncAudio();
     }, { signal: this.abort.signal });
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) { this.presentationPaused = true; this.audio.pause(); }
-      else { this.presentationPaused = false; this.syncAudio(); }
+      else { this.presentationPaused = false; this.last = performance.now(); this.syncAudio(); }
     }, { signal: this.abort.signal });
   }
   async init(): Promise<void> {
@@ -131,6 +131,8 @@ export class Game {
           audioDiagnostics: () => this.audio.diagnostics,
           atmosphere: () => this.world.atmosphere,
           touchSensitivity: () => this.settings.touchSensitivity,
+          settings: () => this.settings,
+          startScare: kind => this.startScare(kind),
           haunt: event => this.haunt(event),
           action: action => this.action(action),
         });
@@ -180,6 +182,7 @@ export class Game {
     }
     if (action === 'menu') {
       if (!['menu', 'difficulty', 'won', 'caught'].includes(this.screen)) this.save();
+      this.world.corazon.finish(); this.ui.scareFade(0); this.ui.cinematic(false);
       this.show('menu');
     }
     if (action === 'journal') this.show('journal');
@@ -191,7 +194,8 @@ export class Game {
     this.selectedDifficulty = progress.difficulty;
     this.ghost.difficulty = this.horror.difficulty = progress.difficulty;
     this.progress = structuredClone(progress); this.revealTime = -1; this.revealStage = -1; this.autosave = 0; this.subtitleCooldown = 0;
-    this.captureTime = this.sprintVoiceCooldown = 0; this.world.kitchenBlackout = false;
+    this.sprintVoiceCooldown = 0; this.world.kitchenBlackout = false;
+    this.world.corazon.reset(); this.ui.scareFade(0); this.ui.cinematic(false);
     this.introPlayed = progress.collected.length > 0; this.introTime = 0; this.soundSightTick = this.weatherTick = 0;
     this.horror.reset(); this.world.environment.reset(); this.world.atmosphere = calmAtmosphere();
     this.progress.battery = Math.max(this.progress.battery, difficultySettings[progress.difficulty].restoredBattery);
@@ -199,6 +203,7 @@ export class Game {
     this.world.viewmodel.reset(has(this.progress, 'flashlight'));
     this.player.flashlight = has(this.progress, 'flashlight');
     this.ghost.reset(this.progress.kitchenSeen, this.player.position);
+    this.world.corazon.updateLocomotion(0, this.ghost, this.settings);
     this.world.syncProgress(this.progress); this.interactions.reset(this.progress);
     this.player.camera(this.world, this.settings); this.ui.reset(); this.audio.reset();
     this.world.ghost.setEnabled(this.progress.kitchenSeen);
@@ -254,7 +259,7 @@ export class Game {
     if (stage !== this.revealStage) {
       this.revealStage = stage;
       if (stage === 0) this.speak(this.settings.cleanDialogue ? 'You: “Aguy, unsa man tong tingoga?”' : 'You: “Yawa, unsa man tong tingoga?”', 1.8, true, 'kitchen-player');
-      if (stage === 1) { this.horror.scare(2); this.audio.effect('sting'); this.speak(`${GHOST_PROFILE.name}: “HOY! NGANONG NISULOD MAN KA DIRI?!”`, 2, true, 'kitchen-ghost'); }
+      if (stage === 1) { this.startScare('jumpscare'); this.speak(`${GHOST_PROFILE.name}: “HOY! NGANONG NISULOD MAN KA DIRI?!”`, 2, true, 'kitchen-ghost'); }
       if (stage === 2) this.speak(`You: “${this.settings.cleanDialogue ? 'AGUY' : 'YAWA'}, SI ${GHOST_PROFILE.name.toUpperCase()} RA DIAY!”`, 2, true, 'recognition');
       if (stage === 3) {
         this.audio.finishJumpscare();
@@ -263,9 +268,31 @@ export class Game {
         this.interactions.sync(this.progress); this.save(); this.ui.notice('Move. Find the fuse. The tsinelas on the floor can slow her down.', 6);
       }
     }
-    this.ui.face(stage === 1, this.settings.gentleScares);
     this.world.kitchenBlackout = stage === 1;
     return stage < 3;
+  }
+  private startScare(kind: ScareKind): void {
+    if (!this.world.corazon.start(kind, this.settings)) return;
+    this.input.clear(); this.player.moving = this.player.sprinting = false;
+    this.ghostMoving = false; this.world.arms.setEnabled(false);
+    this.horror.scare(CORAZON_SCARE[kind].duration); this.ui.cinematic(true); this.syncTouch();
+  }
+  private updateScare(dt: number): void {
+    const presentation = this.world.corazon, kind = presentation.kind!;
+    this.input.clear();
+    const event = presentation.update(dt, this.settings);
+    // Both the 3D pose and the preloaded recording change in this render tick.
+    if (event.reveal) { this.audio.jumpscare(); this.ui.face(true, this.settings.gentleScares); }
+    this.ui.scareFade(scareFrame(kind, presentation.timeline.time).fade);
+    if (!event.finished) return;
+    presentation.finish(); this.ui.face(false, this.settings.gentleScares); this.ui.cinematic(false);
+    this.audio.finishJumpscare(); this.input.clear();
+    if (kind === 'capture') this.show('caught');
+    else {
+      this.player.camera(this.world, this.settings);
+      this.world.arms.setEnabled(this.world.viewmodel.visible);
+      this.horror.recover(); this.syncTouch();
+    }
   }
   private tick(): void {
     const now = performance.now(), realDt = Math.max(0, (now - this.last) / 1000), dt = Math.min(.05, realDt); this.last = now;
@@ -278,12 +305,23 @@ export class Game {
       this.world.scene.render(); return;
     }
     if (['won', 'caught'].includes(this.screen) && !document.hidden && !this.presentationPaused) this.updateAtmosphere(dt, this.screen === 'won' ? 'ENDING' : 'GAME_OVER');
-    if (this.screen === 'playing' && !document.hidden) {
+    if (this.screen === 'playing' && !document.hidden && !this.presentationPaused) {
       if (this.performanceProfile.update(realDt, this.settings, this.input.touchMode)) this.applyResolution();
-      if (this.captureTime > 0) {
-        this.captureTime -= dt; this.ui.face(true, this.settings.gentleScares);
-        this.updateAtmosphere(dt);
-        if (this.captureTime <= 0) this.show('caught');
+      if (this.world.corazon.active) {
+        // Presentation follows elapsed time even below 20 FPS, matching the
+        // audio clock. Only movement physics uses the capped simulation step.
+        this.progress.elapsed += realDt; this.ui.tick(realDt, this.settings.subtitles);
+        this.subtitleCooldown = Math.max(0, this.subtitleCooldown - realDt);
+        this.updateAtmosphere(realDt);
+        const scareTime = this.world.corazon.timeline.time;
+        const kind = this.world.corazon.kind;
+        this.updateScare(realDt);
+        // Keep kitchen dialogue behind the reveal when a frame stalls. The
+        // scare clock may hold at the reveal to guarantee it is rendered once.
+        if (kind === 'jumpscare') {
+          const advance = this.world.corazon.active ? this.world.corazon.timeline.time - scareTime : CORAZON_SCARE.jumpscare.duration - scareTime;
+          this.kitchen(Math.max(0, advance));
+        }
         this.world.scene.render(); return;
       }
       this.progress.elapsed += dt; this.subtitleCooldown = Math.max(0, this.subtitleCooldown - dt);
@@ -303,22 +341,20 @@ export class Game {
         const before = { ...this.ghost.position };
         const caught = this.ghost.update(dt, this.world, this.player, this.progress, event => this.speak(`${GHOST_PROFILE.name}: ${event === 'spotted' ? '“HOYYYY! ARI DIRI!”' : '“PAGHULAT BA!”'}`, 3, false, event));
         this.ghostMoving = Math.hypot(this.ghost.position.x - before.x, this.ghost.position.z - before.z) > .001;
+        this.world.corazon.updateLocomotion(dt, this.ghost, this.settings);
         if (caught) {
-          this.horror.scare(.7); this.audio.effect('sting'); this.audio.voice('scream'); this.captureTime = .7; this.input.clear();
-          this.ui.face(true, this.settings.gentleScares);
+          this.startScare('capture');
         }
       } else { this.input.consume('KeyE'); this.input.consume('Throw'); this.input.consume('Hide'); }
       this.interactions.updateProjectile(dt, this.ghost, (p, r) => { this.ghost.hear(p, r); this.audio.effect('land', [p.x, p.y + .1, p.z]); }, () => {
         this.audio.effect('hit'); this.speak(`${GHOST_PROFILE.name}: ${this.settings.cleanDialogue ? '“Aguy, sakita oy!”' : '“YAWA, SAKITA OY!”'}`, 2, true, 'hit');
       });
-      this.world.ghost.position.set(this.ghost.position.x, this.ghost.position.y + .015, this.ghost.position.z);
-      this.world.ghost.rotation.y = this.ghost.yaw + Math.PI;
-      this.world.ghost.rotation.z = this.ghost.state === 'Stunned' ? .14 : 0;
+      if (revealing && !this.world.corazon.active) this.world.corazon.updateLocomotion(dt, this.ghost, this.settings);
       this.sprintVoiceCooldown = Math.max(0, this.sprintVoiceCooldown - dt);
       if (this.ghost.state === 'Chase' && this.player.sprinting && this.sprintVoiceCooldown === 0 && this.subtitleCooldown === 0) {
         this.speak(`${GHOST_PROFILE.name}: “Ayaw dagan!”`, 2, false, 'sprint'); this.sprintVoiceCooldown = 18;
       }
-      if (this.screen === 'playing' && this.captureTime === 0 && this.player.position.level === 0 && this.player.position.x < -1.9 && this.player.position.z > -14.3 && this.player.position.z < -12.7 && canEscape(this.progress)) {
+      if (this.screen === 'playing' && !this.world.corazon.active && this.player.position.level === 0 && this.player.position.x < -1.9 && this.player.position.z > -14.3 && this.player.position.z < -12.7 && canEscape(this.progress)) {
         this.storage.clear(); this.show('won');
       }
       this.worldTick += dt; this.autosave += dt;
@@ -354,7 +390,7 @@ export class Game {
       room, player: p, eye: this.player.eye, direction: this.player.direction.asArray() as Vec3,
       ghost, ghostState: this.ghost.state, ghostGrace: this.ghost.grace, ghostOccluded: this.ghostOccluded,
       hidden: this.player.hidden, sprinting: this.player.sprinting && this.player.moving, stamina: this.player.stamina,
-      suppressed: this.revealTime >= 0 || this.subtitleCooldown > 8 || this.captureTime > 0,
+      suppressed: this.revealTime >= 0 || this.subtitleCooldown > 8 || this.world.corazon.active,
     });
     this.world.atmosphere = result.atmosphere;
     this.audio.update(dt, { atmosphere: result.atmosphere, eye: this.player.eye, direction: this.player.direction.asArray() as Vec3,
@@ -370,6 +406,6 @@ export class Game {
     this.canvas.setAttribute('aria-label', touch ? 'Haunted house game. Left joystick to move, right drag to look, on-screen buttons to interact.' : 'Haunted house game. WASD to move, mouse to look, Space to jump, E to interact.');
   }
   private applyResolution(): void { this.engine?.setHardwareScalingLevel(this.performanceProfile.scale(this.settings, this.input.touchMode, devicePixelRatio)); }
-  private syncTouch(): void { this.touch.sync(this.screen === 'playing', this.interactions?.target?.kind === 'hide' && this.player.grounded, this.player.hidden, this.interactions?.slipperInHand ?? false, has(this.progress, 'flashlight') && this.world.viewmodel.ready, this.player.grounded); }
+  private syncTouch(): void { this.touch.sync(this.screen === 'playing' && !this.world?.corazon?.active, this.interactions?.target?.kind === 'hide' && this.player.grounded, this.player.hidden, this.interactions?.slipperInHand ?? false, has(this.progress, 'flashlight') && this.world.viewmodel.ready, this.player.grounded); }
   dispose(): void { this.abort.abort(); this.display.dispose(); this.ui.dispose(); this.input.dispose(); this.touch.dispose(); this.audio.dispose(); this.engine?.stopRenderLoop(); this.world?.dispose(); this.engine?.dispose(); }
 }
