@@ -2,6 +2,8 @@ import type { World } from './world.ts';
 import { B } from './world.ts';
 import type { Position, Progress, Settings, Vec3 } from './types.ts';
 import { detectTouch } from './touch.ts';
+import { PlayerPhysics } from './player-physics.ts';
+import { difficultySettings } from './difficulty.ts';
 
 export class InputSystem {
   readonly keys = new Set<string>();
@@ -24,7 +26,7 @@ export class InputSystem {
     const signal = this.controller.signal;
     window.addEventListener('keydown', e => {
       if (!this.active) return;
-      if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowLeft', 'ArrowRight'].includes(e.code)) this.setTouchMode(false);
+      if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space', 'ArrowLeft', 'ArrowRight'].includes(e.code)) this.setTouchMode(false);
       if (['Tab', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
       if (!e.repeat) this.pressed.add(e.code);
       this.keys.add(e.code);
@@ -78,6 +80,9 @@ export class InputSystem {
 }
 
 export class Player {
+  private physics = new PlayerPhysics();
+  get grounded(): boolean { return this.physics.grounded; }
+  get verticalVelocity(): number { return this.physics.velocity; }
   position: Position = { x: 0, y: 0, z: -2.5, level: 0 };
   yaw = 0;
   pitch = 0;
@@ -97,6 +102,7 @@ export class Player {
     this.stamina = 6; this.recovery = 0; this.exhausted = false;
     this.hidden = this.hideExposed = this.moving = this.sprinting = false;
     this.flashlight = false; this.step = 0; this.bob = 0;
+    this.physics.reset();
   }
   update(dt: number, input: InputSystem, world: World, progress: Progress, settings: Settings, noise: (p: Position, radius: number) => void, footstep: () => void): void {
     const [dx, dy] = input.look();
@@ -117,7 +123,14 @@ export class Player {
     this.sprinting = !this.hidden && norm > 0 && !this.exhausted && this.stamina > 0 && (input.touchSprint || input.keys.has('ShiftLeft') || input.keys.has('ShiftRight'));
     const speed = (this.sprinting ? 3.9 : 2.1) * Math.min(1, norm);
     const before = this.position;
-    if (norm > 0 && !this.hidden) this.position = world.nav.move(before, (Math.sin(this.yaw) * forward + Math.cos(this.yaw) * side) / norm * speed * dt, (-Math.cos(this.yaw) * forward + Math.sin(this.yaw) * side) / norm * speed * dt);
+    const jump = input.consume('Space');
+    const vx = norm > 0 && !this.hidden ? (Math.sin(this.yaw) * forward + Math.cos(this.yaw) * side) / norm * speed : 0;
+    const vz = norm > 0 && !this.hidden ? (-Math.cos(this.yaw) * forward + Math.sin(this.yaw) * side) / norm * speed : 0;
+    const wasGrounded = this.grounded;
+    this.position = this.physics.update(before, dt, vx, vz, jump && !this.hidden, world.collision);
+    if (!wasGrounded && this.grounded && before.y - this.position.y > .005) {
+      footstep(); noise(this.position, this.sprinting ? 9 : 5);
+    }
     const distance = Math.hypot(this.position.x - before.x, this.position.z - before.z);
     this.moving = distance > .0001;
     if (this.sprinting && this.moving) {
@@ -128,18 +141,18 @@ export class Player {
       if (this.recovery === 0) this.stamina = Math.min(6, this.stamina + dt * 1.25);
       if (this.stamina >= 1.8) this.exhausted = false;
     }
-    this.step += distance;
+    this.step += this.grounded ? distance : 0;
     if (this.step > (this.sprinting ? 1.1 : .95)) { this.step = 0; footstep(); noise(this.position, this.sprinting ? 11 : 3); }
-    this.bob += distance * 7;
+    this.bob += this.grounded ? distance * 7 : 0;
     this.camera(world, settings);
     const equipped = world.viewmodel.update(dt, { owned: progress.collected.includes('flashlight'), hidden: this.hidden,
-      distance, moving: this.moving, sprinting: this.sprinting, reducedMotion: settings.reducedMotion });
+      distance: this.grounded ? distance : 0, moving: this.moving && this.grounded, sprinting: this.sprinting, reducedMotion: settings.reducedMotion });
     if (equipped) this.flashlight = true;
-    if (this.flashlight && world.viewmodel.ready && progress.collected.includes('flashlight')) progress.battery = Math.max(0, progress.battery - dt * .17);
+    if (this.flashlight && world.viewmodel.ready && progress.collected.includes('flashlight')) progress.battery = Math.max(0, progress.battery - dt * difficultySettings[progress.difficulty].batteryDrain);
   }
   camera(world: World, settings: Settings): void {
     this.direction.set(Math.sin(this.yaw) * Math.cos(this.pitch), Math.sin(this.pitch), -Math.cos(this.yaw) * Math.cos(this.pitch));
-    world.camera.position.set(this.position.x, this.position.y + world.data.eyeHeight + (settings.reducedMotion || !this.moving ? 0 : Math.sin(this.bob) * .012), this.position.z);
+    world.camera.position.set(this.position.x, this.position.y + world.data.eyeHeight + (settings.reducedMotion || !this.moving || !this.grounded ? 0 : Math.sin(this.bob) * .012), this.position.z);
     world.camera.setTarget(world.camera.position.add(this.direction));
   }
   get eye(): Vec3 { return [this.position.x, this.position.y + 1.65, this.position.z]; }

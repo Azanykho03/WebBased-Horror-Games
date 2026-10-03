@@ -37,6 +37,7 @@ export class TouchControls {
       <div class="touch-stick" role="group" aria-label="Movement joystick"><span class="stick-label">MOVE</span><i></i></div>
       <div class="touch-actions">
         <button data-touch="KeyE" aria-label="Interact" class="touch-interact">✋<span>Interact</span></button>
+        <button data-touch="Space" aria-label="Jump" class="touch-jump">↑<span>Jump</span></button>
         <button data-touch="KeyF" aria-label="Toggle flashlight">☼<span>Light</span></button>
         <button data-touch="Sprint" aria-label="Toggle sprint" aria-pressed="false">»<span>Run</span></button>
         <button data-touch="Hide" aria-label="Hide or leave hiding place">◐<span>Hide</span></button>
@@ -99,13 +100,16 @@ export class TouchControls {
     const [side, forward] = joystickVector(x - this.origin.x, y - this.origin.y, this.origin.radius);
     this.input.setMove(side, forward); this.nub.style.transform = `translate(${side * this.origin.radius}px,${-forward * this.origin.radius}px)`;
   }
-  sync(playing: boolean, canHide: boolean, hidden: boolean, canThrow: boolean, hasLight: boolean): void {
+  sync(playing: boolean, canHide: boolean, hidden: boolean, canThrow: boolean, hasLight: boolean, grounded = true): void {
     this.element.hidden = !playing || !this.input.touchMode;
     this.element.classList.toggle('portrait-dismissed', this.portraitDismissed);
     const hide = this.element.querySelector<HTMLButtonElement>('[data-touch="Hide"]')!;
     hide.disabled = !canHide && !hidden; hide.querySelector('span')!.textContent = hidden ? 'Leave' : 'Hide';
     this.element.querySelector<HTMLButtonElement>('[data-touch="Throw"]')!.disabled = !canThrow;
     this.element.querySelector<HTMLButtonElement>('[data-touch="KeyF"]')!.disabled = !hasLight || hidden;
+    const jump = this.element.querySelector<HTMLButtonElement>('[data-touch="Space"]')!;
+    jump.disabled = hidden;
+    jump.dataset.grounded = String(grounded);
     this.element.querySelector('[data-touch="Sprint"]')!.setAttribute('aria-pressed', String(this.input.touchSprint));
   }
   reset(): void {

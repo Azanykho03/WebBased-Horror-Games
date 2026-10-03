@@ -15,6 +15,9 @@ import { HorrorDirector, calmAtmosphere, surfaceForRoom } from './horror.ts';
 import type { HauntEvent, Soundscape } from './horror.ts';
 import { TouchControls } from './touch.ts';
 import { PerformanceProfile } from './performance.ts';
+import { difficultySettings, isDifficulty } from './difficulty.ts';
+import type { Difficulty } from './difficulty.ts';
+import { MobileDisplay } from './mobile-display.ts';
 
 export class Game {
   private engine!: Babylon.Engine;
@@ -26,6 +29,8 @@ export class Game {
   private ui: UI;
   private input: InputSystem;
   private touch: TouchControls;
+  private display: MobileDisplay;
+  private selectedDifficulty: Difficulty = 'medium';
   private performanceProfile = new PerformanceProfile();
   private audio: AudioSystem;
   private audioUnlocked = false;
@@ -43,6 +48,7 @@ export class Game {
   private screen: Screen = 'loading';
   private returnScreen: Screen = 'menu';
   private loaded = false;
+  private runStarted = false;
   private last = 0;
   private worldTick = 0;
   private autosave = 0;
@@ -58,13 +64,17 @@ export class Game {
     this.canvas = canvas; this.ui = new UI(root); this.settings = this.storage.settings();
     this.audio = new AudioSystem(this.settings); this.input = new InputSystem(canvas, () => this.pause());
     this.touch = new TouchControls(root, this.input, () => this.pause());
+    this.display = new MobileDisplay(() => {
+      this.input.clear(); this.performanceProfile.resetSamples(); this.applyResolution();
+      this.engine?.resize(); this.world?.camera.getProjectionMatrix(true);
+    });
     this.input.onClear = () => this.touch.reset();
     this.input.onModeChange = touch => {
       this.updateInputMode(touch); this.applyResolution();
       this.syncTouch();
     };
     this.updateInputMode(this.input.touchMode);
-    this.ui.onAction = action => this.action(action);
+    this.ui.onAction = (action, userGesture) => this.action(action, userGesture);
     this.ui.onSettings = (key, value) => {
       this.settings = { ...this.settings, [key]: value }; this.storage.saveSettings(this.settings); this.audio.apply(this.settings);
       this.applyResolution();
@@ -76,11 +86,11 @@ export class Game {
     for (const event of ['pointerdown', 'pointerup', 'touchend', 'keydown', 'click']) {
       document.addEventListener(event, unlockAudio, { capture: true, passive: true, signal: this.abort.signal });
     }
-    window.addEventListener('beforeunload', () => { if (this.loaded && this.screen !== 'won' && this.screen !== 'menu') this.save(); }, { signal: this.abort.signal });
+    window.addEventListener('beforeunload', () => { if (this.runStarted && this.screen !== 'difficulty') this.save(); }, { signal: this.abort.signal });
     window.addEventListener('keydown', event => {
-      if (this.screen === 'intro' && event.code === 'Escape') { event.preventDefault(); this.action('skip-intro'); }
+      if (this.screen === 'intro' && event.code === 'Escape') { event.preventDefault(); this.action('skip-intro', event.isTrusted); }
       if (this.screen === 'journal' && (event.code === 'Tab' || event.code === 'Escape')) {
-        event.preventDefault(); this.action('resume');
+        event.preventDefault(); this.action('resume', event.isTrusted);
       }
     }, { signal: this.abort.signal });
     window.addEventListener('blur', () => { this.presentationPaused = true; this.audio.pause(); }, { signal: this.abort.signal });
@@ -109,9 +119,6 @@ export class Game {
       this.player.camera(this.world, this.settings);
       this.interactions.reset(this.progress);
       this.world.update(this.player.position, this.player.direction, this.renderSettings, this.progress, false, 0);
-      const resize = () => { this.input.clear(); this.performanceProfile.resetSamples(); this.applyResolution(); this.engine.resize(); };
-      window.addEventListener('resize', resize, { signal: this.abort.signal });
-      window.visualViewport?.addEventListener('resize', resize, { signal: this.abort.signal });
       this.engine.onContextLostObservable.add(() => { this.pause(); this.ui.notice('Graphics context lost. Reload if the scene does not recover.', 15); });
       this.show('menu'); this.last = performance.now();
       if (import.meta.env.MODE === 'validation') {
@@ -132,26 +139,35 @@ export class Game {
   }
   private show(screen: Screen, detail = ''): void {
     this.screen = screen;
+    if (screen === 'menu' || screen === 'won') this.runStarted = false;
+    this.display.sync(screen === 'playing' || screen === 'intro');
     if (screen !== 'playing') this.input.stop();
     if (screen === 'menu' || screen === 'caught' || screen === 'won') this.audio.reset();
     this.syncAudio();
-    this.ui.screen(screen, this.progress, this.settings, this.storage.load() !== null, detail);
+    this.ui.screen(screen, this.progress, this.settings, this.storage.load() !== null, detail, this.selectedDifficulty);
     this.syncTouch();
   }
   private syncAudio(): void {
-    const menu = ['loading', 'menu', 'ready'].includes(this.screen)
+    const menu = ['loading', 'menu', 'difficulty', 'ready'].includes(this.screen)
       || (this.screen === 'settings' || this.screen === 'credits') && this.returnScreen === 'menu';
     const game = ['playing', 'intro', 'caught', 'won'].includes(this.screen);
     if (menu || game) this.audio.setMusic(menu ? 'menu' : 'game');
     if (this.audioUnlocked && !this.presentationPaused && !document.hidden && (menu || game)) this.audio.start();
     else this.audio.pause();
   }
-  private action(action: string): void {
+  private action(action: string, userGesture = false): void {
     if (action === 'reload') { location.reload(); return; }
     if (!this.loaded) return;
-    if (action === 'new') { this.storage.clear(); this.begin(freshProgress()); }
+    if (action === 'new') { this.selectedDifficulty = 'medium'; this.show('difficulty'); }
+    if (action.startsWith('difficulty:') && this.screen === 'difficulty') {
+      const value = action.slice('difficulty:'.length);
+      if (isDifficulty(value)) { this.selectedDifficulty = value; this.ui.selectDifficulty(value); }
+    }
+    if (action === 'start-game' && this.screen === 'difficulty') { this.storage.clear(); this.begin(freshProgress(this.selectedDifficulty)); }
     if (action === 'continue' || action === 'retry') this.begin(this.storage.load() ?? freshProgress());
     if (action === 'resume' || action === 'skip-intro') {
+      if (!['ready', 'intro', 'paused', 'journal'].includes(this.screen)) return;
+      this.display.sync(true, userGesture);
       this.presentationPaused = false; this.last = performance.now();
       this.performanceProfile.resetSamples();
       if (!this.introPlayed && action !== 'skip-intro') {
@@ -160,7 +176,7 @@ export class Game {
       this.audio.effect('ui');
     }
     if (action === 'menu') {
-      if (!['menu', 'won', 'caught'].includes(this.screen)) this.save();
+      if (!['menu', 'difficulty', 'won', 'caught'].includes(this.screen)) this.save();
       this.show('menu');
     }
     if (action === 'journal') this.show('journal');
@@ -168,11 +184,14 @@ export class Game {
     if (action === 'back') this.show(this.returnScreen);
   }
   private begin(progress: Progress): void {
+    this.runStarted = true;
+    this.selectedDifficulty = progress.difficulty;
+    this.ghost.difficulty = this.horror.difficulty = progress.difficulty;
     this.progress = structuredClone(progress); this.revealTime = -1; this.revealStage = -1; this.autosave = 0; this.subtitleCooldown = 0;
     this.captureTime = this.sprintVoiceCooldown = 0; this.world.kitchenBlackout = false;
     this.introPlayed = progress.collected.length > 0; this.introTime = 0; this.soundSightTick = this.weatherTick = 0;
     this.horror.reset(); this.world.environment.reset(); this.world.atmosphere = calmAtmosphere();
-    this.progress.battery = Math.max(this.progress.battery, 25);
+    this.progress.battery = Math.max(this.progress.battery, difficultySettings[progress.difficulty].restoredBattery);
     this.player.reset(CHECKPOINTS[this.progress.checkpoint]);
     this.world.viewmodel.reset(has(this.progress, 'flashlight'));
     this.player.flashlight = has(this.progress, 'flashlight');
@@ -201,6 +220,7 @@ export class Game {
     const target = this.interactions.target;
     if (!target) return;
     if (target.kind === 'hide') {
+      if (!this.player.grounded) return;
       this.player.hideExposed = this.ghost.sees(this.player, this.world);
       this.player.hidden = true; this.player.flashlight = false;
       this.audio.effect('latch', target.position);
@@ -216,7 +236,7 @@ export class Game {
       if (target.id === 'flashlight') { this.player.flashlight = false; this.world.viewmodel.pickup(); }
       if (before !== mission(this.progress)) this.audio.effect('objective');
       this.world.syncProgress(this.progress); this.interactions.sync(this.progress); this.save();
-      if (result.checkpoint) this.ghost.grace = Math.max(5, this.ghost.grace);
+      if (result.checkpoint) this.ghost.grace = Math.max(difficultySettings[this.progress.difficulty].objectiveGrace, this.ghost.grace);
       if (target.id === 'exit') this.speak(`${GHOST_PROFILE.name}: “ASA MAN KA PADULONG?! BALIK DIRI!”`, 3, true, 'exit');
     }
   }
@@ -340,9 +360,9 @@ export class Game {
   private get renderSettings(): Settings { return { ...this.settings, quality: this.performanceProfile.low(this.settings, this.input.touchMode) ? 'low' : 'standard' }; }
   private updateInputMode(touch: boolean): void {
     this.ui.inputMode(touch);
-    this.canvas.setAttribute('aria-label', touch ? 'Haunted house game. Left joystick to move, right drag to look, on-screen buttons to interact.' : 'Haunted house game. WASD to move, mouse to look, E to interact.');
+    this.canvas.setAttribute('aria-label', touch ? 'Haunted house game. Left joystick to move, right drag to look, on-screen buttons to interact.' : 'Haunted house game. WASD to move, mouse to look, Space to jump, E to interact.');
   }
   private applyResolution(): void { this.engine?.setHardwareScalingLevel(this.performanceProfile.scale(this.settings, this.input.touchMode, devicePixelRatio)); }
-  private syncTouch(): void { this.touch.sync(this.screen === 'playing', this.interactions?.target?.kind === 'hide', this.player.hidden, this.interactions?.slipperInHand ?? false, has(this.progress, 'flashlight') && this.world.viewmodel.ready); }
-  dispose(): void { this.abort.abort(); this.ui.dispose(); this.input.dispose(); this.touch.dispose(); this.audio.dispose(); this.engine?.stopRenderLoop(); this.world?.dispose(); this.engine?.dispose(); }
+  private syncTouch(): void { this.touch.sync(this.screen === 'playing', this.interactions?.target?.kind === 'hide' && this.player.grounded, this.player.hidden, this.interactions?.slipperInHand ?? false, has(this.progress, 'flashlight') && this.world.viewmodel.ready, this.player.grounded); }
+  dispose(): void { this.abort.abort(); this.display.dispose(); this.ui.dispose(); this.input.dispose(); this.touch.dispose(); this.audio.dispose(); this.engine?.stopRenderLoop(); this.world?.dispose(); this.engine?.dispose(); }
 }

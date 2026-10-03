@@ -334,7 +334,7 @@ export class AbandonedInterior {
     const room = this.world.room(p).id, low = settings.quality === 'low';
     for (const mesh of this.meshes) {
       const meta = mesh.metadata as { room: string; surface: Surface };
-      const sameFloor = meta.room.startsWith('U') === (p.y > 2), bounds = mesh.getBoundingInfo().boundingBox;
+      const sameFloor = meta.room.startsWith('U') === (p.level === 1 || room === 'F03' && p.y > 2), bounds = mesh.getBoundingInfo().boundingBox;
       const distance = Math.hypot(Math.max(bounds.minimumWorld.x - p.x, 0, p.x - bounds.maximumWorld.x), Math.max(bounds.minimumWorld.z - p.z, 0, p.z - bounds.maximumWorld.z));
       const visible = (sameFloor || meta.room === 'F03') && distance < (low ? 11 : 18);
       mesh.setEnabled(visible && (meta.surface !== 'moon' || !low && meta.room === room));

@@ -9,6 +9,7 @@ import { HauntedEnvironment } from './haunting.ts';
 import { calmAtmosphere } from './horror.ts';
 import type { Atmosphere } from './horror.ts';
 import { AbandonedInterior } from './decay.ts';
+import { PlayerCollision } from './player-physics.ts';
 
 export const B = (window as unknown as { BABYLON: typeof Babylon }).BABYLON;
 export const vector = (p: Vec3) => B.Vector3.FromArray(p);
@@ -19,6 +20,8 @@ export class World {
   readonly sky: Babylon.HemisphericLight;
   data!: HouseManifest;
   nav!: Navigation;
+  private playerCollision?: PlayerCollision;
+  get collision(): PlayerCollision { return this.playerCollision ??= new PlayerCollision(this.data, this.nav); }
   meshes: Babylon.AbstractMesh[] = [];
   ghost!: Babylon.TransformNode;
   arms!: Babylon.TransformNode;
@@ -179,17 +182,19 @@ export class World {
         gate.mesh.setEnabled(closed); if (closed) this.dynamic.push(gate.collider);
       }
       this.nav.setDynamicColliders(this.dynamic);
+      this.collision.setDynamicColliders(this.dynamic);
     }
     this.key.setEnabled(p.cabinet && !p.collected.includes('exit-key'));
   }
   get colliders(): Collider[] { return this.data.colliders.concat(this.dynamic); }
   clearSight(a: Vec3, b: Vec3): boolean { const hit = worldHit(a, b, this.colliders); return hit === null || hit > .985; }
   room(p: Position): { id: string; name: string } {
-    if (p.y > .05 && p.y < this.data.floorRise - .05) return { id: 'F03', name: 'Hardwood staircase' };
+    const [x0, x1, z0, z1] = this.data.stair.rect;
+    if (p.x >= x0 && p.x <= x1 && p.z >= z0 && p.z <= z1) return { id: 'F03', name: 'Hardwood staircase' };
     return this.data.rooms.find(r => r.floor === p.level && r.id !== 'F03' && r.rects.some(([x0, x1, z0, z1]) => p.x >= x0 && p.x <= x1 && p.z >= z0 && p.z <= z1)) ?? { id: 'OUT', name: 'Outside' };
   }
   update(p: Position, direction: Babylon.Vector3, settings: Settings, progress: Progress, flashlightOn: boolean, time: number): void {
-    const room = this.room(p).id, upper = p.y > 2, nearStairs = p.x > -1.4 && p.x < 3.7 && p.z > -8;
+    const room = this.room(p).id, upper = p.level === 1 || room === 'F03' && p.y > 2, nearStairs = p.x > -1.4 && p.x < 3.7 && p.z > -8;
     for (const mesh of this.meshes) {
       const name = mesh.name;
       mesh.setEnabled(!name.startsWith('roof') && (!name.startsWith('U') || upper || nearStairs) && (!name.startsWith('F') || !upper || nearStairs || name.startsWith('F03') || name.includes('ceiling')));

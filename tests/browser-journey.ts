@@ -13,6 +13,8 @@ import { attachAudioAudit } from './audio-audit.ts';
 import { attachMusicAudit } from './music-audit.ts';
 import { attachAmbienceAudit } from './ambience-audit.ts';
 import type { AudioSystem } from '../src/audio.ts';
+import { attachJumpAudit } from './jump-audit.ts';
+import { attachDisplayAudit } from './display-audit.ts';
 
 interface JourneyHost {
   world: World; player: Player; input: InputSystem; ghost: GhostStateMachine; interactions: InteractionSystem;
@@ -30,6 +32,8 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
   panel.innerHTML = '<details open><summary>DEVELOPMENT VALIDATION</summary><div><p>Normal collision, objectives and live enemy.</p><button>Run full journey</button><button id="journey-touch">Run touch journey</button><button id="journey-mode">Preview touch controls</button><button id="journey-saved">Resume saved journey</button><button id="journey-retry" hidden>Continue journey from checkpoint</button><pre style="white-space:pre-wrap" role="status">Ready</pre></div></details>';
   document.body.append(panel);
   const content = panel.querySelector('details > div')!;
+  const jumpAudit = attachJumpAudit(content, host);
+  attachDisplayAudit(content, host.world);
   attachAudioAudit(content, () => host.action('journal'));
   attachMusicAudit(content, () => host.action('journal'));
   attachAmbienceAudit(content, () => host.action('journal'));
@@ -61,7 +65,7 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
     steps = ['flashlight', 'note', 'fuse', 'tsinelas', 'battery-kitchen', 'breaker', 'letter', 'locket', ...(mobile ? ['hide-guest' as const] : []), 'music-box', 'cabinet', 'exit-key', 'exit'];
     host.input.setTouchMode(mobile);
     index = extraStep = 0; catches = 0; elapsed = distance = settle = reportAt = 0; route = prior = null; completed.length = fps.length = 0; seenStates.clear(); retry.hidden = true;
-    host.action('new'); host.action('resume'); running = true; button.disabled = touchRun.disabled = true; report(mobile ? 'Running with touch pointers' : 'Running');
+    host.action('new'); host.action('start-game'); host.action('resume'); running = true; button.disabled = touchRun.disabled = true; report(mobile ? 'Running with touch pointers' : 'Running');
   };
   button.addEventListener('click', () => begin(false));
   touchRun.addEventListener('click', () => begin(true));
@@ -110,6 +114,7 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
     return p.collected.some(item => item === id);
   }
   return dt => {
+    jumpAudit(dt);
     mixTime += dt;
     if (mixTime > .25) { mixTime = 0; const a = host.audioDiagnostics(); mix.textContent = `${a.soundtrack} · ${a.state}\nBGM ${a.background?.track ?? 'none'} → ${a.background?.requested ?? 'none'} · ${a.background?.playing ? 'playing' : 'paused'} · ${(a.background?.time ?? 0).toFixed(1)} s\nMixkit ${a.ambience.status} · ${a.ambience.playing ? 'playing' : 'quiet'} · ${a.ambience.time.toFixed(1)} s · gain ${a.ambience.gain.toFixed(3)}\nDuck music ${a.ducking.music.toFixed(2)} / ambience ${a.ducking.ambience.toFixed(2)}\nVoices ${a.transientVoices}/20 · loops ${a.permanentSources}\nFear ${host.atmosphere().fear.toFixed(2)} · proximity ${host.atmosphere().proximity.toFixed(2)}`; }
     if (!running) return;

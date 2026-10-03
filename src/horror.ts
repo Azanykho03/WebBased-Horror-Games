@@ -1,5 +1,7 @@
 import type { GhostState, HouseManifest, Position, Vec3 } from './types.ts';
 import type { VoiceCue } from './config.ts';
+import { difficultySettings } from './difficulty.ts';
+import type { Difficulty } from './difficulty.ts';
 
 export type Soundscape = 'CALM_EXPLORATION' | 'UNEASY' | 'CORAZON_NEARBY' | 'CORAZON_DETECTED_PLAYER' | 'CHASE' | 'HIDING' | 'JUMPSCARE' | 'POST_JUMPSCARE' | 'GAME_OVER' | 'ENDING';
 export type Surface = 'wood' | 'tile' | 'concrete' | 'metal' | 'dirt';
@@ -46,6 +48,7 @@ const unsettling = new Set(['F06', 'F07', 'F08', 'U00', 'U03', 'U06']);
 // One simulation-clock scheduler. Pause freezes it; retry resets every pending event.
 // It never changes navigation, objectives, inventory, or the real ghost's position.
 export class HorrorDirector {
+  difficulty: Difficulty = 'medium';
   atmosphere = calmAtmosphere();
   private data: HouseManifest;
   private random: () => number;
@@ -67,7 +70,7 @@ export class HorrorDirector {
   private pick<T>(items: T[]): T { return items[Math.floor(this.between(0, items.length))]; }
   reset(): void {
     this.atmosphere = calmAtmosphere(); this.clock = 0;
-    this.nextEvent = this.between(16, 25); this.nextStorm = this.between(30, 52);
+    this.nextEvent = this.between(16, 25) * difficultySettings[this.difficulty].encounterInterval; this.nextStorm = this.between(30, 52);
     this.quiet = this.quietWhisper = this.scareTime = this.recovery = this.detection = 0;
     this.previousGhost = 'Dormant'; this.recent = []; this.cooldown.clear(); this.whisperHistory.clear(); this.lastWhisper = -1;
   }
@@ -102,7 +105,7 @@ export class HorrorDirector {
     }
     this.nextEvent -= dt;
     if (this.nextEvent > 0 || input.ghostState === 'Chase' || this.recovery > 0 || input.ghostGrace > 0) return { atmosphere: { ...a }, events };
-    this.nextEvent = this.between(25, 55) * (a.proximity > .5 ? .85 : 1);
+    this.nextEvent = this.between(25, 55) * (a.proximity > .5 ? .85 : 1) * difficultySettings[this.difficulty].encounterInterval;
     const kinds: HauntKind[] = input.hidden ? ['creak', 'knock', 'footsteps', 'whisper', 'silence'] : ['creak', 'knock', 'scratch', 'footsteps', 'object', 'whisper', 'silence', 'light'];
     if (!input.hidden) {
       const local: Record<string, HauntKind> = { F02: 'piano', F05: 'drip', F07: 'drip', F08: 'glass', F09: 'metal', U00: 'glass', U01: 'paper', U02: 'paper', U05: 'drip', U07: 'metal' };

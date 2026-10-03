@@ -1,0 +1,23 @@
+PASS: Hard checkpoint preserved after returning to menu, reloading, entering a new difficulty selection with Medium shown, reloading that screen without Start Game, then continuing.
+Hard · This night’s difficulty
+
+THE FRONT DOOR HAS LOCKED
+Stay quiet.
+
+Find the flashlight and warning on the living-room coffee table. Return what belongs to this house.
+
+W A S D Move
+Mouse Look
+E Interact / hide
+F Flashlight
+Shift Sprint
+Space Jump
+Click Throw tsinelas
+Tab Journal
+Esc Pause
+Click to play
+↗
+Main menu
+↗
+
+A click enables sound and mouse look. If mouse lock is unavailable, hold right mouse to look or use the arrow keys.

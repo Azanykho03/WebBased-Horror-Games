@@ -1,0 +1,10 @@
+PASS · ILI ILI + Mixkit in one mixer
+Actual RMS: music 0.020874 / ambience 0.006479
+Ambience quieter · mixed peak 0.008365
+70.0 s native loop · seam jump 0.004310
+Dialogue / chase / jumpscare duck both layers
+Smooth release (including reset) · overlapping cues retain ducking
+Ghost voice, footsteps, door, sting remain audible
+Independent sliders + master mute
+Pause freezes both · resume + 8 resets
+Menu fade + return · one ambience source · disposal

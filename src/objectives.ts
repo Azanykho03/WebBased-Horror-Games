@@ -1,4 +1,5 @@
 import type { InteractionId, ItemId, Mission, Progress } from './types.ts';
+import { difficultySettings } from './difficulty.ts';
 export const KEEPSAKES: ItemId[] = ['locket', 'letter', 'music-box'];
 export const has = (p: Progress, id: ItemId) => p.collected.includes(id);
 export const keepsakeCount = (p: Progress) => KEEPSAKES.filter(id => has(p, id)).length;
@@ -56,7 +57,7 @@ export function interact(p: Progress, id: InteractionId): InteractionResult {
   if (id.startsWith('battery-')) {
     if (has(p, id as ItemId)) return no('Already collected.');
     if (p.battery >= 99) return no('The flashlight is charged. Leave this battery for later.');
-    p.battery = Math.min(100, p.battery + 55);
+    p.battery = Math.min(100, p.battery + difficultySettings[p.difficulty].batteryPickup);
     return collect(id as ItemId, 'Fresh battery fitted.');
   }
   const messages: Partial<Record<ItemId, string>> = {

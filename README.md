@@ -28,24 +28,43 @@ weights, source footage and working reference collections remain outside `dist/`
 
 ## Play
 
-WASD moves, mouse looks, Shift sprints, E interacts/hides, F toggles the light,
+WASD moves, mouse looks, Shift sprints, **Space jumps**, E interacts/hides, F toggles the light,
 left click throws the tsinelas, Tab toggles the journal and Escape pauses.
 If pointer lock is unavailable, hold the right mouse button to look or use the
 arrow keys. Click the play/continue button to enable sound.
 
 On a touch phone, controls appear automatically: left joystick moves, right-side
 drag looks, **Interact** uses items/doors, **Light** toggles the flashlight, **Run**
-toggles sprint, **Hide/Leave** uses hiding places, and **Throw** throws the tsinelas.
+toggles sprint, **Jump** jumps, **Hide/Leave** uses hiding places, and **Throw** throws the tsinelas.
 Journal and Pause are at the top right. Movement, camera and buttons accept
 simultaneous pointers. Keyboard movement or a mouse press restores desktop input
 on hybrid devices. Touch sensitivity is adjustable in Settings.
 
 Landscape is recommended; portrait remains playable and its rotation hint can
-be dismissed. Orientation changes resize the game without reloading. Auto graphics
+be dismissed. Mobile landscape gameplay attempts document fullscreen once, then
+retries on a gameplay tap or Play/Continue if activation was required. Unsupported
+browsers keep the viewport-filling layout. Manual fullscreen exit is respected;
+there is no request loop. Rotation, fullscreen changes and browser chrome changes
+resize the renderer and camera without reloading. Auto graphics
 uses fewer lights, a 256px flashlight shadow, reduced rain/dust and a capped render
 resolution for touch devices. Slow sustained frame rates gradually reduce resolution;
 Standard and Low remain selectable. Serve `dist/` from a normal HTTP(S) host to
 play from an Android URL; no app installation or account is needed.
+
+Choose **Easy**, **Medium** (default), or **Hard** before starting a new night.
+Checkpoints keep that choice; older saves load as Medium. Easy gives a slower ghost,
+longer reaction/escape windows, fewer incidental encounters and more battery life.
+Hard increases detection, pursuit and hearing, shortens attack/stun windows, and
+makes batteries less generous. Essential items and objective order stay the same.
+All tuning lives in `src/difficulty.ts`.
+
+Jumping raises the actual player body with a 5.4 m/s impulse and 15 m/s² gravity
+(about 0.97 m at the apex). It requires ground contact and a fresh press. Furniture
+tops support landing, chair seats/backs and bed mattresses/headboards have separate
+player collision shapes, and solid walls, windows, closed gates and ceilings block
+the body. The original stair ramp and enemy navigation remain shared. There is no
+jump clip in the supplied arm rig; the equipped arm follows the physically moving
+camera and walking bob stops in the air.
 
 1. Take the flashlight and read the warning near the entrance.
 2. Find the fuse on the kitchen counter. Install it in the upstairs hallway
@@ -60,7 +79,8 @@ a utility room and front exit; those locations were adapted to the existing hous
 
 The kitchen introduces Corazon once per saved run. Walls block sight, footsteps
 attract her, and a hiding place only conceals an entry she did not witness.
-The recoverable tsinelas stuns for two seconds, with immunity afterward.
+The recoverable tsinelas stuns for two seconds on Medium (2.8 on Easy, 1.5 on Hard),
+with immunity afterward.
 Escape is possible without a successful throw. Checkpoints preserve collected
 items and put the enemy away from the player with a recovery window.
 
@@ -172,6 +192,12 @@ to each recording's end to verify looping, checks sequential fades and independe
 music/master mute, then tests pause/resume, resets and disposal during a fade.
 See [tests/background-music-validation.md](tests/background-music-validation.md)
 for the results and the physical-device testing limit.
+**Check desktop jumping** and **Check touch jumping** walk the actual player to
+the living-room table, jump onto it, reject repeated/airborne jump input, hold a
+stable landing, and walk off under gravity.
+**Check landscape fullscreen** uses the production display controller with a
+simulated mobile capability and the real browser Fullscreen API, then checks the
+canvas and camera aspect before exiting.
 **Preview touch controls** enables a manual layout preview on a desktop browser.
 Collapse the validation panel to see the HUD unobstructed.
 
@@ -189,3 +215,6 @@ The project's local TypeSafe/JEV skill was read with its live documentation.
 Its guidance keeps known rules in code. This game's deterministic progression,
 collision and enemy states use strict TypeScript and tests; no unnecessary
 network AI dependency or global skill installation was introduced.
+
+Jumping, difficulty, mobile layout and fullscreen verification are recorded in
+[tests/jump-difficulty-validation.md](tests/jump-difficulty-validation.md).
