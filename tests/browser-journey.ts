@@ -11,6 +11,7 @@ import type { Atmosphere, HauntEvent } from '../src/horror.ts';
 import { TouchDriver } from './touch-driver.ts';
 import { attachAudioAudit } from './audio-audit.ts';
 import { attachMusicAudit } from './music-audit.ts';
+import { attachAmbienceAudit } from './ambience-audit.ts';
 import type { AudioSystem } from '../src/audio.ts';
 
 interface JourneyHost {
@@ -31,6 +32,7 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
   const content = panel.querySelector('details > div')!;
   attachAudioAudit(content, () => host.action('journal'));
   attachMusicAudit(content, () => host.action('journal'));
+  attachAmbienceAudit(content, () => host.action('journal'));
   const mix = document.createElement('pre'); mix.setAttribute('aria-label', 'Audio diagnostics'); content.append(mix);
   const audition = document.createElement('button'); audition.textContent = 'Audition weather / haunt'; content.append(audition);
   let auditionIndex = 0, mixTime = 0;
@@ -109,7 +111,7 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
   }
   return dt => {
     mixTime += dt;
-    if (mixTime > .25) { mixTime = 0; const a = host.audioDiagnostics(); mix.textContent = `${a.soundtrack} · ${a.state}\nBGM ${a.background?.track ?? 'none'} → ${a.background?.requested ?? 'none'} · ${a.background?.playing ? 'playing' : 'paused'} · ${(a.background?.time ?? 0).toFixed(1)} s\nVoices ${a.transientVoices}/20 · loops ${a.permanentSources}\nFear ${host.atmosphere().fear.toFixed(2)} · proximity ${host.atmosphere().proximity.toFixed(2)}`; }
+    if (mixTime > .25) { mixTime = 0; const a = host.audioDiagnostics(); mix.textContent = `${a.soundtrack} · ${a.state}\nBGM ${a.background?.track ?? 'none'} → ${a.background?.requested ?? 'none'} · ${a.background?.playing ? 'playing' : 'paused'} · ${(a.background?.time ?? 0).toFixed(1)} s\nMixkit ${a.ambience.status} · ${a.ambience.playing ? 'playing' : 'quiet'} · ${a.ambience.time.toFixed(1)} s · gain ${a.ambience.gain.toFixed(3)}\nDuck music ${a.ducking.music.toFixed(2)} / ambience ${a.ducking.ambience.toFixed(2)}\nVoices ${a.transientVoices}/20 · loops ${a.permanentSources}\nFear ${host.atmosphere().fear.toFixed(2)} · proximity ${host.atmosphere().proximity.toFixed(2)}`; }
     if (!running) return;
     if (host.screen() === 'intro') return;
     seenStates.add(host.ghost.state);

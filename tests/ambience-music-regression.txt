@@ -1,0 +1,8 @@
+PASS · Actual supplied MP3s
+MELANCHOLIA → ILI ILI → menu
+Both recordings loop · one streaming player
+0.8 s fade out / fade in
+Music + master mute independently
+Pause freezes position · resume + 8 resets
+Dispose during fade clears media
+Output peaks: 0.007981 / 0.003654

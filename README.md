@@ -82,7 +82,15 @@ items and put the enemy away from the player with a recovery window.
   on each side of a track change. Sound unlocks on the first click, tap or key
   press; menu settings/credits keep menu music, while pause and backgrounding
   freeze playback. Resume keeps the current position; returning to the menu
-  restores MELANCHOLIA. Original procedural rain/wind, adaptive tension, directional ghost
+  restores MELANCHOLIA. The supplied `mixkit-horror-ambience-2482.wav` sits quietly
+  beneath ILI ILI through the same context, Ambience slider and master limiter.
+  Its steady interior uses a three-second crossfade for a gapless 70-second native
+  loop; the source WAV and both MP3s remain unchanged. A soft low-pass filter and
+  0.055 base gain leave room for the music box and foreground effects. The layer
+  follows actual game-music playback/fades, freezes on pause, and fades out for
+  the menu. Both background buses duck for dialogue, chase and jumpscares with
+  fast attacks and smooth recovery; concurrent cues retain the stronger duck.
+  Original procedural rain/wind, adaptive tension, directional ghost
   movement/voices, heartbeat, exertion breathing, varied surface steps, doors and
   object sounds remain, including contextual ducking through ten gameplay states.
 - Horror director: bounded, room-aware events, recent-event memory, silence before

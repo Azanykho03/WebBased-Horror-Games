@@ -1,8 +1,9 @@
 import type { Position, Settings, Vec3, InteractionId, Hotspot } from './types.ts';
-import { assetUrl, MUSIC_AUDIO, VOICE_AUDIO } from './config.ts';
+import { AMBIENCE_AUDIO, assetUrl, MUSIC_AUDIO, VOICE_AUDIO } from './config.ts';
 import type { VoiceCue } from './config.ts';
 import { BackgroundMusic } from './music.ts';
 import type { MusicTrack } from './music.ts';
+import { createAmbienceLoop, HORROR_AMBIENCE_LEVEL } from './ambience.ts';
 import { clamp } from './horror.ts';
 import type { Atmosphere, HauntEvent, Soundscape, Surface } from './horror.ts';
 
@@ -27,6 +28,14 @@ export class AudioSystem {
   private buses!: Record<Bus, GainNode>;
   private musicDuck!: GainNode;
   private ambientDuck!: GainNode;
+  private horrorAmbience!: GainNode;
+  private ambienceSource: AudioBufferSourceNode | null = null;
+  private ambienceStatus: 'idle' | 'loading' | 'ready' | 'unavailable' = 'idle';
+  private ambienceStarted: number | null = null;
+  private ambienceTarget = 0;
+  private silence = 0;
+  private scareUntil = 0;
+  private duckTargets = { music: 1, ambience: 1 };
   private wind!: GainNode;
   private rain!: GainNode;
   private rainFilter!: BiquadFilterNode;
@@ -61,8 +70,12 @@ export class AudioSystem {
   private mixTick = 0;
   constructor(settings: Settings) { this.settings = settings; }
   get state(): string { return this.context?.state ?? 'uninitialized'; }
-  get diagnostics() { return { state: this.state, soundtrack: this.stateName, transientVoices: this.playing.size, permanentSources: this.permanent.length, active: this.active, background: this.background?.diagnostics ?? null }; }
-  setMusic(track: MusicTrack | null): void { this.musicTrack = track; this.background?.select(track); }
+  get diagnostics() { return { state: this.state, soundtrack: this.stateName, transientVoices: this.playing.size, permanentSources: this.permanent.length, active: this.active, background: this.background?.diagnostics ?? null,
+    ambience: { status: this.ambienceStatus, playing: this.active && this.state === 'running' && this.ambienceTarget > 0 && Boolean(this.ambienceSource),
+      gain: this.horrorAmbience?.gain.value ?? 0, duration: this.ambienceSource?.buffer?.duration ?? 0,
+      time: this.ambienceSource && this.ambienceStarted !== null ? (this.context!.currentTime - this.ambienceStarted) % this.ambienceSource.buffer!.duration : 0 },
+    ducking: { music: this.musicDuck?.gain.value ?? 1, ambience: this.ambientDuck?.gain.value ?? 1 } }; }
+  setMusic(track: MusicTrack | null): void { this.musicTrack = track; this.background?.select(track); this.syncAmbience(); }
   start(): void {
     if (this.disposed) return;
     this.active = true;
@@ -72,19 +85,23 @@ export class AudioSystem {
       this.background?.resume();
     } catch { /* Captions and gameplay remain available without Web Audio. */ }
   }
-  pause(): void { this.active = false; this.background?.pause(); void this.context?.suspend().catch(() => {}); }
+  pause(): void {
+    this.active = false; this.background?.pause(); this.silenceAmbience();
+    void this.context?.suspend().catch(() => {});
+  }
   reset(): void {
     this.voiceToken++; this.voicePlaying = null;
     for (const sound of [...this.playing]) sound.stop();
     this.lastEffect.clear(); this.variants.clear();
     this.beat = .5; this.breath = 1; this.pulse = this.phrase = this.dialogue = this.mixTick = 0; this.ghostStep = 1; this.vocal = 18;
     this.stateName = 'CALM_EXPLORATION';
+    this.silence = this.scareUntil = 0; this.duckTargets = { music: 1, ambience: 1 };
     if (this.context) {
       for (const gain of [this.wind, this.rain, this.roomtone, this.ghostBreath, ...Object.values(this.layers)]) {
         gain.gain.cancelScheduledValues(this.context.currentTime); gain.gain.setValueAtTime(0, this.context.currentTime);
       }
       for (const gain of [this.musicDuck, this.ambientDuck]) {
-        gain.gain.cancelScheduledValues(this.context.currentTime); gain.gain.setValueAtTime(1, this.context.currentTime);
+        gain.gain.cancelScheduledValues(this.context.currentTime); gain.gain.setTargetAtTime(1, this.context.currentTime, .8);
       }
     }
   }
@@ -104,10 +121,12 @@ export class AudioSystem {
     limiter.connect(this.master);
     this.buses = { music: this.gain(limiter), ambience: this.gain(limiter), effects: this.gain(limiter), voice: this.gain(limiter) };
     this.musicDuck = this.gain(this.buses.music, 1); this.ambientDuck = this.gain(this.buses.ambience, 1);
+    const ambienceFilter = c.createBiquadFilter(); ambienceFilter.type = 'lowpass'; ambienceFilter.frequency.value = 1800; ambienceFilter.Q.value = .7;
+    ambienceFilter.connect(this.ambientDuck); this.horrorAmbience = this.gain(ambienceFilter);
     this.background = new BackgroundMusic(c, this.musicDuck, { menu: assetUrl(MUSIC_AUDIO.menu), game: assetUrl(MUSIC_AUDIO.game) });
     this.background.select(this.musicTrack);
     c.addEventListener('statechange', () => {
-      if (c.state !== 'running') this.background?.pause();
+      if (c.state !== 'running') { this.background?.pause(); this.silenceAmbience(); }
       else if (this.active) this.background?.resume();
     }, { signal: this.pending.signal });
     this.noise = c.createBuffer(1, c.sampleRate * 8, c.sampleRate);
@@ -142,13 +161,61 @@ export class AudioSystem {
     layer('drone', [49, 73.55], 'sine'); layer('tension', [98, 103.7], 'triangle'); layer('nearby', [196, 207.6], 'sine');
     layer('chase', [49, 50.3], 'sawtooth'); layer('ending', [130.81, 196], 'sine');
     this.apply(this.settings);
+    this.ambienceStatus = 'loading';
+    void this.load(AMBIENCE_AUDIO).then(recording => {
+      // Keep only the prepared loop in memory, not a second decoded WAV copy.
+      this.buffers.delete(AMBIENCE_AUDIO);
+      if (this.disposed) return;
+      if (!recording) { this.ambienceStatus = 'unavailable'; return; }
+      try {
+        const source = c.createBufferSource(); source.buffer = createAmbienceLoop(c, recording);
+        source.loop = true; source.connect(this.horrorAmbience);
+        this.ambienceSource = source; this.ambienceStatus = 'ready'; this.syncAmbience();
+      } catch { this.ambienceStatus = 'unavailable'; }
+    });
     // Only configured critical clips are prefetched. Empty placeholders make no requests.
     for (const cue of ['kitchen-ghost', 'spotted', 'scream'] as const) { const path = this.path(cue); if (path) void this.load(path); }
+  }
+  private silenceAmbience(): void {
+    this.ambienceTarget = 0;
+    if (!this.context || !this.horrorAmbience) return;
+    this.horrorAmbience.gain.cancelScheduledValues(this.context.currentTime);
+    this.horrorAmbience.gain.setValueAtTime(0, this.context.currentTime);
+  }
+  private syncAmbience(): void {
+    const c = this.context, music = this.background?.diagnostics;
+    if (!c || !this.horrorAmbience) return;
+    const level = this.ambienceSource && this.active && music?.playing && music.track === 'game' && music.requested === 'game' ? music.gain * HORROR_AMBIENCE_LEVEL : 0;
+    if (level > 0 && this.ambienceSource && this.ambienceStarted === null) {
+      // Start only once ILI ILI really plays; the same audio clock freezes both
+      // layers during pause/interruption, and repeated gestures never add loops.
+      this.ambienceStarted = c.currentTime;
+      this.ambienceSource.start(); this.permanent.push(this.ambienceSource);
+    }
+    if (level === this.ambienceTarget) return;
+    this.ambienceTarget = level;
+    this.horrorAmbience.gain.setTargetAtTime(level, c.currentTime, level > 0 ? .25 : .16);
+  }
+  private duckBackground(): void {
+    const c = this.context;
+    if (!c) return;
+    const scare = this.stateName === 'JUMPSCARE' || c.currentTime < this.scareUntil;
+    const chase = this.stateName === 'CHASE', voice = this.dialogue > 0;
+    const targets = {
+      music: (scare ? .08 : Math.min(voice ? .42 : 1, chase ? .7 : 1)) * (1 - this.silence * .92),
+      ambience: (scare ? .08 : Math.min(voice ? .4 : 1, chase ? .35 : 1)) * (1 - this.silence * .97),
+    };
+    for (const key of ['music', 'ambience'] as const) {
+      if (targets[key] === this.duckTargets[key]) continue;
+      const attack = targets[key] < this.duckTargets[key]; this.duckTargets[key] = targets[key];
+      const gain = key === 'music' ? this.musicDuck : this.ambientDuck;
+      gain.gain.setTargetAtTime(targets[key], c.currentTime, attack ? scare ? .025 : .08 : .8);
+    }
   }
   apply(settings: Settings): void {
     const cleanChanged = this.settings.cleanDialogue !== settings.cleanDialogue;
     this.settings = settings;
-    if (cleanChanged) { this.voiceToken++; this.voicePlaying?.stop(); this.voicePlaying = null; }
+    if (cleanChanged) { this.voiceToken++; this.voicePlaying?.stop(); this.voicePlaying = null; this.dialogue = 0; this.duckBackground(); }
     if (!this.context) return;
     const t = this.context.currentTime;
     this.master.gain.setTargetAtTime(clamp(settings.volume) * .7, t, .08);
@@ -163,8 +230,9 @@ export class AudioSystem {
   }
   voice(cue?: VoiceCue, at?: Vec3, level = 1, occluded = false): void {
     const token = ++this.voiceToken; this.voicePlaying?.stop(); this.voicePlaying = null;
-    if (!cue || !this.active || !this.context) return;
-    this.dialogue = 3;
+    this.dialogue = 0;
+    if (!cue || !this.active || !this.context) { this.duckBackground(); return; }
+    this.dialogue = 3; this.duckBackground();
     const path = this.path(cue), ghost = cue !== 'kitchen-player' && cue !== 'recognition';
     const fallback = () => {
       // Formant/hum placeholder, not spoken dialogue. Supplied clips replace it.
@@ -178,7 +246,7 @@ export class AudioSystem {
     void this.load(path).then(buffer => {
       if (token !== this.voiceToken || !this.active || this.disposed) return;
       if (!buffer) { fallback(); return; }
-      this.dialogue = Math.min(20, buffer.duration);
+      this.dialogue = buffer.duration; this.duckBackground();
       this.voicePlaying = this.note({ buffer, duration: buffer.duration, volume: .75 * level, bus: 'voice', at, ghost: ghost && !at, attack: .01, occluded });
     });
   }
@@ -235,7 +303,7 @@ export class AudioSystem {
   effect(type: Effect, at?: Vec3): void {
     if (!this.ready(type, type === 'sting' ? 2.5 : type === 'detect' ? 5 : .12)) return;
     const tone = (frequency: number, duration: number, volume: number, delay = 0) => this.note({ frequency, endFrequency: frequency * .7, duration, volume, bus: 'effects', at, delay, scare: type === 'sting' });
-    if (type === 'sting') { this.note({ noise: true, filter: 900, q: .65, duration: .65, volume: .24, bus: 'effects', scare: true }); tone(55, .9, .17); tone(277, .42, .035); this.dialogue = 1; return; }
+    if (type === 'sting') { this.scareUntil = this.context!.currentTime + 1; this.duckBackground(); this.note({ noise: true, filter: 900, q: .65, duration: .65, volume: .24, bus: 'effects', scare: true }); tone(55, .9, .17); tone(277, .42, .035); return; }
     if (type === 'detect') { tone(146.8, .6, .095); tone(155.6, .5, .06); return; }
     if (type === 'objective') { tone(196, 1.5, .045); tone(207.6, 1.2, .025, .22); return; }
     if (type === 'pickup') { tone(740, .22, .05); tone(1113, .16, .02, .06); return; }
@@ -281,6 +349,7 @@ export class AudioSystem {
     if (old !== a.state && a.state === 'CHASE') this.pulse = 0;
     if (old !== a.state && a.state === 'CORAZON_DETECTED_PLAYER') this.effect('detect');
     this.dialogue = Math.max(0, this.dialogue - dt);
+    this.silence = a.silence; this.duckBackground(); this.syncAmbience();
     const listener = c.listener;
     if (listener.positionX) {
       listener.positionX.value = frame.eye[0]; listener.positionY.value = frame.eye[1]; listener.positionZ.value = frame.eye[2];
@@ -295,8 +364,6 @@ export class AudioSystem {
     if (this.mixTick <= 0 || old !== a.state) {
       this.mixTick = .1;
       const set = (gain: GainNode, value: number, fade = .7) => gain.gain.setTargetAtTime(value, c.currentTime, fade);
-      set(this.musicDuck, (scare ? .08 : this.dialogue > 0 ? .42 : 1) * (1 - a.silence * .92), scare ? .025 : 1.4);
-      set(this.ambientDuck, (scare ? .08 : chase ? .35 : 1) * (1 - a.silence * .97), scare ? .025 : 1.8);
       set(this.wind, (.085 + frame.rainExposure * .07) * (.8 + Math.sin(c.currentTime * .16) * .2));
       set(this.rain, .07 + frame.rainExposure * .19); this.rainFilter.frequency.setTargetAtTime(650 + frame.rainExposure * 2100, c.currentTime, 1);
       set(this.roomtone, .1); set(this.layers.drone, ending ? .005 : over ? .025 : .012);
@@ -341,6 +408,7 @@ export class AudioSystem {
     this.disposed = true; this.active = false; this.pending.abort(); this.reset();
     this.background?.dispose(); this.background = null;
     for (const source of this.permanent) { try { source.stop(); } catch { /* Already stopped. */ } source.disconnect(); }
+    this.ambienceSource?.disconnect(); this.ambienceSource = null; this.ambienceStarted = null; this.ambienceStatus = 'idle'; this.ambienceTarget = 0;
     this.permanent = []; this.buffers.clear(); void this.context?.close().catch(() => {}); this.context = null;
   }
 }

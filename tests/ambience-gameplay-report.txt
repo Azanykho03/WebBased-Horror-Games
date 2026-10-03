@@ -1,0 +1,12 @@
+PASS · Full desktop escape with live ghost
+flashlight → note → fuse → tsinelas → battery-kitchen → breaker → letter → locket → music-box → checkpoint restored → cabinet → exit-key → exit
+61.6s · 162.8m · 1 captures
+Ghost: Dormant, Patrol, Investigate, Chase, Catch
+FPS avg 59 · min 36
+
+ENDING · running
+BGM game → game · playing · 11.8 s
+Mixkit ready · playing · 54.5 s · gain 0.055
+Duck music 1.00 / ambience 1.00
+Voices 0/20 · loops 12
+Fear 0.00 · proximity 0.00

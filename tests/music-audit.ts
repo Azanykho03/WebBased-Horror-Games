@@ -11,7 +11,7 @@ export function attachMusicAudit(panel: Element, pauseGame: () => void): void {
   panel.append(button, status);
   button.addEventListener('click', async () => {
     pauseGame(); button.disabled = true; status.textContent = 'Checking supplied MP3 playback…';
-    const settings = { ...DEFAULT_SETTINGS, volume: .08, music: .65 };
+    const settings = { ...DEFAULT_SETTINGS, volume: .08, music: .65, ambience: 0 };
     const audio = new AudioSystem(settings);
     const mixer = () => audio as unknown as { context: AudioContext; master: GainNode; buses: Record<string, GainNode>; background: { media: HTMLAudioElement } };
     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
