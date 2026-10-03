@@ -1,4 +1,40 @@
-# Flashlight arms and key generation
+# Active female-arm integration — 2026-10-03
+
+The active runtime now uses the supplied rigged female right arm and the existing
+standalone yellow flashlight. No new inference was run. The original uploaded GLB
+is preserved byte for byte; all 58 joints, skin weights, UVs, textures and pose
+presets remain intact. The left mesh is disabled at runtime.
+
+See `public/assets/models/player/arms/README.md` for the current integration,
+source inspection, original-file hash, hand socket, animation and verification.
+The earlier generated arm files below are historical and remain preserved.
+
+# Current flashlight and arm refinement — 2026-10-03
+
+STATUS: COMPLETE — final yellow flashlight and posed right arm installed in the
+existing game. Continue from these files; no further inference is needed.
+
+- Combined viewmodel: `public/assets/models/player/arms/flashlight-arms/flashlight_arms.glb`
+  (27,778 triangles, 3,939,492 bytes).
+- Separate arm: the same folder's `right_arm.glb` (16,946 triangles).
+- Separate flashlight: `public/assets/models/items/flashlight/flashlight.glb`
+  (10,832 triangles).
+- TRELLIS hand/arm source retained; defective forearm repaired and skin rebaked.
+  TRELLIS flashlight had intersecting bodies and was rejected; local TripoSR
+  reused cached Hugging Face weights after its hosted Space failed. The final
+  flashlight received a hard-surface rebuild and transferred material wear.
+- `src/config.ts`, `src/player.ts`, `src/world.ts` integrate the new pose, preserve
+  PBR shading and align the beam to the lens. Production build, 31 game tests,
+  eight workflow tests and final GLB conformance checks pass.
+- See the current asset folder's `README.md`, `generation-info.json`, validation
+  reports and previews for the complete file list, provenance and offline resume.
+- Static posed meshes only; no skeleton/animation clips. Saved older models and
+  generations remain preserved. The key and ghost are outside this refinement.
+
+The following is the historical record of the earlier silver viewmodel delivery;
+its arm appearance, dimensions and integration notes are superseded above.
+
+# Earlier flashlight arms and key generation
 
 STATUS: COMPLETE
 

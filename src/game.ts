@@ -108,7 +108,7 @@ export class Game {
       this.player.reset(CHECKPOINTS.entrance);
       this.player.camera(this.world, this.settings);
       this.interactions.reset(this.progress);
-      this.world.update(this.player.position, this.player.direction, this.renderSettings, this.progress, true, 0);
+      this.world.update(this.player.position, this.player.direction, this.renderSettings, this.progress, false, 0);
       const resize = () => { this.input.clear(); this.performanceProfile.resetSamples(); this.applyResolution(); this.engine.resize(); };
       window.addEventListener('resize', resize, { signal: this.abort.signal });
       window.visualViewport?.addEventListener('resize', resize, { signal: this.abort.signal });
@@ -174,10 +174,12 @@ export class Game {
     this.horror.reset(); this.world.environment.reset(); this.world.atmosphere = calmAtmosphere();
     this.progress.battery = Math.max(this.progress.battery, 25);
     this.player.reset(CHECKPOINTS[this.progress.checkpoint]);
+    this.world.viewmodel.reset(has(this.progress, 'flashlight'));
+    this.player.flashlight = has(this.progress, 'flashlight');
     this.ghost.reset(this.progress.kitchenSeen, this.player.position);
     this.world.syncProgress(this.progress); this.interactions.reset(this.progress);
     this.player.camera(this.world, this.settings); this.ui.reset(); this.audio.reset();
-    this.world.ghost.setEnabled(this.progress.kitchenSeen); this.world.arms.setEnabled(has(this.progress, 'flashlight'));
+    this.world.ghost.setEnabled(this.progress.kitchenSeen);
     this.worldTick = 1; this.save(); this.show('ready');
   }
   private save(): void {
@@ -209,8 +211,9 @@ export class Game {
     const result = interact(this.progress, target.id);
     this.audio.interaction(target.id, target.kind, result.changed, target.position);
     if (target.id === 'note') this.speak(WARNING, 18, true);
-    this.ui.notice(this.input.touchMode && target.id === 'flashlight' ? 'Flashlight taken. Tap Light to switch it. Read the warning on the wall.' : result.message, target.id === 'note' ? 8 : 4);
+    this.ui.notice(this.input.touchMode && target.id === 'flashlight' ? 'Taking the flashlight. Tap Light after it settles. Read the warning beside it.' : result.message, target.id === 'note' ? 8 : 4);
     if (result.changed) {
+      if (target.id === 'flashlight') { this.player.flashlight = false; this.world.viewmodel.pickup(); }
       if (before !== mission(this.progress)) this.audio.effect('objective');
       this.world.syncProgress(this.progress); this.interactions.sync(this.progress); this.save();
       if (result.checkpoint) this.ghost.grace = Math.max(5, this.ghost.grace);
@@ -330,7 +333,7 @@ export class Game {
     this.audio.update(dt, { atmosphere: result.atmosphere, eye: this.player.eye, direction: this.player.direction.asArray() as Vec3,
       room, ghost, ghostOccluded: this.ghostOccluded, ghostMoving: this.ghostMoving, ...this.weather });
     for (const event of result.events) this.haunt(event);
-    const lit = has(this.progress, 'flashlight') && this.player.flashlight && this.progress.battery > 0;
+    const lit = has(this.progress, 'flashlight') && this.world.viewmodel.ready && this.player.flashlight && this.progress.battery > 0;
     this.world.environment.update(dt, p, this.player.direction, lit, this.renderSettings, presentation ? this.introTime : this.progress.elapsed);
     this.world.lighting(this.player.direction, this.renderSettings, this.progress, lit, this.progress.elapsed);
   }
@@ -340,6 +343,6 @@ export class Game {
     this.canvas.setAttribute('aria-label', touch ? 'Haunted house game. Left joystick to move, right drag to look, on-screen buttons to interact.' : 'Haunted house game. WASD to move, mouse to look, E to interact.');
   }
   private applyResolution(): void { this.engine?.setHardwareScalingLevel(this.performanceProfile.scale(this.settings, this.input.touchMode, devicePixelRatio)); }
-  private syncTouch(): void { this.touch.sync(this.screen === 'playing', this.interactions?.target?.kind === 'hide', this.player.hidden, this.interactions?.slipperInHand ?? false, has(this.progress, 'flashlight')); }
+  private syncTouch(): void { this.touch.sync(this.screen === 'playing', this.interactions?.target?.kind === 'hide', this.player.hidden, this.interactions?.slipperInHand ?? false, has(this.progress, 'flashlight') && this.world.viewmodel.ready); }
   dispose(): void { this.abort.abort(); this.ui.dispose(); this.input.dispose(); this.touch.dispose(); this.audio.dispose(); this.engine?.stopRenderLoop(); this.world?.dispose(); this.engine?.dispose(); }
 }

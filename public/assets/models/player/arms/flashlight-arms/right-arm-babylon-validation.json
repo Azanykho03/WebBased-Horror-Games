@@ -1,0 +1,34 @@
+{
+  "loaded": true,
+  "asset": "arm",
+  "babylonVersion": "9.28.0",
+  "meshCount": 3,
+  "triangles": 16946,
+  "vertices": 10846,
+  "min": [
+    -0.04699999839067459,
+    -0.382999986410141,
+    -0.06014294922351837
+  ],
+  "max": [
+    0.04699999839067459,
+    0.03700000047683716,
+    0.2590775489807129
+  ],
+  "textures": [
+    {
+      "name": "data:EnvironmentBRDFTexture2",
+      "ready": true
+    },
+    {
+      "name": "Arm_forearm_skin (Base Color)",
+      "ready": true
+    },
+    {
+      "name": "Arm_skin (Base Color)",
+      "ready": true
+    }
+  ],
+  "skeletons": 0,
+  "animations": 0
+}

@@ -7,10 +7,19 @@ import { DEFAULT_SETTINGS, freshProgress } from '../src/types.ts';
 import type { HouseManifest, Position, Vec3 } from '../src/types.ts';
 import type { InputSystem } from '../src/player.ts';
 import { GhostStateMachine } from '../src/ghost.ts';
+import { FlashlightEquipState } from '../src/flashlight-state.ts';
+import type { FlashlightViewmodel, ArmMotion } from '../src/flashlight-viewmodel.ts';
 
 // Babylon's real headless engine exercises the player and projectile systems.
 // The browser build provides the same library as a local classic script.
 (globalThis as unknown as { window: EventTarget & { BABYLON: typeof Babylon } }).window = Object.assign(new EventTarget(), { BABYLON: Babylon });
+// Rendering is covered by the browser review. The headless interaction tests
+// only need a canvas surface for the warning-note DynamicTexture.
+Object.assign(globalThis, { OffscreenCanvas: class {
+  width: number; height: number;
+  constructor(width: number, height: number) { this.width = width; this.height = height; }
+  getContext() { return { fillRect() {}, fillText() {} }; }
+} });
 const { World } = await import('../src/world.ts');
 const { Player } = await import('../src/player.ts');
 const { InteractionSystem } = await import('../src/interactions.ts');
@@ -19,6 +28,13 @@ function setup() {
   const engine = new Babylon.NullEngine(), world = new World(engine);
   world.data = data; world.nav = createNavigation(data);
   world.arms = new Babylon.TransformNode('test-arm', world.scene);
+  const equip = new FlashlightEquipState();
+  world.viewmodel = {
+    get ready() { return equip.ready; }, get visible() { return equip.visible; },
+    pickupRoot: new Babylon.TransformNode('test-world-flashlight', world.scene),
+    update(dt: number, motion: ArmMotion) { return equip.update(dt, motion.owned, motion.hidden); },
+    toggle() {},
+  } as unknown as FlashlightViewmodel;
   world.key = new Babylon.TransformNode('test-key', world.scene);
   const player = new Player(), progress = freshProgress(), keys = new Set<string>();
   const input = { keys, look: () => [0, 0], consume: () => false } as unknown as InputSystem;
@@ -28,7 +44,7 @@ function setup() {
 test('player sprint exhausts, recovers, collides, and hiding stops movement and battery drain', () => {
   const { world, player, progress, keys, input, cleanup } = setup();
   try {
-    progress.collected.push('flashlight'); keys.add('KeyW'); keys.add('ShiftLeft');
+    progress.collected.push('flashlight'); player.flashlight = true; keys.add('KeyW'); keys.add('ShiftLeft');
     let travelled = 0;
     for (let i = 0; i < 125; i++) {
       if (i === 75) player.yaw = Math.PI;

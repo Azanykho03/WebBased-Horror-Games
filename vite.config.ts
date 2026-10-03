@@ -9,7 +9,8 @@ const runtimeAssets = new Set([
   'models/environments/haunted-house/vendor/babylon.js',
   'models/environments/haunted-house/vendor/babylonjs.loaders.min.js',
   'models/environments/haunted-house/vendor/BABYLON-LICENSE.md',
-  GHOST_PROFILE.model, GHOST_PROFILE.face, ASSETS.key, ASSETS.arms,
+  GHOST_PROFILE.model, GHOST_PROFILE.face, ASSETS.key, ASSETS.arms, ASSETS.flashlight,
+  'models/player/arms/ATTRIBUTION.md',
   ...Object.values(MUSIC_AUDIO),
   ...Object.values(VOICE_AUDIO).flatMap(clip => [clip.normal, clip.clean]).filter((path): path is string => Boolean(path)),
 ]);

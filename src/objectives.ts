@@ -14,7 +14,7 @@ export function mission(p: Progress): Mission {
 }
 export function objective(p: Progress): { title: string; detail: string } {
   switch (mission(p)) {
-    case 'M01': return { title: 'Find your bearings', detail: !has(p, 'flashlight') ? 'Take the flashlight by the entrance.' : 'Read the warning on the foyer wall.' };
+    case 'M01': return { title: 'Find your bearings', detail: !has(p, 'flashlight') ? 'Take the flashlight from the living-room coffee table.' : 'Read the warning beside the flashlight on the living-room table.' };
     case 'M02': return { title: 'Restore the lights', detail: has(p, 'fuse') ? 'Install the fuse in the upstairs breaker, near Master 1.' : 'Pangitaa ang fuse sa kusina. Search the kitchen counter.' };
     case 'M03': return { title: `Recover the keepsakes · ${keepsakeCount(p)}/3`, detail: 'Locket: guest bedroom. Letter: garage workbench. Music box: far master bedroom.' };
     case 'M04': return { title: 'Return what belongs here', detail: 'Place all three keepsakes in the glass cabinet downstairs.' };
@@ -31,7 +31,7 @@ export function interact(p: Progress, id: InteractionId): InteractionResult {
   if (id === 'front-door') return no('The front latch is jammed. The warning mentions a service exit opposite the glass cabinet.');
   if (id === 'bedroom-door') return no(p.power ? 'The latch has released.' : 'The electric latch has no power. Find the kitchen fuse and the upstairs breaker.');
   if (id === 'breaker') {
-    if (!bearingsFound(p)) return no('Find the flashlight and read the foyer warning first.');
+    if (!bearingsFound(p)) return no('Find the flashlight and read the living-room warning first.');
     if (!has(p, 'fuse')) return no('A fuse is missing. Search the kitchen counter downstairs.');
     if (p.power) return no('The house has partial power. The far bedroom latch is open.');
     p.power = true; p.checkpoint = 'breaker';
@@ -50,7 +50,7 @@ export function interact(p: Progress, id: InteractionId): InteractionResult {
   }
   if (id.startsWith('hide-')) return no('A place to hide.');
   if (id === 'exit-key' && !p.cabinet) return no('The cabinet is sealed.');
-  if (id === 'fuse' && !bearingsFound(p)) return no('Read the foyer warning and take the flashlight first.');
+  if (id === 'fuse' && !bearingsFound(p)) return no('Read the living-room warning and take the flashlight first.');
   if (KEEPSAKES.includes(id as ItemId) && !p.power) return no('Restore the lights before disturbing the keepsakes.');
   if (id === 'tsinelas' && !p.kitchenSeen) return no('Something is moving in the kitchen.');
   if (id.startsWith('battery-')) {
@@ -60,7 +60,7 @@ export function interact(p: Progress, id: InteractionId): InteractionResult {
     return collect(id as ItemId, 'Fresh battery fitted.');
   }
   const messages: Partial<Record<ItemId, string>> = {
-    flashlight: 'Flashlight taken. F switches it on or off. Read the warning on the wall.',
+    flashlight: 'Taking the flashlight. F switches it on or off once it settles. Read the warning beside it.',
     note: 'Warning read. Find the kitchen fuse, then the breaker upstairs.',
     fuse: 'Kitchen fuse collected. The breaker is upstairs near Master 1.',
     locket: 'Corazon’s locket. The little portrait has been carefully kept.', letter: 'A folded letter: “Corazon, we left the light on for you.”', 'music-box': 'Corazon’s music box. One unfinished melody, then silence.',

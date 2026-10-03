@@ -115,7 +115,7 @@ def prepare_asset_mesh(source: Path, target: Path, *, asset_type, size=None,
     parent node supplies the metre scale and pivot; existing node transforms stay
     intact. This avoids a lossy texture re-encode or accidental transform baking.
     """
-    if asset_type not in {"key", "flashlight-arms"}:
+    if asset_type not in {"key", "flashlight-arms", "flashlight", "arm"}:
         raise ValueError("Unsupported asset type")
     size = size if size is not None else (0.12 if asset_type == "key" else 0.5)
     if not np.isfinite(size) or size <= 0 or not np.isfinite(rotation).all():
@@ -173,7 +173,8 @@ def prepare_asset_mesh(source: Path, target: Path, *, asset_type, size=None,
         children = list(item.get("nodes", []))
         if children:
             item["nodes"] = [len(nodes)]
-            nodes.append({"name": "Key" if asset_type == "key" else "FlashlightArms",
+            names = {"key": "Key", "flashlight-arms": "FlashlightArms", "flashlight": "Flashlight", "arm": "RightArm"}
+            nodes.append({"name": names[asset_type],
                           "children": children, "matrix": transform.flatten(order="F").tolist()})
     changes = []
     for material in document.get("materials", []):

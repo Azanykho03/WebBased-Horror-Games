@@ -1,0 +1,321 @@
+{
+  "file": "free_gameready_fps_female_arms.glb",
+  "bytes": 39313020,
+  "sha256": "1e410ec6ac5133c70bd42a691fda73d88d28744ec7fa1b0b51ab4a151e179a1d",
+  "sourceFileMatches": true,
+  "assetMetadata": {
+    "extras": {
+      "author": "BAMEN (https://sketchfab.com/bamenwo05)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/free-gameready-fps-female-arms-007f5dd998ad4376943ed6fb3dfa2e15",
+      "title": "FREE GameReady [FPS Female Arms]"
+    },
+    "generator": "Sketchfab-0.3.0",
+    "version": "2.0"
+  },
+  "nodes": 70,
+  "skeletons": 1,
+  "joints": 58,
+  "meshes": [
+    {
+      "name": "[FPS Female Left Arm]_[FPS Female Arms] Material_0",
+      "vertices": 10203,
+      "triangles": 19400,
+      "attributes": [
+        "JOINTS_0",
+        "NORMAL",
+        "POSITION",
+        "TANGENT",
+        "TEXCOORD_0",
+        "TEXCOORD_1",
+        "TEXCOORD_2",
+        "WEIGHTS_0"
+      ]
+    },
+    {
+      "name": "[FPS Female Right Arm]_[FPS Female Arms] Material_0",
+      "vertices": 10203,
+      "triangles": 19400,
+      "attributes": [
+        "JOINTS_0",
+        "NORMAL",
+        "POSITION",
+        "TANGENT",
+        "TEXCOORD_0",
+        "TEXCOORD_1",
+        "TEXCOORD_2",
+        "WEIGHTS_0"
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "name": null,
+      "mimeType": "image/png",
+      "bytes": 12467284,
+      "dimensions": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "name": null,
+      "mimeType": "image/png",
+      "bytes": 4727862,
+      "dimensions": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "name": null,
+      "mimeType": "image/png",
+      "bytes": 20046528,
+      "dimensions": [
+        4096,
+        4096
+      ]
+    }
+  ],
+  "poses": [
+    "Throw Pose",
+    "Riffle Gun Pose",
+    "Fists Pose",
+    "Heart Pose",
+    "Prime Pose"
+  ],
+  "boneHierarchy": [
+    {
+      "name": "_rootJoint",
+      "parent": "Object_5"
+    },
+    {
+      "name": "Root_01",
+      "parent": "_rootJoint"
+    },
+    {
+      "name": "Shoulder.L_00",
+      "parent": "Root_01"
+    },
+    {
+      "name": "Shoulder_2.L_02",
+      "parent": "Shoulder.L_00"
+    },
+    {
+      "name": "Forearm.L_03",
+      "parent": "Shoulder_2.L_02"
+    },
+    {
+      "name": "Hand.L_04",
+      "parent": "Forearm.L_03"
+    },
+    {
+      "name": "Finger_1.1.L_05",
+      "parent": "Hand.L_04"
+    },
+    {
+      "name": "Finger_1.2.L_06",
+      "parent": "Finger_1.1.L_05"
+    },
+    {
+      "name": "Finger_1.3.L_07",
+      "parent": "Finger_1.2.L_06"
+    },
+    {
+      "name": "Finger_1.4.L_08",
+      "parent": "Finger_1.3.L_07"
+    },
+    {
+      "name": "Finger_1.4.L_end_047",
+      "parent": "Finger_1.4.L_08"
+    },
+    {
+      "name": "Finger_2.1.L_09",
+      "parent": "Hand.L_04"
+    },
+    {
+      "name": "Finger_2.2.L_010",
+      "parent": "Finger_2.1.L_09"
+    },
+    {
+      "name": "Finger_2.3.L_011",
+      "parent": "Finger_2.2.L_010"
+    },
+    {
+      "name": "Finger_2.4.L_012",
+      "parent": "Finger_2.3.L_011"
+    },
+    {
+      "name": "Finger_2.4.L_end_048",
+      "parent": "Finger_2.4.L_012"
+    },
+    {
+      "name": "Finger_3.1.L_013",
+      "parent": "Hand.L_04"
+    },
+    {
+      "name": "Finger_3.2.L_014",
+      "parent": "Finger_3.1.L_013"
+    },
+    {
+      "name": "Finger_3.3.L_015",
+      "parent": "Finger_3.2.L_014"
+    },
+    {
+      "name": "Finger_3.4.L_016",
+      "parent": "Finger_3.3.L_015"
+    },
+    {
+      "name": "Finger_3.4.L_end_049",
+      "parent": "Finger_3.4.L_016"
+    },
+    {
+      "name": "Finger_4.1.L_017",
+      "parent": "Hand.L_04"
+    },
+    {
+      "name": "Finger_4.2.L_018",
+      "parent": "Finger_4.1.L_017"
+    },
+    {
+      "name": "Finger_4.3.L_019",
+      "parent": "Finger_4.2.L_018"
+    },
+    {
+      "name": "Finger_4.4.L_020",
+      "parent": "Finger_4.3.L_019"
+    },
+    {
+      "name": "Finger_4.4.L_end_050",
+      "parent": "Finger_4.4.L_020"
+    },
+    {
+      "name": "Finger_5.1.L_021",
+      "parent": "Hand.L_04"
+    },
+    {
+      "name": "Finger_5.2.L_022",
+      "parent": "Finger_5.1.L_021"
+    },
+    {
+      "name": "Finger_5.3.L_023",
+      "parent": "Finger_5.2.L_022"
+    },
+    {
+      "name": "Finger_5.3.L_end_051",
+      "parent": "Finger_5.3.L_023"
+    },
+    {
+      "name": "Shoulder.R_024",
+      "parent": "Root_01"
+    },
+    {
+      "name": "Shoulder_2.R_025",
+      "parent": "Shoulder.R_024"
+    },
+    {
+      "name": "Forearm.R_026",
+      "parent": "Shoulder_2.R_025"
+    },
+    {
+      "name": "Hand.R_027",
+      "parent": "Forearm.R_026"
+    },
+    {
+      "name": "Finger_1.1.R_028",
+      "parent": "Hand.R_027"
+    },
+    {
+      "name": "Finger_1.2.R_029",
+      "parent": "Finger_1.1.R_028"
+    },
+    {
+      "name": "Finger_1.3.R_030",
+      "parent": "Finger_1.2.R_029"
+    },
+    {
+      "name": "Finger_1.4.R_031",
+      "parent": "Finger_1.3.R_030"
+    },
+    {
+      "name": "Finger_1.4.R_end_052",
+      "parent": "Finger_1.4.R_031"
+    },
+    {
+      "name": "Finger_2.1.R_032",
+      "parent": "Hand.R_027"
+    },
+    {
+      "name": "Finger_2.2.R_033",
+      "parent": "Finger_2.1.R_032"
+    },
+    {
+      "name": "Finger_2.3.R_034",
+      "parent": "Finger_2.2.R_033"
+    },
+    {
+      "name": "Finger_2.4.R_035",
+      "parent": "Finger_2.3.R_034"
+    },
+    {
+      "name": "Finger_2.4.R_end_053",
+      "parent": "Finger_2.4.R_035"
+    },
+    {
+      "name": "Finger_3.1.R_036",
+      "parent": "Hand.R_027"
+    },
+    {
+      "name": "Finger_3.2.R_037",
+      "parent": "Finger_3.1.R_036"
+    },
+    {
+      "name": "Finger_3.3.R_038",
+      "parent": "Finger_3.2.R_037"
+    },
+    {
+      "name": "Finger_3.4.R_039",
+      "parent": "Finger_3.3.R_038"
+    },
+    {
+      "name": "Finger_3.4.R_end_054",
+      "parent": "Finger_3.4.R_039"
+    },
+    {
+      "name": "Finger_4.1.R_040",
+      "parent": "Hand.R_027"
+    },
+    {
+      "name": "Finger_4.2.R_041",
+      "parent": "Finger_4.1.R_040"
+    },
+    {
+      "name": "Finger_4.3.R_042",
+      "parent": "Finger_4.2.R_041"
+    },
+    {
+      "name": "Finger_4.4.R_043",
+      "parent": "Finger_4.3.R_042"
+    },
+    {
+      "name": "Finger_4.4.R_end_055",
+      "parent": "Finger_4.4.R_043"
+    },
+    {
+      "name": "Finger_5.1.R_044",
+      "parent": "Hand.R_027"
+    },
+    {
+      "name": "Finger_5.2.R_045",
+      "parent": "Finger_5.1.R_044"
+    },
+    {
+      "name": "Finger_5.3.R_046",
+      "parent": "Finger_5.2.R_045"
+    },
+    {
+      "name": "Finger_5.3.R_end_056",
+      "parent": "Finger_5.3.R_046"
+    }
+  ]
+}

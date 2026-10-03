@@ -15,6 +15,8 @@ from providers.common import GenerationError, error_code, safe_error
 
 ASSETS = {
     "flashlight-arms": ("player/arms/flashlight-arms", "flashlight_arms.glb"),
+    "flashlight": ("items/flashlight", "flashlight.glb"),
+    "arm": ("player/arms/right-arm", "right_arm.glb"),
     "key": ("items/keys", "key.glb"),
 }
 
@@ -52,6 +54,8 @@ def main(argv=None):
     parser.add_argument("--reference-strategy", help="Explain how a prepared image uses the originals")
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--resume-run", type=Path, help="Existing generation-info.json; reuse its raw mesh without a GPU call")
+    parser.add_argument("--fallback-from", type=Path, help="TRELLIS report rejected in visual review; retain its source and try TripoSR")
+    parser.add_argument("--fallback-reason", help="Specific visual defect in the rejected TRELLIS mesh")
     parser.add_argument("--trellis-space", default=os.environ.get("HF_3D_SPACE_ID") or "trellis-community/TRELLIS")
     parser.add_argument("--triposr-space", default=os.environ.get("HF_TRIPOSR_SPACE_ID") or "stabilityai/TripoSR")
     parser.add_argument("--timeout", type=float, default=600)
@@ -64,6 +68,8 @@ def main(argv=None):
     parser.add_argument("--pivot", choices=["center", "base"], default="center")
     parser.add_argument("--replace", action="store_true", help="Archive an existing successful asset before replacement")
     args = parser.parse_args(argv)
+    if args.fallback_from and (args.resume_run or not args.fallback_reason):
+        parser.error("--fallback-from requires --fallback-reason and cannot be combined with --resume-run")
     if args.timeout <= 0 or not 0 <= args.mesh_simplify < 1 or (args.size is not None and args.size <= 0):
         parser.error("Invalid timeout, mesh simplification or size")
     if args.prepared_image and not args.reference_strategy:
@@ -123,10 +129,21 @@ def main(argv=None):
                 k: previous[k] for k in ("model", "model_revision", "license", "device", "torch_version", "resolution", "chunk_size", "cpu_isosurface", "network_access") if k in previous}
             print("Reusing preserved", selected_name, "mesh:", raw, flush=True)
         else:
+            if args.fallback_from:
+                previous, attempt, rejected = cached_source(args.fallback_from, refs, chosen, args.type)
+                if attempt["generator"] != "TRELLIS":
+                    raise ValueError("Visual fallback must refer to a preserved TRELLIS generation")
+                info["attempts"] = [*previous["attempts"]]
+                info["attempts"][-1] = {**info["attempts"][-1], "status": "rejected",
+                    "error_code": "visual_quality_failed", "reason": args.fallback_reason}
+                info["rejected_run"] = str(args.fallback_from)
+                save()
             for index, (name, provider, space) in enumerate([
                 ("TRELLIS", trellis_provider, args.trellis_space),
                 ("TripoSR", triposr_provider, args.triposr_space),
             ]):
+                if args.fallback_from and name == "TRELLIS":
+                    continue
                 attempt = {"generator": name, "space_id": space, "status": "running"}
                 info["attempts"].append(attempt)
                 save()

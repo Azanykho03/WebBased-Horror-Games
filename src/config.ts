@@ -5,11 +5,16 @@ export const ASSETS = {
   house: 'models/environments/haunted-house/haunted-house.glb',
   manifest: 'models/environments/haunted-house/house-manifest.json',
   ghost: 'models/enemies/ghost/ghost.glb',
-  arms: 'models/player/arms/flashlight-arms/flashlight_arms.glb',
+  arms: 'models/player/arms/free_gameready_fps_female_arms.glb',
+  flashlight: 'models/items/flashlight/flashlight.glb',
   key: 'models/items/keys/key.glb',
   face: 'models/enemies/ghost/source/ghost-face-reference.png',
 };
 export const GAME_TITLE = 'Balay ni Corazon';
+// Camera-relative origin for the uploaded rig, after its display scale is undone.
+export const VIEWMODEL = { position: [.13, -1.9, -.02] as const };
+// Existing F02 coffee table: preserved boards top out at approximately .47 m.
+export const FLASHLIGHT_PICKUP = { position: [5.9, .515, -3.28] as [number, number, number], rotation: [.053, -.3, 0] as [number, number, number] };
 export const GHOST_PROFILE = { name: 'Corazon', face: ASSETS.face, model: ASSETS.ghost };
 export const MUSIC_AUDIO = {
   menu: 'audio/MELANCHOLIA Music Box Sad, creepy song.mp3',
@@ -25,8 +30,8 @@ export const CHECKPOINTS: Record<string, Position> = {
   cabinet: { x: 0, y: 0, z: -13.5, level: 0 },
 };
 export const HOTSPOTS: Hotspot[] = [
-  { id: 'flashlight', label: 'Take the flashlight', position: [.65, .35, -2.35], room: 'F01', kind: 'pickup', radius: .3 },
-  { id: 'note', label: 'Read the warning', position: [-1.285, 1.45, -2.7], room: 'F01', kind: 'note', radius: .27 },
+  { id: 'flashlight', label: 'Pick up Flashlight', position: [...FLASHLIGHT_PICKUP.position], room: 'F02', kind: 'pickup', radius: .19 },
+  { id: 'note', label: 'Read the warning', position: [6.34, .507, -3.3], room: 'F02', kind: 'note', radius: .2 },
   { id: 'fuse', label: 'Take the kitchen fuse', position: [-4.5, 1.1, -21.35], room: 'F05', kind: 'pickup', radius: .23 },
   { id: 'breaker', label: 'Restore the lights', position: [-1.08, 4.67, -4.65], room: 'U00', kind: 'fixture', radius: .35 },
   { id: 'locket', label: 'Take the family locket', position: [7.46, 4.04, -13.8], room: 'U03', kind: 'pickup', radius: .24 },

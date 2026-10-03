@@ -3,6 +3,7 @@ import { createNavigation } from '../scripts/3d-generation/house-navigation.mjs'
 import type { Navigation } from '../scripts/3d-generation/house-navigation.mjs';
 import type { Collider, HouseManifest, Position, Progress, Settings, Vec3 } from './types.ts';
 import { assetUrl, ASSETS, GHOST_PROFILE } from './config.ts';
+import { FlashlightViewmodel } from './flashlight-viewmodel.ts';
 import { worldHit } from './geometry.ts';
 import { HauntedEnvironment } from './haunting.ts';
 import { calmAtmosphere } from './horror.ts';
@@ -21,6 +22,7 @@ export class World {
   meshes: Babylon.AbstractMesh[] = [];
   ghost!: Babylon.TransformNode;
   arms!: Babylon.TransformNode;
+  viewmodel!: FlashlightViewmodel;
   key!: Babylon.TransformNode;
   private fixtures: { definition: HouseManifest['lights'][number]; light: Babylon.PointLight }[] = [];
   private gates = new Map<string, { mesh: Babylon.Mesh; collider: Collider }>();
@@ -28,6 +30,9 @@ export class World {
   private gateState = '';
   private shadow: Babylon.ShadowGenerator;
   private shadowQuality = '';
+  private viewmodelFill?: Babylon.PointLight;
+  private flashlightSocket?: Babylon.TransformNode;
+  private flashlightEmitter?: Babylon.PBRMaterial;
   kitchenBlackout = false;
   environment!: HauntedEnvironment;
   interior?: AbandonedInterior;
@@ -79,16 +84,23 @@ export class World {
     this.createGate('exit', 'F08--outside-escape');
     this.createGate('bedroom', 'U00--U06');
     report(`Loading ${GHOST_PROFILE.name}, your flashlight, and the red key`, 65);
-    [this.ghost, this.arms, this.key] = await Promise.all([
-      this.model(GHOST_PROFILE.model, 'ghost'), this.model(ASSETS.arms, 'flashlight-arm'), this.model(ASSETS.key, 'exit-key'),
+    const [ghost, rig, flashlight, key] = await Promise.all([
+      this.model(GHOST_PROFILE.model, 'ghost'), this.import(ASSETS.arms),
+      this.model(ASSETS.flashlight, 'held-flashlight', true), this.model(ASSETS.key, 'exit-key'),
     ]);
+    this.ghost = ghost; this.key = key;
+    this.viewmodel = new FlashlightViewmodel(this.scene, this.camera, rig, flashlight);
+    this.arms = this.viewmodel.root;
     this.ghost.setEnabled(false);
     for (const mesh of this.ghost.getChildMeshes()) this.shadow.addShadowCaster(mesh);
-    this.arms.parent = this.camera;
-    this.arms.position.set(.23, -.34, -.47);
-    this.arms.scaling.setAll(.8);
-    this.arms.setEnabled(false);
-    for (const mesh of this.arms.getChildMeshes()) { mesh.renderingGroupId = 1; mesh.isPickable = false; }
+    const armMeshes = this.viewmodel.meshes;
+    this.flashlightSocket = this.viewmodel.lens;
+    this.flashlightEmitter = armMeshes.map(mesh => mesh.material).find((m): m is Babylon.PBRMaterial => m instanceof B.PBRMaterial && m.name === 'Flashlight_emitter');
+    this.viewmodelFill = new B.PointLight('viewmodel-fill', vector([-.25, .18, -.05]), this.scene);
+    this.viewmodelFill.parent = this.camera;
+    this.viewmodelFill.includedOnlyMeshes = armMeshes;
+    this.viewmodelFill.diffuse.set(.79, .84, .91); this.viewmodelFill.range = 1.3; this.viewmodelFill.radius = .3;
+    this.flashlight.excludedMeshes = armMeshes;
     // Only the foreground arm clears depth; it cannot clip into a nearby wall.
     this.scene.setRenderingAutoClearDepthStencil(1, true, true, true);
     this.key.position.set(.58, 1.38, -13.5); this.key.scaling.setAll(1.6); this.key.setEnabled(false);
@@ -107,10 +119,15 @@ export class World {
     const url = assetUrl(path), slash = url.lastIndexOf('/');
     return B.SceneLoader.ImportMeshAsync(null, url.slice(0, slash + 1), url.slice(slash + 1), this.scene);
   }
-  private async model(path: string, name: string): Promise<Babylon.TransformNode> {
+  private async model(path: string, name: string, preservePbr = false): Promise<Babylon.TransformNode> {
     const result = await this.import(path), root = new B.TransformNode(name, this.scene);
     for (const mesh of result.meshes) if (!mesh.parent) mesh.parent = root;
-    this.standardMaterials(result.meshes.filter(m => m.getTotalVertices() > 0), false);
+    if (preservePbr) {
+      for (const mesh of result.meshes) if (mesh.material instanceof B.PBRMaterial) {
+        mesh.material.maxSimultaneousLights = 4;
+        mesh.material.environmentIntensity = .25;
+      }
+    } else this.standardMaterials(result.meshes.filter(m => m.getTotalVertices() > 0), false);
     return root;
   }
   private standardMaterials(meshes: Babylon.AbstractMesh[], house: boolean): void {
@@ -194,8 +211,18 @@ export class World {
   }
   lighting(direction: Babylon.Vector3, settings: Settings, progress: Progress, flashlightOn: boolean, time: number): void {
     this.flashlight.position.copyFrom(this.camera.position); this.flashlight.direction.copyFrom(direction);
+    if (this.flashlightSocket) {
+      this.flashlightSocket.computeWorldMatrix(true);
+      this.flashlight.position.copyFrom(this.flashlightSocket.getAbsolutePosition());
+      this.flashlight.direction.copyFrom(this.flashlightSocket.getDirection(vector([0, 0, -1])).normalize());
+    }
     const e = this.environment;
-    this.flashlight.intensity = flashlightOn && progress.battery > 0 ? 2.3 * settings.brightness * (1 - (e?.flashlightDip ?? 0)) : 0;
+    this.flashlight.intensity = flashlightOn && progress.collected.includes('flashlight') && this.viewmodel.ready && progress.battery > 0 ? 2.3 * settings.brightness * (1 - (e?.flashlightDip ?? 0)) : 0;
+    if (this.viewmodelFill) { this.viewmodelFill.intensity = .5 * settings.brightness; this.viewmodelFill.setEnabled(this.viewmodel.visible); }
+    if (this.flashlightEmitter) {
+      const lit = this.flashlight.intensity > 0;
+      this.flashlightEmitter.emissiveColor.set(lit ? .85 : .012, lit ? .76 : .012, lit ? .46 : .009);
+    }
     this.sky.intensity = (.19 + (e?.lightning ?? 0) * .23) * settings.brightness;
     for (const f of this.fixtures) {
       if (!f.light.isEnabled()) continue;

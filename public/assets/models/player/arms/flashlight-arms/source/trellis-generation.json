@@ -1,0 +1,127 @@
+{
+  "status": "complete",
+  "asset_type": "arm",
+  "started_at": "20261002T175618_095409Z",
+  "generator": "TRELLIS",
+  "fallback_used": false,
+  "rigged": false,
+  "animated": false,
+  "babylon_ready": false,
+  "attempts": [
+    {
+      "generator": "TRELLIS",
+      "space_id": "trellis-community/TRELLIS",
+      "status": "generated",
+      "raw_asset": ".cache/3d-generation/runs/arm-20261002T175618_095409Z/trellis/downloads/fbe081edd21a9fea2f90418d5ecc2d07af104eee843c13c80e8ef1bc051a3b3b/sample.glb"
+    }
+  ],
+  "asset_directory": ".cache/3d-generation/flashlight-refinement/arm",
+  "run_directory": ".cache/3d-generation/runs/arm-20261002T175618_095409Z",
+  "references_used": [
+    "source/reference-1.png"
+  ],
+  "reference_original_names": [
+    "arm.png"
+  ],
+  "reference_sha256": {
+    "reference-1.png": "ee9c63a0114e32ab402d2a1fd8cdd942a4c9782a3c2751143d06a12cc83adf2e"
+  },
+  "generation_input": "source/prepared-reference.png",
+  "generation_input_sha256": "744b289aedf32ae5d06fccefa4778b5d884d781876def78ee6dd20ad2aa340ec",
+  "reference_strategy": "Original arm supplies anatomy, proportions and skin tone; built-in imagegen reposes the hand to grip the separate flashlight. Hidden anatomy is inferred.",
+  "seed": 42,
+  "texture_size_requested": 2048,
+  "mesh_simplify_requested": 0.5,
+  "raw_source": "source/generated-20261002T175618_095409Z/sample.glb",
+  "raw_sha256": "fbe081edd21a9fea2f90418d5ecc2d07af104eee843c13c80e8ef1bc051a3b3b",
+  "output": "right_arm.glb",
+  "output_sha256": "002976b093f0b321d324448d83fc1697abbf4b3e03630aeace692882ae5da865",
+  "texture_files": [
+    "textures/image-0.png"
+  ],
+  "file_size_bytes": 4539580,
+  "textures": true,
+  "validation": {
+    "format": "GLB 2.0",
+    "file_size_bytes": 4539580,
+    "triangles": 51638,
+    "vertices": 33515,
+    "mesh_count": 1,
+    "materials": 1,
+    "textures": true,
+    "embedded_images": 1,
+    "image_sizes": [
+      [
+        2048,
+        2048
+      ]
+    ],
+    "rigged": false,
+    "animated": false,
+    "bounds_metres": [
+      [
+        -0.08802830084655827,
+        -0.1671429505282773,
+        -0.3
+      ],
+      [
+        0.08802830084655826,
+        0.16714295052827732,
+        0.3
+      ]
+    ],
+    "uvs": true,
+    "external_paths": false,
+    "validation": "basic structural, embedded-image and mesh checks; not Khronos conformance",
+    "up_axis": "Y",
+    "source_up_axis": "Y",
+    "rotation_degrees_xyz": [
+      0,
+      0,
+      0
+    ],
+    "longest_dimension_metres": 0.6,
+    "pivot": "centre of mesh bounds",
+    "normalization_matrix": [
+      [
+        0.6017685353929013,
+        0.0,
+        0.0,
+        0.00230840560202696
+      ],
+      [
+        0.0,
+        0.6017685353929013,
+        0.0,
+        -0.004921448791912701
+      ],
+      [
+        0.0,
+        0.0,
+        0.6017685353929013,
+        -0.000505266363379118
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "material_changes": [
+      {
+        "material": "unnamed",
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.58
+      }
+    ],
+    "renamed_reserved_world_nodes": [
+      0
+    ],
+    "native_glb_binary_preserved": true,
+    "conversion_performed": false
+  },
+  "notes": [
+    "Structural checks passed. Visual review and runtime validation are still required."
+  ]
+}

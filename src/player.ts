@@ -82,7 +82,7 @@ export class Player {
   yaw = 0;
   pitch = 0;
   stamina = 6;
-  flashlight = true;
+  flashlight = false;
   hidden = false;
   hideExposed = false;
   moving = false;
@@ -96,7 +96,7 @@ export class Player {
     this.position = { ...position }; this.yaw = 0; this.pitch = 0;
     this.stamina = 6; this.recovery = 0; this.exhausted = false;
     this.hidden = this.hideExposed = this.moving = this.sprinting = false;
-    this.flashlight = true; this.step = 0; this.bob = 0;
+    this.flashlight = false; this.step = 0; this.bob = 0;
   }
   update(dt: number, input: InputSystem, world: World, progress: Progress, settings: Settings, noise: (p: Position, radius: number) => void, footstep: () => void): void {
     const [dx, dy] = input.look();
@@ -107,7 +107,9 @@ export class Player {
     if (input.keys.has('ArrowRight')) this.yaw += dt * 1.5;
     if (input.keys.has('ArrowUp')) this.pitch = Math.min(1.35, this.pitch + dt);
     if (input.keys.has('ArrowDown')) this.pitch = Math.max(-1.35, this.pitch - dt);
-    if (input.consume('KeyF') && progress.collected.includes('flashlight')) this.flashlight = !this.flashlight;
+    if (input.consume('KeyF') && progress.collected.includes('flashlight') && world.viewmodel.ready) {
+      this.flashlight = !this.flashlight; world.viewmodel.toggle();
+    }
     if (this.hidden) this.flashlight = false;
     const forward = Number(input.keys.has('KeyW')) - Number(input.keys.has('KeyS')) + (input.moveForward ?? 0);
     const side = Number(input.keys.has('KeyD')) - Number(input.keys.has('KeyA')) + (input.moveX ?? 0);
@@ -128,11 +130,12 @@ export class Player {
     }
     this.step += distance;
     if (this.step > (this.sprinting ? 1.1 : .95)) { this.step = 0; footstep(); noise(this.position, this.sprinting ? 11 : 3); }
-    if (this.flashlight && progress.collected.includes('flashlight')) progress.battery = Math.max(0, progress.battery - dt * .17);
     this.bob += distance * 7;
     this.camera(world, settings);
-    world.arms.setEnabled(progress.collected.includes('flashlight') && !this.hidden);
-    world.arms.position.y = -.34 + (settings.reducedMotion ? 0 : Math.sin(this.bob) * .008);
+    const equipped = world.viewmodel.update(dt, { owned: progress.collected.includes('flashlight'), hidden: this.hidden,
+      distance, moving: this.moving, sprinting: this.sprinting, reducedMotion: settings.reducedMotion });
+    if (equipped) this.flashlight = true;
+    if (this.flashlight && world.viewmodel.ready && progress.collected.includes('flashlight')) progress.battery = Math.max(0, progress.battery - dt * .17);
   }
   camera(world: World, settings: Settings): void {
     this.direction.set(Math.sin(this.yaw) * Math.cos(this.pitch), Math.sin(this.pitch), -Math.cos(this.yaw) * Math.cos(this.pitch));

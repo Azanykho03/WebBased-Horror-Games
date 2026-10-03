@@ -1,3 +1,8 @@
+> Active game update: the uploaded rigged female right arm now holds the existing
+> standalone yellow flashlight. See
+> [`public/assets/models/player/arms/README.md`](../../public/assets/models/player/arms/README.md).
+> The generated arm workflow and previous source assets below are preserved.
+
 # 3D asset generation
 
 ## Haunted-house environment
@@ -214,6 +219,26 @@ asset Babylon-ready. Mesh generation does not create a humanoid skeleton.
 GLB, glTF, OBJ, PLY and STL are loaded where supported. FBX or unusual formats may
 need Blender conversion; errors preserve raw output and never masquerade as a GLB.
 No Blender installation is required for the normal native-GLB path.
+
+## Refined yellow flashlight and right arm (2026-10-03)
+
+The active viewmodel now uses the supplied yellow flashlight and bare-arm
+references. TRELLIS supplied the hand; its flashlight result was rejected for
+duplicate intersecting bodies, so cached Hugging Face TripoSR weights supplied
+the flashlight reconstruction. The saved reconstructions were refined locally
+into complete volumes with PBR materials and integrated at the existing game path.
+
+The final assets and exact continuation commands are documented in
+[`flashlight-arms/README.md`](../../public/assets/models/player/arms/flashlight-arms/README.md).
+Use `refine_flashlight_arms.py` and its saved pre-polish arm to continue offline;
+do not run fresh inference to repeat review, polishing or assembly.
+
+`generate_asset.py --type flashlight` and `--type arm` support separate exports.
+When a successful TRELLIS result fails visual review, `--fallback-from REPORT`
+with `--fallback-reason TEXT` records the defect and tries TripoSR while retaining
+the rejected source. This path verifies that the original/prepared references
+match the saved run. The local fallback can reuse saved provider preprocessing
+with `--preprocessed-image`; it still requires recorded attempts from both Spaces.
 
 ## Offline checks
 

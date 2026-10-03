@@ -22,6 +22,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--image", type=Path, required=True)
     parser.add_argument("--resume-failures", type=Path, required=True)
+    parser.add_argument("--preprocessed-image", type=Path, help="Preserved transparent image returned by the attempted HF provider")
     parser.add_argument("--output-run", type=Path, help="Reuse this directory to resume saved inference/mesh stages")
     parser.add_argument("--resolution", type=int, default=192)
     parser.add_argument("--texture-size", type=int, default=2048)
@@ -32,7 +33,7 @@ def main():
     previous = json.loads(args.resume_failures.read_text(encoding="utf-8-sig"))
     if previous.get("generation_input_sha256") != digest(args.image):
         parser.error("Input does not match the recorded failed provider attempts")
-    failures = {a["generator"] for a in previous.get("attempts", []) if a.get("status") == "failed"}
+    failures = {a["generator"] for a in previous.get("attempts", []) if a.get("status") in {"failed", "rejected"}}
     if not {"TRELLIS", "TripoSR"}.issubset(failures):
         parser.error("Attempt TRELLIS and the TripoSR Space first, then supply their failure report")
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S_%fZ")
@@ -96,7 +97,21 @@ def main():
             codes = torch.load(state_path, map_location=device, weights_only=True)
             print("Reusing saved inference state", flush=True)
         else:
-            with Image.open(args.image) as opened:
+            if args.preprocessed_image:
+                info["preprocessed_image"] = str(args.preprocessed_image)
+                info["preprocessed_image_sha256"] = digest(args.preprocessed_image)
+            with Image.open(args.preprocessed_image or args.image) as opened:
+                if args.preprocessed_image and opened.mode == "RGB":
+                    # TRELLIS returns its rembg result composited on pure black.
+                    # Recover that provider mask for TripoSR's neutral input; do
+                    # not run another image generator or alter the source file.
+                    rgb_provider = np.asarray(opened)
+                    corners = rgb_provider[[0, 0, -1, -1], [0, -1, 0, -1]]
+                    if corners.max() > 3:
+                        raise ValueError("RGB provider preprocessing must have a black background")
+                    alpha = (rgb_provider.max(axis=2) > 3).astype(np.uint8) * 255
+                    opened = Image.fromarray(np.dstack((rgb_provider, alpha)), "RGBA")
+                    info["input_preprocessing"] = "TRELLIS foreground on black; recover provider mask and composite on TripoSR neutral gray"
                 if opened.mode != "RGBA" or opened.getextrema()[3][0] == 255:
                     raise ValueError("Local fallback needs a prepared transparent RGBA reference")
                 # Official TripoSR foreground sizing and neutral-background input.

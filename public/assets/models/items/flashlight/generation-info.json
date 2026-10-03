@@ -1,0 +1,296 @@
+{
+  "status": "complete",
+  "updated_at": "2026-10-03T01:03:53.693013+00:00",
+  "asset_type": "flashlight",
+  "generator": "TripoSR (local), followed by hard-surface rebuild and material transfer",
+  "fallback_used": true,
+  "rigged": false,
+  "animated": false,
+  "babylon_ready": true,
+  "attempts": [
+    {
+      "generator": "TRELLIS",
+      "space_id": "trellis-community/TRELLIS",
+      "status": "rejected",
+      "raw_asset": ".cache/3d-generation/runs/flashlight-20261002T175339_903096Z/trellis/downloads/3a1c7b2d65e2172e0982de3586c1a17b6e6f3c75763c0443dada04ec405e5fc0/sample.glb",
+      "error_code": "visual_quality_failed",
+      "reason": "Babylon multi-angle inspection found two intersecting flashlight bodies instead of one cylindrical prop.",
+      "component": "flashlight"
+    },
+    {
+      "generator": "TripoSR",
+      "space_id": "stabilityai/TripoSR",
+      "status": "failed",
+      "error_code": "space_unavailable",
+      "reason": "The current space is in the invalid state: RUNTIME_ERROR. Please contact the owner to fix this.",
+      "component": "flashlight"
+    },
+    {
+      "generator": "TripoSR (local)",
+      "model": "stabilityai/TripoSR",
+      "status": "generated",
+      "raw_asset": ".cache/3d-generation/flashlight-refinement/flashlight-local/triposr.glb",
+      "component": "flashlight"
+    }
+  ],
+  "reference_sha256": {
+    "public/assets/models/player/arms/flashlight-arms/source/reference-20261003/arm-grip.png": "744b289aedf32ae5d06fccefa4778b5d884d781876def78ee6dd20ad2aa340ec",
+    "public/assets/models/player/arms/flashlight-arms/source/reference-20261003/arm.png": "ee9c63a0114e32ab402d2a1fd8cdd942a4c9782a3c2751143d06a12cc83adf2e",
+    "public/assets/models/player/arms/flashlight-arms/source/reference-20261003/flashlight.png": "4af1d290e08e1b90c8de162bf791a1baf3c04b67eaf9207106a50827f6962f06"
+  },
+  "reference_strategy": "Uploaded yellow flashlight is used directly. Uploaded bare-arm image supplies anatomy and skin tone; the recorded imagegen preparation closes the hand around a grip before TRELLIS. Hidden surfaces and the grip pose are inferred.",
+  "outputs": {
+    "combined": {
+      "path": "public/assets/models/player/arms/flashlight-arms/flashlight_arms.glb",
+      "sha256": "eb79738399283f905dcb7fb13a50edcd4e67d1f6d66c1e928e6c16cf17a342e1",
+      "format": "GLB 2.0",
+      "file_size_bytes": 3939492,
+      "triangles": 27778,
+      "vertices": 16781,
+      "mesh_count": 8,
+      "materials": 8,
+      "textures": true,
+      "embedded_images": 4,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          512,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "rigged": false,
+      "animated": false,
+      "bounds_metres": [
+        [
+          -0.04699999839067459,
+          -0.382999986410141,
+          -0.17000000178813934
+        ],
+        [
+          0.04699999839067459,
+          0.03999999910593033,
+          0.2590775489807129
+        ]
+      ],
+      "uvs": false,
+      "external_paths": false,
+      "validation": "basic structural, embedded-image and mesh checks; not Khronos conformance"
+    },
+    "arm": {
+      "path": "public/assets/models/player/arms/flashlight-arms/right_arm.glb",
+      "sha256": "b7c6e3235095239baa25bfc856d3e091f21b9b5df82d8c7b040f24f3ea969f3a",
+      "format": "GLB 2.0",
+      "file_size_bytes": 1472972,
+      "triangles": 16946,
+      "vertices": 10846,
+      "mesh_count": 3,
+      "materials": 3,
+      "textures": true,
+      "embedded_images": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          512,
+          1024
+        ]
+      ],
+      "rigged": false,
+      "animated": false,
+      "bounds_metres": [
+        [
+          -0.04699999839067459,
+          -0.382999986410141,
+          -0.06014294922351837
+        ],
+        [
+          0.04699999839067459,
+          0.03700000047683716,
+          0.2590775489807129
+        ]
+      ],
+      "uvs": false,
+      "external_paths": false,
+      "validation": "basic structural, embedded-image and mesh checks; not Khronos conformance"
+    },
+    "flashlight": {
+      "path": "public/assets/models/items/flashlight/flashlight.glb",
+      "sha256": "d5ab686ee9f6a83740432c1c71c7b3a78042e390f20adf3f531aba7135cb098c",
+      "format": "GLB 2.0",
+      "file_size_bytes": 2593928,
+      "triangles": 10832,
+      "vertices": 5935,
+      "mesh_count": 5,
+      "materials": 5,
+      "textures": true,
+      "embedded_images": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "rigged": false,
+      "animated": false,
+      "bounds_metres": [
+        [
+          -0.03670518100261688,
+          -0.03670518100261688,
+          -0.17000000178813934
+        ],
+        [
+          0.03670518100261688,
+          0.03999999910593033,
+          0.09200000017881393
+        ]
+      ],
+      "uvs": true,
+      "external_paths": false,
+      "validation": "basic structural, embedded-image and mesh checks; not Khronos conformance"
+    }
+  },
+  "output": "flashlight.glb",
+  "output_sha256": "d5ab686ee9f6a83740432c1c71c7b3a78042e390f20adf3f531aba7135cb098c",
+  "validation": {
+    "path": "public/assets/models/items/flashlight/flashlight.glb",
+    "sha256": "d5ab686ee9f6a83740432c1c71c7b3a78042e390f20adf3f531aba7135cb098c",
+    "format": "GLB 2.0",
+    "file_size_bytes": 2593928,
+    "triangles": 10832,
+    "vertices": 5935,
+    "mesh_count": 5,
+    "materials": 5,
+    "textures": true,
+    "embedded_images": 2,
+    "image_sizes": [
+      [
+        1024,
+        1024
+      ],
+      [
+        1024,
+        1024
+      ]
+    ],
+    "rigged": false,
+    "animated": false,
+    "bounds_metres": [
+      [
+        -0.03670518100261688,
+        -0.03670518100261688,
+        -0.17000000178813934
+      ],
+      [
+        0.03670518100261688,
+        0.03999999910593033,
+        0.09200000017881393
+      ]
+    ],
+    "uvs": true,
+    "external_paths": false,
+    "validation": "basic structural, embedded-image and mesh checks; not Khronos conformance"
+  },
+  "file_size_bytes": 2593928,
+  "provider_details": {
+    "arm": {
+      "space_id": "trellis-community/TRELLIS",
+      "seed": 42,
+      "mesh_simplify": 0.5,
+      "texture_size_requested": 2048
+    },
+    "flashlight": {
+      "model": "stabilityai/TripoSR",
+      "model_revision": "5b521936b01fbe1890f6f9baed0254ab6351c04a",
+      "license": "MIT",
+      "device": "NVIDIA GeForce GTX 1650",
+      "torch_version": "2.6.0+cu124",
+      "resolution": 256,
+      "chunk_size": 4096,
+      "network_access": false
+    }
+  },
+  "refinement": {
+    "script": "scripts/3d-generation/refine_flashlight_arms.py",
+    "arm": "Retained TRELLIS palm/fingers; repaired pinched forearm with rounded anatomical cross sections; closed ends, fitted grip, shared seam normals, simplified hand, rebaked and de-lit skin to blend the wrist.",
+    "flashlight": "Substantial hard-surface rebuild guided by the reference and TripoSR reconstruction. Straight ribbed housing, faceted hollow rubber bezel and tail, recessed reflector, convex lens, emitter, guarded slider. Wear/material variation transferred from the saved TripoSR surface.",
+    "optimization": "Hand reduced from 14834 to 9642 triangles with locked borders and 0.003 error tolerance. Final meshes grouped by material; four embedded color images at at most 1024 px per side.",
+    "no_new_inference_during_continuation": true,
+    "reproducible_arm_input": "source/arm-optimized-before-albedo-polish.glb",
+    "topology_limit": "Static overlapping hand/forearm/cap pieces. No skeleton, weights, independent finger articulation or animation clips."
+  },
+  "coordinates": {
+    "units": "metres",
+    "up_axis": "+Y",
+    "beam_axis": "-Z",
+    "pivot": "flashlight grip centre",
+    "beam_socket": {
+      "node": null,
+      "translation": [
+        0,
+        0,
+        -0.171
+      ],
+      "note": "Socket node exists in the combined viewmodel only; coordinates are the standalone lens position."
+    },
+    "camera_anchor": [
+      0.2,
+      -0.2,
+      -0.42
+    ],
+    "camera_rotation_radians": [
+      0,
+      0.14,
+      0
+    ],
+    "scale": 1,
+    "narrow_screen_adjustment": "X anchor multiplied by min(1, camera aspect / 1.3)"
+  },
+  "runtime": {
+    "engine": "Babylon.js 9.28.0",
+    "active_asset": "src/config.ts ASSETS.arms",
+    "pbr_preserved": true,
+    "foreground_rendering_group": 1,
+    "viewmodel_only_fill_light": true,
+    "beam_tracks_lens_socket": true,
+    "production_build": "passed",
+    "game_tests": "31 passed",
+    "generation_tests": "8 passed",
+    "runtime_review": "tests/viewmodel-review.html",
+    "studio_review": "scripts/3d-generation/viewmodel-viewer.html"
+  },
+  "previous_delivery": "../../player/arms/flashlight-arms/source/previous-20261003/",
+  "source_reports": [
+    "source/triposr-generation.json",
+    "source/trellis-generation.json"
+  ],
+  "previews": [
+    "preview-three-quarter.jpg"
+  ],
+  "texture_files": {
+    "Flashlight_worn_yellow": "public/assets/models/items/flashlight/textures/flashlight_worn_yellow.png",
+    "Flashlight_rubber": "public/assets/models/items/flashlight/textures/flashlight_rubber.png"
+  },
+  "delivery_record": "public/assets/models/player/arms/flashlight-arms/generation-info.json",
+  "khronos_validation": {
+    "numErrors": 0,
+    "numWarnings": 0,
+    "numInfos": 3
+  }
+}

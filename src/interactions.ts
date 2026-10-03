@@ -37,14 +37,28 @@ export class InteractionSystem {
       } else if (h.id === 'fuse' || h.id.startsWith('battery')) {
         mesh = B.MeshBuilder.CreateCylinder(h.id, { height: .17, diameter: .055, tessellation: 12 }, scene); mesh.rotation.z = Math.PI / 2; mesh.material = h.id === 'fuse' ? brass : metal;
       } else {
-        mesh = B.MeshBuilder.CreateBox(h.id, h.id === 'music-box' ? { width: .23, height: .16, depth: .17 } : h.id === 'note' ? { width: .015, height: .34, depth: .25 } : { width: .24, height: .015, depth: .16 }, scene);
+        mesh = B.MeshBuilder.CreateBox(h.id, h.id === 'music-box' ? { width: .23, height: .16, depth: .17 } : h.id === 'note' ? { width: .26, height: .006, depth: .33 } : { width: .24, height: .015, depth: .16 }, scene);
         mesh.material = h.id === 'music-box' ? red : paper;
+        if (h.id === 'note') {
+          const ink = new B.DynamicTexture('living-room-warning-print', { width: 512, height: 640 }, scene, false);
+          // Correct the horizontal canvas UV orientation in the RH game scene.
+          ink.uScale = -1; ink.uOffset = 1;
+          const context = ink.getContext(); context.fillStyle = '#b8aa80'; context.fillRect(0, 0, 512, 640);
+          context.fillStyle = '#30291f'; context.font = 'bold 42px serif'; context.fillText('AYAW PAGSULOD.', 35, 85);
+          context.font = '28px serif';
+          ['Return what belongs', 'to this house.', '', 'Find the kitchen fuse.', 'Restore the lights.', '', 'Break her line of sight.', 'Hide only when unseen.'].forEach((line, i) => context.fillText(line, 36, 160 + i * 48));
+          ink.update();
+          const face = new B.StandardMaterial('warning-print', scene); face.diffuseTexture = ink; face.specularColor.setAll(0); face.backFaceCulling = false;
+          face.emissiveColor.set(.08, .065, .04);
+          const page = B.MeshBuilder.CreateGround('warning-note-text', { width: .25, height: .32, subdivisions: 1 }, scene);
+          page.parent = root; page.position.y = .004; page.material = face;
+          root.rotation.y = Math.PI - .1;
+        }
       }
       mesh.parent = root; this.visuals.set(h.id, root);
     }
-    // The existing flashlight model is used for the foyer pickup and later reparented to the hand.
-    const lamp = this.world.arms.clone('flashlight-pickup', null);
-    if (lamp) { lamp.setEnabled(true); lamp.position.copyFromFloats(.65, .4, -2.35); lamp.scaling.setAll(.7); for (const mesh of lamp.getChildMeshes()) mesh.renderingGroupId = 0; this.visuals.set('flashlight', lamp); }
+    // One physical flashlight is loaded once, then moved to the real hand socket.
+    this.visuals.set('flashlight', this.world.viewmodel.pickupRoot);
     const hint = new B.StandardMaterial('focus-marker', scene); hint.emissiveColor.set(.78, .70, .43); hint.disableLighting = true;
     this.marker = B.MeshBuilder.CreateTorus('interaction-ring', { diameter: .055, thickness: .008, tessellation: 12 }, scene); this.marker.material = hint; this.marker.isPickable = false;
     for (const root of this.visuals.values()) for (const mesh of root.getChildMeshes()) mesh.isPickable = false;

@@ -1,8 +1,8 @@
 {
   "status": "complete",
+  "updated_at": "2026-10-03T01:03:53.693013+00:00",
   "asset_type": "flashlight-arms",
-  "started_at": "20261001T014931_644316Z",
-  "generator": "TripoSR (local)",
+  "generator": "TRELLIS arm + TripoSR flashlight; offline mesh and material refinement",
   "fallback_used": true,
   "rigged": false,
   "animated": false,
@@ -11,163 +11,309 @@
     {
       "generator": "TRELLIS",
       "space_id": "trellis-community/TRELLIS",
-      "status": "failed",
-      "error_code": "quota_or_rate_limit",
-      "reason": "You have exceeded your ZeroGPU quota (120s requested vs. 145s left). Try again in 11:05:52. Authenticate with a Hugging Face token [REDACTED] more quota - https://huggingface.co/settings/tokens"
+      "status": "generated",
+      "raw_asset": ".cache/3d-generation/runs/arm-20261002T175618_095409Z/trellis/downloads/fbe081edd21a9fea2f90418d5ecc2d07af104eee843c13c80e8ef1bc051a3b3b/sample.glb",
+      "component": "arm"
+    },
+    {
+      "generator": "TRELLIS",
+      "space_id": "trellis-community/TRELLIS",
+      "status": "rejected",
+      "raw_asset": ".cache/3d-generation/runs/flashlight-20261002T175339_903096Z/trellis/downloads/3a1c7b2d65e2172e0982de3586c1a17b6e6f3c75763c0443dada04ec405e5fc0/sample.glb",
+      "error_code": "visual_quality_failed",
+      "reason": "Babylon multi-angle inspection found two intersecting flashlight bodies instead of one cylindrical prop.",
+      "component": "flashlight"
     },
     {
       "generator": "TripoSR",
       "space_id": "stabilityai/TripoSR",
       "status": "failed",
       "error_code": "space_unavailable",
-      "reason": "The current space is in the invalid state: RUNTIME_ERROR. Please contact the owner to fix this."
+      "reason": "The current space is in the invalid state: RUNTIME_ERROR. Please contact the owner to fix this.",
+      "component": "flashlight"
     },
     {
       "generator": "TripoSR (local)",
       "model": "stabilityai/TripoSR",
       "status": "generated",
-      "raw_asset": ".cache/3d-generation/runs/flashlight-arms-local-20261001-01/triposr.glb"
+      "raw_asset": ".cache/3d-generation/flashlight-refinement/flashlight-local/triposr.glb",
+      "component": "flashlight"
     }
   ],
-  "asset_directory": "public/assets/models/player/arms/flashlight-arms",
-  "run_directory": ".cache/3d-generation/runs/flashlight-arms-20261001T014931_644316Z",
-  "references_used": [
-    "source/reference-1.jpg"
-  ],
-  "reference_original_names": [
-    "handTexture.jpg"
-  ],
   "reference_sha256": {
-    "reference-1.jpg": "217d7e7d8cdea28ae89ca9374d6ee465ce4a7262ab738f978b27a6279a6ac522"
+    "public/assets/models/player/arms/flashlight-arms/source/reference-20261003/arm-grip.png": "744b289aedf32ae5d06fccefa4778b5d884d781876def78ee6dd20ad2aa340ec",
+    "public/assets/models/player/arms/flashlight-arms/source/reference-20261003/arm.png": "ee9c63a0114e32ab402d2a1fd8cdd942a4c9782a3c2751143d06a12cc83adf2e",
+    "public/assets/models/player/arms/flashlight-arms/source/reference-20261003/flashlight.png": "4af1d290e08e1b90c8de162bf791a1baf3c04b67eaf9207106a50827f6962f06"
   },
-  "generation_input": "source/prepared-reference.png",
-  "generation_input_sha256": "9e598b6eaf7610f47a0ab57e27ced7cc7872c2320dde0ca96c960b9788a72adf",
-  "reference_strategy": "Original handTexture.jpg supplies the right-hand grip, tan skin and silver flashlight design. Built-in imagegen completes the cropped forearm and makes its silhouette visible for reconstruction. Unseen anatomy is inferred; see source/reference-preparation.json.",
-  "seed": 42,
-  "texture_size_requested": 2048,
-  "mesh_simplify_requested": 0.9,
-  "resumed_from": "public\\assets\\models\\player\\arms\\flashlight-arms\\generation-info.json",
-  "provider_details": {
-    "model": "stabilityai/TripoSR",
-    "model_revision": "5b521936b01fbe1890f6f9baed0254ab6351c04a",
-    "license": "MIT",
-    "device": "NVIDIA GeForce GTX 1650",
-    "torch_version": "2.6.0+cu124",
-    "resolution": 192,
-    "chunk_size": 4096,
-    "cpu_isosurface": "scikit-image marching_cubes; upstream coordinate order retained",
-    "network_access": false
+  "reference_strategy": "Uploaded yellow flashlight is used directly. Uploaded bare-arm image supplies anatomy and skin tone; the recorded imagegen preparation closes the hand around a grip before TRELLIS. Hidden surfaces and the grip pose are inferred.",
+  "outputs": {
+    "combined": {
+      "path": "public/assets/models/player/arms/flashlight-arms/flashlight_arms.glb",
+      "sha256": "eb79738399283f905dcb7fb13a50edcd4e67d1f6d66c1e928e6c16cf17a342e1",
+      "format": "GLB 2.0",
+      "file_size_bytes": 3939492,
+      "triangles": 27778,
+      "vertices": 16781,
+      "mesh_count": 8,
+      "materials": 8,
+      "textures": true,
+      "embedded_images": 4,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          512,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "rigged": false,
+      "animated": false,
+      "bounds_metres": [
+        [
+          -0.04699999839067459,
+          -0.382999986410141,
+          -0.17000000178813934
+        ],
+        [
+          0.04699999839067459,
+          0.03999999910593033,
+          0.2590775489807129
+        ]
+      ],
+      "uvs": false,
+      "external_paths": false,
+      "validation": "basic structural, embedded-image and mesh checks; not Khronos conformance"
+    },
+    "arm": {
+      "path": "public/assets/models/player/arms/flashlight-arms/right_arm.glb",
+      "sha256": "b7c6e3235095239baa25bfc856d3e091f21b9b5df82d8c7b040f24f3ea969f3a",
+      "format": "GLB 2.0",
+      "file_size_bytes": 1472972,
+      "triangles": 16946,
+      "vertices": 10846,
+      "mesh_count": 3,
+      "materials": 3,
+      "textures": true,
+      "embedded_images": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          512,
+          1024
+        ]
+      ],
+      "rigged": false,
+      "animated": false,
+      "bounds_metres": [
+        [
+          -0.04699999839067459,
+          -0.382999986410141,
+          -0.06014294922351837
+        ],
+        [
+          0.04699999839067459,
+          0.03700000047683716,
+          0.2590775489807129
+        ]
+      ],
+      "uvs": false,
+      "external_paths": false,
+      "validation": "basic structural, embedded-image and mesh checks; not Khronos conformance"
+    },
+    "flashlight": {
+      "path": "public/assets/models/items/flashlight/flashlight.glb",
+      "sha256": "d5ab686ee9f6a83740432c1c71c7b3a78042e390f20adf3f531aba7135cb098c",
+      "format": "GLB 2.0",
+      "file_size_bytes": 2593928,
+      "triangles": 10832,
+      "vertices": 5935,
+      "mesh_count": 5,
+      "materials": 5,
+      "textures": true,
+      "embedded_images": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "rigged": false,
+      "animated": false,
+      "bounds_metres": [
+        [
+          -0.03670518100261688,
+          -0.03670518100261688,
+          -0.17000000178813934
+        ],
+        [
+          0.03670518100261688,
+          0.03999999910593033,
+          0.09200000017881393
+        ]
+      ],
+      "uvs": true,
+      "external_paths": false,
+      "validation": "basic structural, embedded-image and mesh checks; not Khronos conformance"
+    }
   },
-  "raw_source": "source/generated-20261001T014601_186625Z/triposr.glb",
-  "raw_sha256": "aefa6b8ea22feeac5514160c38e615cc504108891d18c20658055965296dab24",
   "output": "flashlight_arms.glb",
-  "output_sha256": "efb66c5f0c13daeafe1e57350e5461bb2af78053a0f307b43039543d61cd05d7",
-  "texture_files": [
-    "textures/image-0.png"
-  ],
-  "file_size_bytes": 2486768,
-  "textures": true,
+  "output_sha256": "eb79738399283f905dcb7fb13a50edcd4e67d1f6d66c1e928e6c16cf17a342e1",
   "validation": {
+    "path": "public/assets/models/player/arms/flashlight-arms/flashlight_arms.glb",
+    "sha256": "eb79738399283f905dcb7fb13a50edcd4e67d1f6d66c1e928e6c16cf17a342e1",
     "format": "GLB 2.0",
-    "file_size_bytes": 2486768,
-    "triangles": 24688,
-    "vertices": 18571,
-    "mesh_count": 1,
-    "materials": 1,
+    "file_size_bytes": 3939492,
+    "triangles": 27778,
+    "vertices": 16781,
+    "mesh_count": 8,
+    "materials": 8,
     "textures": true,
-    "embedded_images": 1,
+    "embedded_images": 4,
     "image_sizes": [
       [
-        2048,
-        2048
+        1024,
+        1024
+      ],
+      [
+        512,
+        1024
+      ],
+      [
+        1024,
+        1024
+      ],
+      [
+        1024,
+        1024
       ]
     ],
     "rigged": false,
     "animated": false,
     "bounds_metres": [
       [
-        -0.09834862056640684,
-        -0.27499999999999997,
-        -0.24114657740377857
+        -0.04699999839067459,
+        -0.382999986410141,
+        -0.17000000178813934
       ],
       [
-        0.09834862056640684,
-        0.275,
-        0.24114657740377854
+        0.04699999839067459,
+        0.03999999910593033,
+        0.2590775489807129
       ]
     ],
-    "uvs": true,
+    "uvs": false,
     "external_paths": false,
-    "validation": "basic structural, embedded-image and mesh checks; not Khronos conformance",
-    "up_axis": "Y",
-    "source_up_axis": "Z",
-    "rotation_degrees_xyz": [
-      -100.0,
-      0.0,
-      0.0
-    ],
-    "longest_dimension_metres": 0.55,
-    "pivot": "centre of mesh bounds",
-    "normalization_matrix": [
-      [
-        0.5750595444125144,
-        0.0,
-        0.0,
-        -0.023713797059329248
-      ],
-      [
-        0.0,
-        -0.5663230977811123,
-        -0.09985804193720826,
-        -0.002372820380269611
-      ],
-      [
-        0.0,
-        0.09985804193720826,
-        -0.5663230977811123,
-        -0.0004705132438791331
-      ],
-      [
-        0.0,
-        0.0,
-        0.0,
-        1.0
+    "validation": "basic structural, embedded-image and mesh checks; not Khronos conformance"
+  },
+  "file_size_bytes": 3939492,
+  "provider_details": {
+    "arm": {
+      "space_id": "trellis-community/TRELLIS",
+      "seed": 42,
+      "mesh_simplify": 0.5,
+      "texture_size_requested": 2048
+    },
+    "flashlight": {
+      "model": "stabilityai/TripoSR",
+      "model_revision": "5b521936b01fbe1890f6f9baed0254ab6351c04a",
+      "license": "MIT",
+      "device": "NVIDIA GeForce GTX 1650",
+      "torch_version": "2.6.0+cu124",
+      "resolution": 256,
+      "chunk_size": 4096,
+      "network_access": false
+    }
+  },
+  "refinement": {
+    "script": "scripts/3d-generation/refine_flashlight_arms.py",
+    "arm": "Retained TRELLIS palm/fingers; repaired pinched forearm with rounded anatomical cross sections; closed ends, fitted grip, shared seam normals, simplified hand, rebaked and de-lit skin to blend the wrist.",
+    "flashlight": "Substantial hard-surface rebuild guided by the reference and TripoSR reconstruction. Straight ribbed housing, faceted hollow rubber bezel and tail, recessed reflector, convex lens, emitter, guarded slider. Wear/material variation transferred from the saved TripoSR surface.",
+    "optimization": "Hand reduced from 14834 to 9642 triangles with locked borders and 0.003 error tolerance. Final meshes grouped by material; four embedded color images at at most 1024 px per side.",
+    "no_new_inference_during_continuation": true,
+    "reproducible_arm_input": "source/arm-optimized-before-albedo-polish.glb",
+    "topology_limit": "Static overlapping hand/forearm/cap pieces. No skeleton, weights, independent finger articulation or animation clips."
+  },
+  "coordinates": {
+    "units": "metres",
+    "up_axis": "+Y",
+    "beam_axis": "-Z",
+    "pivot": "flashlight grip centre",
+    "beam_socket": {
+      "node": "Flashlight_beam_socket",
+      "translation": [
+        0,
+        0,
+        -0.171
       ]
+    },
+    "camera_anchor": [
+      0.2,
+      -0.2,
+      -0.42
     ],
-    "material_changes": [
-      {
-        "material": "FlashlightArmSurface",
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.58
-      }
-    ],
-    "renamed_reserved_world_nodes": [
+    "camera_rotation_radians": [
+      0,
+      0.14,
       0
     ],
-    "native_glb_binary_preserved": true,
-    "conversion_performed": false
+    "scale": 1,
+    "narrow_screen_adjustment": "X anchor multiplied by min(1, camera aspect / 1.3)"
   },
-  "notes": [
-    "One right hand and forearm holding a silver flashlight, matching the scope visible in handTexture.jpg; no second arm was invented.",
-    "Built-in imagegen completed the cropped forearm; the unseen elbow end and back surfaces are inferred. Prompt and source image are preserved.",
-    "The accepted complete forearm uses offline TripoSR after TRELLIS quota exhaustion and a TripoSR Space runtime error.",
-    "Single fused, static surface with a 2048x2048 color atlas and approximate small details. No separate metal/roughness map, independent flashlight articulation, emission or beam.",
-    "Y up, 55 cm longest dimension, centered root, resting pose rotated -100 degrees around X after source Z-up conversion.",
-    "Before deformation: clean up and retopologize the grip and wrist as needed, then rig and weight-paint. No skeleton or animation was generated."
+  "runtime": {
+    "engine": "Babylon.js 9.28.0",
+    "active_asset": "src/config.ts ASSETS.arms",
+    "pbr_preserved": true,
+    "foreground_rendering_group": 1,
+    "viewmodel_only_fill_light": true,
+    "beam_tracks_lens_socket": true,
+    "production_build": "passed",
+    "game_tests": "31 passed",
+    "generation_tests": "8 passed",
+    "runtime_review": "tests/viewmodel-review.html",
+    "studio_review": "scripts/3d-generation/viewmodel-viewer.html",
+    "validation_report": "runtime-validation.json"
+  },
+  "previous_delivery": "source/previous-20261003/",
+  "source_reports": [
+    "source/trellis-generation.json",
+    "../../../items/flashlight/source/triposr-generation.json"
   ],
-  "babylon_ready_scope": "Static rendering validated in Babylon.js 9.28.0; animation requires cleanup and rigging.",
-  "visual_status": "accepted_static_mesh",
-  "validation_report": "validation-report.json",
-  "babylon_validation": "babylon-validation.json",
-  "previews": {
-    "mesh": "flashlight-arms-preview.png",
-    "player": "flashlight-arms-player-preview.png"
+  "previews": [
+    "preview-three-quarter.jpg",
+    "preview-back.jpg",
+    "preview-side.jpg",
+    "preview-geometry.jpg",
+    "preview-gameplay.jpg",
+    "preview-portrait.jpg",
+    "preview-arm.jpg",
+    "preview-player-studio.jpg"
+  ],
+  "texture_files": {
+    "Arm_skin": "public/assets/models/player/arms/flashlight-arms/textures/arm_skin.png",
+    "Arm_forearm_skin": "public/assets/models/player/arms/flashlight-arms/textures/arm_forearm_skin.png",
+    "Flashlight_worn_yellow": "public/assets/models/player/arms/flashlight-arms/textures/flashlight_worn_yellow.png",
+    "Flashlight_rubber": "public/assets/models/player/arms/flashlight-arms/textures/flashlight_rubber.png"
   },
-  "reference_preparation": "source/reference-preparation.json",
-  "direct_reference_attempt": {
-    "generator": "TRELLIS",
-    "run": ".cache/3d-generation/runs/flashlight-arms-20261001T013223_060113Z",
-    "visual_status": "rejected",
-    "reason": "The original cropped reference yielded a hand and flashlight with most of the forearm missing. Raw output and archived GLB remain preserved."
+  "khronos_validation": {
+    "numErrors": 0,
+    "numWarnings": 0,
+    "numInfos": 4
   }
 }

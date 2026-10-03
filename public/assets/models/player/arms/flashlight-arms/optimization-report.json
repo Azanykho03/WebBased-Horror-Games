@@ -1,0 +1,36 @@
+{
+  "before": [
+    {
+      "name": "Arm_skin",
+      "triangles": 14834
+    },
+    {
+      "name": "Arm_forearm_skin",
+      "triangles": 7040
+    },
+    {
+      "name": "Arm_closed_cap",
+      "triangles": 264
+    }
+  ],
+  "after": [
+    {
+      "name": "Arm_skin",
+      "triangles": 9642
+    },
+    {
+      "name": "Arm_forearm_skin",
+      "triangles": 7040
+    },
+    {
+      "name": "Arm_closed_cap",
+      "triangles": 264
+    }
+  ],
+  "textureBytesPreserved": true,
+  "fileSize": 1871840,
+  "errors": 0,
+  "warnings": 0,
+  "ratio": 0.65,
+  "errorTolerance": 0.003
+}

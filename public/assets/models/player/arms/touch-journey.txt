@@ -1,0 +1,40 @@
+Browser tab: 2, Title: "Balay ni Corazon · Ayaw Pagsulod", URL: "http://127.0.0.1:4176/".
+0 AXWebArea Balay ni Corazon · Ayaw Pagsulod, URL: 127.0.0.1:4176/
+	1 image Description: Haunted house game. Left joystick to move, right drag to look, on-screen buttons to interact., ID: game
+	2 container ui
+		16 container panel
+			17 container
+				18 text YOU MADE IT OUT
+				19 heading Ayaw na og balik., Value: 1
+					20 text Ayaw na og balik.
+				21 text 0:57 “Nakuha nimo ang proof?”
+				22 text “Oo. Dili na ko mobalik.” The rain feels different outside.
+				23 button Another night
+				24 button Main menu
+			25 text BALAY NI CORAZON / 01
+	15 container Development validation
+		26 container
+			27 button (expanded) DEVELOPMENT VALIDATION, Secondary Actions: Collapse
+				28 text DEVELOPMENT VALIDATION
+			29 text Normal collision, objectives and live enemy.
+			30 button Run full journey
+			31 button Run touch journey, ID: journey-touch
+			32 button Preview touch controls, ID: journey-mode
+			33 button Resume saved journey, ID: journey-saved
+			34 text PASS · Full touch escape with live ghost
+multitouch diagonal / look / sprint / cancel → touch pause / resume → touch journal / resume → touch flashlight off / on → flashlight → note → fuse → touch throw → tsinelas → battery-kitchen → breaker → letter → locket → hide-guest → music-box → checkpoint restored → cabinet → exit-key → exit
+65.3s · 172.8m · 1 captures
+Ghost: Dormant, Patrol, Investigate, Chase, Catch
+FPS avg 59 · min 29
+			35 button Check audio lifecycle
+			36 container Audio audit result
+			37 button Check background music
+			38 container Music audit result
+			39 container Audio diagnostics
+				42 text ENDING · running
+BGM game → game · playing · 9.9 s
+Voices 0/20 · loops 11
+Fear 0.00 · proximity 0.00
+			41 button Audition weather / haunt
+
+The focused UI element is 27 button (expanded) DEVELOPMENT VALIDATION, Secondary Actions: Collapse

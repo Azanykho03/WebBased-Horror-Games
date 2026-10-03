@@ -1,0 +1,127 @@
+{
+  "status": "complete",
+  "asset_type": "flashlight",
+  "started_at": "20261002T175339_903096Z",
+  "generator": "TRELLIS",
+  "fallback_used": false,
+  "rigged": false,
+  "animated": false,
+  "babylon_ready": false,
+  "attempts": [
+    {
+      "generator": "TRELLIS",
+      "space_id": "trellis-community/TRELLIS",
+      "status": "generated",
+      "raw_asset": ".cache/3d-generation/runs/flashlight-20261002T175339_903096Z/trellis/downloads/3a1c7b2d65e2172e0982de3586c1a17b6e6f3c75763c0443dada04ec405e5fc0/sample.glb"
+    }
+  ],
+  "asset_directory": ".cache/3d-generation/flashlight-refinement/flashlight",
+  "run_directory": ".cache/3d-generation/runs/flashlight-20261002T175339_903096Z",
+  "references_used": [
+    "source/reference-1.png"
+  ],
+  "reference_original_names": [
+    "flashlight.png"
+  ],
+  "reference_sha256": {
+    "reference-1.png": "4af1d290e08e1b90c8de162bf791a1baf3c04b67eaf9207106a50827f6962f06"
+  },
+  "generation_input": "source/reference-1.png",
+  "generation_input_sha256": "4af1d290e08e1b90c8de162bf791a1baf3c04b67eaf9207106a50827f6962f06",
+  "reference_strategy": "Direct reconstruction from the first reference; provider preprocesses its background. All supplied references used.",
+  "seed": 42,
+  "texture_size_requested": 2048,
+  "mesh_simplify_requested": 0.65,
+  "raw_source": "source/generated-20261002T175339_903096Z/sample.glb",
+  "raw_sha256": "3a1c7b2d65e2172e0982de3586c1a17b6e6f3c75763c0443dada04ec405e5fc0",
+  "output": "flashlight.glb",
+  "output_sha256": "02198ede233a660cc6fe520f900a8f02308c33c227bc876ecd006490a5bf9e75",
+  "texture_files": [
+    "textures/image-0.png"
+  ],
+  "file_size_bytes": 6074244,
+  "textures": true,
+  "validation": {
+    "format": "GLB 2.0",
+    "file_size_bytes": 6074244,
+    "triangles": 74774,
+    "vertices": 42350,
+    "mesh_count": 1,
+    "materials": 1,
+    "textures": true,
+    "embedded_images": 1,
+    "image_sizes": [
+      [
+        2048,
+        2048
+      ]
+    ],
+    "rigged": false,
+    "animated": false,
+    "bounds_metres": [
+      [
+        -0.125,
+        -0.04153368611525265,
+        -0.12493049706118034
+      ],
+      [
+        0.125,
+        0.04153368611525265,
+        0.12493049706118035
+      ]
+    ],
+    "uvs": true,
+    "external_paths": false,
+    "validation": "basic structural, embedded-image and mesh checks; not Khronos conformance",
+    "up_axis": "Y",
+    "source_up_axis": "Y",
+    "rotation_degrees_xyz": [
+      0,
+      0,
+      0
+    ],
+    "longest_dimension_metres": 0.25,
+    "pivot": "centre of mesh bounds",
+    "normalization_matrix": [
+      [
+        0.24996051815908424,
+        0.0,
+        0.0,
+        -1.7804075431830027e-05
+      ],
+      [
+        0.0,
+        0.24996051815908424,
+        0.0,
+        5.077513729847426e-05
+      ],
+      [
+        0.0,
+        0.0,
+        0.24996051815908424,
+        0.00012142528432587007
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "material_changes": [
+      {
+        "material": "unnamed",
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.58
+      }
+    ],
+    "renamed_reserved_world_nodes": [
+      0
+    ],
+    "native_glb_binary_preserved": true,
+    "conversion_performed": false
+  },
+  "notes": [
+    "Structural checks passed. Visual review and runtime validation are still required."
+  ]
+}

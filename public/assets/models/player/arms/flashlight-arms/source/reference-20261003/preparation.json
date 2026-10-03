@@ -1,0 +1,11 @@
+{
+  "tool": "Built-in imagegen",
+  "purpose": "Repose original open right arm into a flashlight grip for 3D reconstruction",
+  "original": "arm.png",
+  "output": "arm-grip.png",
+  "prompt": "Use case: precise-object-edit. Asset type: transparent reference for image-to-3D reconstruction of a realistic first-person game arm. The supplied image is the primary anatomy, skin color, and proportions reference. Repose this same SINGLE bare RIGHT arm into a natural flashlight-holding grip. Show the whole arm from smooth capped upper-arm end through elbow and forearm to wrist and hand; no torso, clothing or other objects. Four anatomically correct fingers curl around an EMPTY cylindrical space of about 4 cm diameter; the thumb opposes and rests over the index finger. Maintain distinct knuckles, finger joints, nails and creases, not a mitten. The imagined cylinder runs across the curled fingers, along the thumb-side direction, as when carrying a torch in a relaxed hammer grip. Do NOT render any flashlight, cylinder or prop; show the empty opening in the curled hand so a separately modeled flashlight can be inserted. Natural wrist angle, gently bent elbow. Three-quarter oblique view, elbow at lower right and hand toward upper left, entire silhouette visible with margin; avoid strong foreshortening. Match reference warm light brown skin with realistic pores, subtle veins and tendons, rounded anatomy and correct proportions. Neutral studio lighting emphasizing volume, no baked cast shadows, no painted black outlines. High quality physically modeled 3D scan appearance, no stylization. Transparent background, no ground, no text. This is a non-gory standalone game asset with smoothly closed upper-arm end.",
+  "limitations": [
+    "Grip and hidden anatomy inferred from the supplied open-arm reference.",
+    "This image is a reconstruction input, not the final game asset."
+  ]
+}

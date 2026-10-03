@@ -1,0 +1,72 @@
+{
+  "status": "generated",
+  "asset_type": "flashlight",
+  "started_at": "20261002T180836_972620Z",
+  "generator": "TripoSR (local)",
+  "fallback_used": true,
+  "rigged": false,
+  "animated": false,
+  "babylon_ready": false,
+  "attempts": [
+    {
+      "generator": "TRELLIS",
+      "space_id": "trellis-community/TRELLIS",
+      "status": "rejected",
+      "raw_asset": ".cache/3d-generation/runs/flashlight-20261002T175339_903096Z/trellis/downloads/3a1c7b2d65e2172e0982de3586c1a17b6e6f3c75763c0443dada04ec405e5fc0/sample.glb",
+      "error_code": "visual_quality_failed",
+      "reason": "Babylon multi-angle inspection found two intersecting flashlight bodies instead of one cylindrical prop."
+    },
+    {
+      "generator": "TripoSR",
+      "space_id": "stabilityai/TripoSR",
+      "status": "failed",
+      "error_code": "space_unavailable",
+      "reason": "The current space is in the invalid state: RUNTIME_ERROR. Please contact the owner to fix this."
+    },
+    {
+      "generator": "TripoSR (local)",
+      "model": "stabilityai/TripoSR",
+      "status": "generated",
+      "raw_asset": ".cache/3d-generation/flashlight-refinement/flashlight-local/triposr.glb"
+    }
+  ],
+  "asset_directory": ".cache/3d-generation/flashlight-refinement/flashlight-triposr",
+  "run_directory": ".cache\\3d-generation\\flashlight-refinement\\flashlight-local",
+  "references_used": [
+    "source/reference-1.png"
+  ],
+  "reference_original_names": [
+    "flashlight.png"
+  ],
+  "reference_sha256": {
+    "reference-1.png": "4af1d290e08e1b90c8de162bf791a1baf3c04b67eaf9207106a50827f6962f06"
+  },
+  "generation_input": "source/reference-1.png",
+  "generation_input_sha256": "4af1d290e08e1b90c8de162bf791a1baf3c04b67eaf9207106a50827f6962f06",
+  "reference_strategy": "Direct reconstruction from the first reference; provider preprocesses its background. All supplied references used.",
+  "seed": 42,
+  "texture_size_requested": 2048,
+  "mesh_simplify_requested": 0.9,
+  "rejected_run": ".cache\\3d-generation\\flashlight-refinement\\flashlight\\generation-info.json",
+  "resumed_failures_from": ".cache\\3d-generation\\flashlight-refinement\\flashlight-triposr\\generation-info.json",
+  "resolution": 256,
+  "chunk_size": 4096,
+  "model": "stabilityai/TripoSR",
+  "license": "MIT",
+  "network_access": false,
+  "output": null,
+  "torch_version": "2.6.0+cu124",
+  "device": "NVIDIA GeForce GTX 1650",
+  "model_revision": "5b521936b01fbe1890f6f9baed0254ab6351c04a",
+  "cpu_isosurface": "scikit-image marching_cubes; upstream coordinate order retained",
+  "preprocessed_image": ".cache\\3d-generation\\runs\\flashlight-20261002T175339_903096Z\\trellis\\downloads\\9ba6480d92b28917b9d3616e7540333722ef11ed6622a50a42a9b0a816e337c2\\image.png",
+  "preprocessed_image_sha256": "9ba6480d92b28917b9d3616e7540333722ef11ed6622a50a42a9b0a816e337c2",
+  "input_preprocessing": "TRELLIS foreground on black; recover provider mask and composite on TripoSR neutral gray",
+  "saved_inference_state": ".cache/3d-generation/flashlight-refinement/flashlight-local/scene-code.pt",
+  "triangles": 85476,
+  "vertices": 66851,
+  "textures": true,
+  "raw_sha256": "abdaa042ab39851b99917578d9e930e71b0b5b118e7e6c869b6706b36865bdae",
+  "source_up": "z",
+  "next_step": "Run generate_asset.py --resume-run on this report with the same original/prepared images, --source-up z, and --replace"
+}

@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flashlight & arm · 3D inspection</title>
+<style>html,body{height:100%;margin:0;background:#20252b;color:#eaeef2;font:13px system-ui}canvas{display:block;width:100%;height:calc(100% - 112px);touch-action:none}footer{padding:10px 20px}button,select{background:#323a44;color:inherit;border:1px solid #626b74;border-radius:4px;padding:7px 12px;margin-right:5px}p{margin:7px 0}details{position:absolute;right:12px;top:12px;max-width:420px;background:#151a20df;padding:10px}pre{font:11px monospace;max-height:320px;overflow:auto}#picked{position:absolute;left:15px;top:15px;pointer-events:none}</style>
+<canvas id="canvas" aria-label="3D model inspection"></canvas><div id="picked"></div>
+<footer><select id="asset" aria-label="Asset"><option value="combined">Previous generated grip</option><option value="flashlight">Flashlight</option><option value="arm">Previous generated arm</option><option value="source-flashlight">TRELLIS flashlight source</option><option value="source-arm">TRELLIS arm source</option><option value="triposr">TripoSR flashlight source</option><option value="assembly">Assembly candidate</option><option value="posed-arm">Posed arm candidate</option><option value="old">Previous model</option></select>
+<button data-view="quarter">Three-quarter</button><button data-view="front">Front</button><button data-view="back">Back</button><button data-view="left">Left</button><button data-view="right">Right</button><button data-view="top">Top</button><button data-view="player">Player view</button><button id="clay">Clay geometry</button><button id="wire">Wireframe</button><button id="save">Save PNG</button>
+<p id="status">Loading…</p><p>Drag to orbit · Scroll to zoom · Click surface for coordinates · Real GLB geometry</p></footer>
+<details><summary>Model validation</summary><pre id="report"></pre></details>
+<script src="../../public/assets/models/environments/haunted-house/vendor/babylon.js"></script><script src="../../public/assets/models/environments/haunted-house/vendor/babylonjs.loaders.min.js"></script>
+<script src="./viewmodel-viewer.js"></script></html>

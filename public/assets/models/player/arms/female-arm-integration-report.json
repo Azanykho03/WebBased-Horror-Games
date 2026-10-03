@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-03",
+  "engine": "Babylon.js 9.28.0",
+  "armSource": "free_gameready_fps_female_arms.glb",
+  "armSha256": "1e410ec6ac5133c70bd42a691fda73d88d28744ec7fa1b0b51ab4a151e179a1d",
+  "flashlight": "models/items/flashlight/flashlight.glb",
+  "flashlightSha256": "d5ab686ee9f6a83740432c1c71c7b3a78042e390f20adf3f531aba7135cb098c",
+  "generation": "No new generation. Supplied female rig and previously refined TripoSR-derived flashlight reused.",
+  "sourceGlbPreserved": true,
+  "skeletonCount": 1,
+  "jointCount": 58,
+  "visibleArm": "right",
+  "leftMesh": "retained, disabled",
+  "visibleTriangles": 30232,
+  "hand": "Hand.R_027",
+  "socket": "FlashlightSocket",
+  "socketPosition": [
+    0.024,
+    0.074,
+    0.01
+  ],
+  "socketRotationY": 3.141592653589793,
+  "lensPosition": [
+    0,
+    0,
+    -0.171
+  ],
+  "lensForward": [
+    0,
+    0,
+    -1
+  ],
+  "equipSeconds": 0.78,
+  "animations": "Runtime joint offsets over the authored Fists Pose; equip finger closure, idle, walk, run, toggle. Original pose groups stopped but retained.",
+  "pickup": {
+    "room": "F02",
+    "table": "F02-coffee-table-004",
+    "position": [
+      5.9,
+      0.515,
+      -3.28
+    ],
+    "warningPosition": [
+      6.34,
+      0.507,
+      -3.3
+    ]
+  },
+  "validation": {
+    "productionBuild": "passed",
+    "validationBuild": "passed",
+    "unitTests": {
+      "passed": 34,
+      "failed": 0
+    },
+    "loadedRigChecks": {
+      "passed": 17,
+      "beamErrorMm": 0.0,
+      "minimumBeamDirectionDot": 1.0,
+      "resetCycles": 100
+    },
+    "desktopJourney": {
+      "result": "Full escape passed",
+      "simulationSeconds": 61.5,
+      "captures": 1,
+      "checkpointRestored": true
+    },
+    "touchJourney": {
+      "result": "Full escape passed",
+      "simulationSeconds": 65.3,
+      "captures": 1,
+      "checkpointRestored": true
+    },
+    "browserWarningsOrErrors": []
+  },
+  "deliveryNote": "Original 39,313,020-byte source and 4K textures intentionally preserved. Active viewmodel is six meshes. Production excludes previous generated arms and review/source files."
+}

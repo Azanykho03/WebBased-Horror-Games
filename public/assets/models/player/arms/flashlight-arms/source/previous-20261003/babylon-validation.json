@@ -1,0 +1,24 @@
+{
+  "asset": "flashlight_arms.glb",
+  "babylonVersion": "9.28.0",
+  "loaded": true,
+  "meshCount": 1,
+  "triangles": 24688,
+  "skeletons": 0,
+  "animations": 0,
+  "texturedMaterials": 1,
+  "textureProblems": [],
+  "boundsMetres": {
+    "min": [
+      -0.09834861937221717,
+      -0.2750000011504241,
+      -0.2411465802028232
+    ],
+    "max": [
+      0.09834861789775573,
+      0.27500000109602496,
+      0.24114658031525593
+    ]
+  },
+  "longestDimensionMetres": 0.5500000022464491
+}

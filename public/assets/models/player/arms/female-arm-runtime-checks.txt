@@ -1,0 +1,68 @@
+Browser tab: 1, Title: "Flashlight · Game renderer review", URL: "http://127.0.0.1:5175/tests/viewmodel-review.html".
+0 AXWebArea Flashlight · Game renderer review, URL: 127.0.0.1:5175/tests/viewmodel-review.html
+	1 image Description: First-person flashlight in the actual game renderer, ID: review
+	2 container
+		3 button (expanded) Flashlight · Game renderer review, Secondary Actions: Collapse
+			4 text Flashlight · Game renderer review
+		5 button Fresh pickup, ID: fresh
+		6 button Interact (E), ID: pickup
+		7 button Restore equipped, ID: equipped
+		8 button Look at warning, ID: note
+		9 button Toggle flashlight (F), ID: toggle
+		10 button Look forward, ID: level
+		11 button Turn 30 degrees, ID: turn
+		12 checkbox Inspect grip, Value: 0, ID: studio
+		13 button Orbit 60 degrees, ID: orbit
+		14 checkbox Portrait viewport, Value: 0, ID: portrait
+		15 checkbox (settable, integer) Description: Walk, Value: 0, ID: walk
+		16 text Walk
+		17 checkbox (settable, integer) Description: Run, Value: 0, ID: run
+		18 text Run
+		19 checkbox (settable, integer) Description: Hide arm, Value: 0, ID: hide
+		20 text Hide arm
+		21 checkbox (settable, integer) Description: Reduced motion, Value: 0, ID: steady
+		22 text Reduced motion
+		23 checkbox (settable, integer) Description: Slow motion, Value: 0, ID: slow
+		24 text Slow motion
+		25 checkbox (settable, integer) Description: Freeze, Value: 0, ID: freeze
+		26 text Freeze
+		27 button Step 0.1 seconds, ID: step
+		28 button Inspect warning, ID: note-view
+		29 container Description: Viewmodel diagnostics, ID: metrics
+			36 text PASS · World / Player / InteractionSystem · Babylon 9.28.0
+30,232 active triangles · 1 visible skinned arm · 58 original joints
+Original PBR textures ready: true
+Phase: held 1.00 · light: ON · hidden: false
+Hand.R_027 → FlashlightSocket → lamp: true
+Left arm disabled: true · skin matrices change: true
+Beam error: 0.000 mm / 0.0000°
+Position: 5.90, 0.00, -2.10
+Socket local: 0.024, 0.074, 0.010
+No target · 60 FPS
+Fresh pickup state — no equipped arm.
+		31 button Run rig checks, ID: audit
+		32 container Description: Rig check results, ID: audit-result
+			33 text PASS · 17 loaded-rig checks
+✓ Fresh game: table lamp only; F is inert
+✓ Table flashlight is reachable through the existing focus system
+✓ Pickup preserves lamp world position at reparent
+✓ Original Hand.R_027 owns socket and flashlight
+✓ Equip gates F and removes the table instance
+✓ Equip finishes at 0.78 seconds and enables the beam
+✓ Collected flashlight cannot be picked up twice
+✓ Warning remains readable on the same table
+✓ F turns the beam off
+✓ F turns the beam on
+✓ Shoulder, elbow and wrist all animate; only the right skin is visible
+✓ Beam follows the lens through movement and camera turns
+✓ Hiding disables the arm and beam
+✓ Leaving cover restores only the right arm
+✓ 100 checkpoint/new-game cycles restore the pose without drift
+✓ No extra skeleton or conflicting source-pose playback
+✓ Original joint indices, skin weights and bind matrices remain unchanged
+Maximum beam error: 0.000000 mm
+Minimum beam direction dot: 1.000000000
+		34 text Isolated review state; no saved game is changed. 
+		35 link Description: Open game, Value: 127.0.0.1:5175/
+
+The focused UI element is 31 button Run rig checks, ID: audit
