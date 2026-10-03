@@ -113,6 +113,19 @@ items and put the enemy away from the player with a recovery window.
   Original procedural rain/wind, adaptive tension, directional ghost
   movement/voices, heartbeat, exertion breathing, varied surface steps, doors and
   object sounds remain, including contextual ducking through ten gameplay states.
+  `CreepyNightBreeze.mp3` loops alongside MELANCHOLIA in the menu and fades out
+  on entry. `CreepyLittleGirl.mp3` joins ILI ILI and Mixkit during gameplay, and
+  stops on capture, escape or menu return. `CreepyCurseSound.mp3` follows the
+  existing ghost's distance, entering at 8 m, growing louder toward 2 m, and
+  fading out past 11 m even when Corazon is around a corner. The warning and
+  `JumpScareCorazon.mp3` use the Effects slider. The preloaded jumpscare starts
+  in the shared face-reveal render tick for both the kitchen scene and captures,
+  plays once per complete sequence, and finishes on the caught screen. A later
+  scare replaces any remaining tail; retry/menu cancels it. Gentle scares also
+  reduce both cues.
+  Adjust the four clips' volumes, loops, fades and distance thresholds in
+  `CORAZON_AUDIO` in `src/config.ts`. Each recording has at most one source in
+  the same context, and failed loads leave the original soundscape playable.
 - Horror director: bounded, room-aware events, recent-event memory, silence before
   whispers, weather, cloth/window movement, falling picture moulding, a flickering
   CRT, moving shadows and brief Corazon afterimages that disappear under the light.
@@ -192,6 +205,12 @@ to each recording's end to verify looping, checks sequential fades and independe
 music/master mute, then tests pause/resume, resets and disposal during a fade.
 See [tests/background-music-validation.md](tests/background-music-validation.md)
 for the results and the physical-device testing limit.
+**Check four Corazon audio integrations** measures real samples from the menu
+pair and all three gameplay layers, crosses each new native loop boundary,
+checks proximity hysteresis and fade reversal, and verifies one-shot gating,
+gentle mode, caught-screen tails, suspension, mute and cleanup. The validation
+panel also observes the live face overlay to verify same-frame sound and one
+trigger per actual capture. See [tests/corazon-recordings-validation.md](tests/corazon-recordings-validation.md).
 **Check desktop jumping** and **Check touch jumping** walk the actual player to
 the living-room table, jump onto it, reject repeated/airborne jump input, hold a
 stable landing, and walk off under gravity.

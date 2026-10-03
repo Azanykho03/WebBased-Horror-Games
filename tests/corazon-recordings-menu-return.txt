@@ -1,0 +1,10 @@
+CALM_EXPLORATION · running
+BGM menu → menu · playing · 0.5 s
+Mixkit ready · quiet · 31.3 s · gain 0.000
+Duck music 1.00 / ambience 1.00
+Voices 0/20 · loops 12
+Fear 0.00 · proximity 0.00
+menu: ready playing · 1.28s · gain 0.240 · sources 1 · starts 3
+gameplay: ready stopped · 0.00s · gain 0.000 · sources 0 · starts 2
+proximity: ready stopped · 0.00s · gain 0.000 · sources 0 · starts 4
+jumpscare: ready stopped · 0.00s · gain 0.000 · sources 0 · starts 2

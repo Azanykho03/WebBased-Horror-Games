@@ -15,6 +15,7 @@ import { attachAmbienceAudit } from './ambience-audit.ts';
 import type { AudioSystem } from '../src/audio.ts';
 import { attachJumpAudit } from './jump-audit.ts';
 import { attachDisplayAudit } from './display-audit.ts';
+import { attachCorazonAudioAudit } from './corazon-audio-audit.ts';
 
 interface JourneyHost {
   world: World; player: Player; input: InputSystem; ghost: GhostStateMachine; interactions: InteractionSystem;
@@ -37,7 +38,22 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
   attachAudioAudit(content, () => host.action('journal'));
   attachMusicAudit(content, () => host.action('journal'));
   attachAmbienceAudit(content, () => host.action('journal'));
+  attachCorazonAudioAudit(content, () => host.action('journal'));
+  const captureAudio = document.createElement('pre'); captureAudio.setAttribute('aria-label', 'Face audio synchronization'); content.append(captureAudio);
+  let faceVisible = false, faceStarts = 0, faceEvents = 0;
+  const face = document.querySelector<HTMLElement>('#face-overlay')!;
+  new MutationObserver(() => {
+    const visible = !face.hidden, clip = host.audioDiagnostics().recordings?.jumpscare;
+    if (visible && !faceVisible) {
+      const startedOnce = clip?.starts === faceStarts + 1;
+      faceEvents++; faceStarts = clip?.starts ?? 0;
+      captureAudio.textContent = `${startedOnce && clip?.playing && clip.sources === 1 && !clip.loop ? 'PASS' : 'FAIL'} · Face event ${faceEvents}: audio started in the face-visibility frame (starts ${faceStarts})`;
+    } else if (visible && clip?.starts !== faceStarts) captureAudio.textContent = 'FAIL · Jumpscare restarted while face remained visible';
+    else if (!visible && faceVisible) captureAudio.textContent += `\nSequence finished · ${clip?.starts === faceStarts ? 'one audio trigger' : 'FAIL duplicate trigger'} · tail ${clip?.playing ? 'playing' : 'stopped'}`;
+    faceVisible = visible;
+  }).observe(face, { attributes: true, attributeFilter: ['hidden'] });
   const mix = document.createElement('pre'); mix.setAttribute('aria-label', 'Audio diagnostics'); content.append(mix);
+  const recordings = document.createElement('pre'); recordings.setAttribute('aria-label', 'Corazon recording diagnostics'); content.append(recordings);
   const audition = document.createElement('button'); audition.textContent = 'Audition weather / haunt'; content.append(audition);
   let auditionIndex = 0, mixTime = 0;
   const auditionKinds: HauntEvent['kind'][] = ['thunder', 'light', 'whisper', 'object', 'footsteps', 'window', 'curtain', 'radio', 'shadow', 'apparition'];
@@ -115,6 +131,13 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
   }
   return dt => {
     jumpAudit(dt);
+    if (mixTime + dt > .25) {
+      const clips = host.audioDiagnostics().recordings;
+      recordings.textContent = clips ? (['menu', 'gameplay', 'proximity', 'jumpscare'] as const).map(name => {
+        const clip = clips[name];
+        return `${name}: ${clip.status} ${clip.playing ? 'playing' : 'stopped'} · ${clip.time.toFixed(2)}s · gain ${clip.gain.toFixed(3)} · sources ${clip.sources} · starts ${clip.starts}`;
+      }).join('\n') : 'Recordings await first interaction';
+    }
     mixTime += dt;
     if (mixTime > .25) { mixTime = 0; const a = host.audioDiagnostics(); mix.textContent = `${a.soundtrack} · ${a.state}\nBGM ${a.background?.track ?? 'none'} → ${a.background?.requested ?? 'none'} · ${a.background?.playing ? 'playing' : 'paused'} · ${(a.background?.time ?? 0).toFixed(1)} s\nMixkit ${a.ambience.status} · ${a.ambience.playing ? 'playing' : 'quiet'} · ${a.ambience.time.toFixed(1)} s · gain ${a.ambience.gain.toFixed(3)}\nDuck music ${a.ducking.music.toFixed(2)} / ambience ${a.ducking.ambience.toFixed(2)}\nVoices ${a.transientVoices}/20 · loops ${a.permanentSources}\nFear ${host.atmosphere().fear.toFixed(2)} · proximity ${host.atmosphere().proximity.toFixed(2)}`; }
     if (!running) return;

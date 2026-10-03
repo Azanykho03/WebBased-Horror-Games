@@ -19,6 +19,7 @@ export class UI {
   private touchMode = false;
   private abort = new AbortController();
   onAction: (action: string, userGesture: boolean) => void = () => {};
+  onFaceReveal: () => void = () => {};
   onSettings: (key: keyof Settings, value: number | boolean | string) => void = () => {};
   constructor(root: HTMLElement) {
     this.root = root;
@@ -90,7 +91,11 @@ export class UI {
   }
   notice(text: string, seconds = 4): void { this.toast.textContent = text; this.noticeTime = seconds; }
   say(text: string, seconds = 3): void { this.subtitle.textContent = text; this.subtitleTime = seconds; }
-  face(visible: boolean, gentle: boolean): void { this.overlay.hidden = !visible; this.overlay.classList.toggle('gentle', gentle); }
+  face(visible: boolean, gentle: boolean): void {
+    const appearing = visible && this.overlay.hidden;
+    this.overlay.hidden = !visible; this.overlay.classList.toggle('gentle', gentle);
+    if (appearing) this.onFaceReveal();
+  }
   tick(dt: number, subtitles: boolean): void {
     this.noticeTime -= dt; this.subtitleTime -= dt;
     if (this.noticeTime <= 0) this.toast.textContent = '';

@@ -1,0 +1,6 @@
+PASS · Face event 2: audio started in the face-visibility frame (starts 2)
+Sequence finished · one audio trigger · tail playing
+menu: ready stopped · 0.00s · gain 0.000 · sources 0 · starts 1
+gameplay: ready stopped · 0.00s · gain 0.000 · sources 0 · starts 1
+proximity: ready stopped · 0.00s · gain 0.000 · sources 0 · starts 3
+jumpscare: ready stopped · 0.00s · gain 0.000 · sources 0 · starts 2

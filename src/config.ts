@@ -21,6 +21,15 @@ export const MUSIC_AUDIO = {
   game: 'audio/ILI ILI Tulog Anay Scary Version Music Box Cover.mp3',
 };
 export const AMBIENCE_AUDIO = 'audio/mixkit-horror-ambience-2482.wav';
+// Levels are before the existing mixer sliders and master limiter. Distances are
+// world meters; all fades use the AudioContext clock (which freezes on pause).
+export const CORAZON_AUDIO = {
+  menu: { path: 'audio/CreepyNightBreeze.mp3', volume: .24, loop: true, fade: .8 },
+  gameplay: { path: 'audio/CreepyLittleGirl.mp3', volume: .16, loop: true, fade: .8 },
+  proximity: { path: 'audio/CreepyCurseSound.mp3', volume: .38, loop: true, fade: .45,
+    enterDistance: 8, exitDistance: 11, fullVolumeDistance: 2, minimumVolume: .09 },
+  jumpscare: { path: 'audio/JumpScareCorazon.mp3', volume: .85, loop: false, fade: .006 },
+};
 export type VoiceCue = 'kitchen-player' | 'kitchen-ghost' | 'recognition' | 'spotted' | 'sprint' | 'lost' | 'exit' | 'hit' | `whisper-${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8}` | 'cry' | 'hum' | 'laugh' | 'scream';
 // Optional asset paths under public/assets. Captions and synthesized cues work
 // when recordings are absent. Clean mode never falls back to an unclean clip.

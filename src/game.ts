@@ -63,6 +63,7 @@ export class Game {
   constructor(canvas: HTMLCanvasElement, root: HTMLElement) {
     this.canvas = canvas; this.ui = new UI(root); this.settings = this.storage.settings();
     this.audio = new AudioSystem(this.settings); this.input = new InputSystem(canvas, () => this.pause());
+    this.ui.onFaceReveal = () => this.audio.jumpscare();
     this.touch = new TouchControls(root, this.input, () => this.pause());
     this.display = new MobileDisplay(() => {
       this.input.clear(); this.performanceProfile.resetSamples(); this.applyResolution();
@@ -142,9 +143,10 @@ export class Game {
     if (screen === 'menu' || screen === 'won') this.runStarted = false;
     this.display.sync(screen === 'playing' || screen === 'intro');
     if (screen !== 'playing') this.input.stop();
-    if (screen === 'menu' || screen === 'caught' || screen === 'won') this.audio.reset();
+    if (screen === 'menu' || screen === 'caught' || screen === 'won') this.audio.reset(screen === 'caught');
     this.syncAudio();
     this.ui.screen(screen, this.progress, this.settings, this.storage.load() !== null, detail, this.selectedDifficulty);
+    if (screen === 'caught') this.audio.finishJumpscare();
     this.syncTouch();
   }
   private syncAudio(): void {
@@ -152,6 +154,7 @@ export class Game {
       || (this.screen === 'settings' || this.screen === 'credits') && this.returnScreen === 'menu';
     const game = ['playing', 'intro', 'caught', 'won'].includes(this.screen);
     if (menu || game) this.audio.setMusic(menu ? 'menu' : 'game');
+    if (menu || game) this.audio.setGameplay(this.screen === 'playing' || this.screen === 'intro');
     if (this.audioUnlocked && !this.presentationPaused && !document.hidden && (menu || game)) this.audio.start();
     else this.audio.pause();
   }
@@ -254,6 +257,7 @@ export class Game {
       if (stage === 1) { this.horror.scare(2); this.audio.effect('sting'); this.speak(`${GHOST_PROFILE.name}: “HOY! NGANONG NISULOD MAN KA DIRI?!”`, 2, true, 'kitchen-ghost'); }
       if (stage === 2) this.speak(`You: “${this.settings.cleanDialogue ? 'AGUY' : 'YAWA'}, SI ${GHOST_PROFILE.name.toUpperCase()} RA DIAY!”`, 2, true, 'recognition');
       if (stage === 3) {
+        this.audio.finishJumpscare();
         this.progress.kitchenSeen = true; this.revealTime = -1; this.ghost.reveal(this.player.position, this.world.nav); this.world.ghost.setEnabled(true);
         this.horror.recover();
         this.interactions.sync(this.progress); this.save(); this.ui.notice('Move. Find the fuse. The tsinelas on the floor can slow her down.', 6);
@@ -299,7 +303,10 @@ export class Game {
         const before = { ...this.ghost.position };
         const caught = this.ghost.update(dt, this.world, this.player, this.progress, event => this.speak(`${GHOST_PROFILE.name}: ${event === 'spotted' ? '“HOYYYY! ARI DIRI!”' : '“PAGHULAT BA!”'}`, 3, false, event));
         this.ghostMoving = Math.hypot(this.ghost.position.x - before.x, this.ghost.position.z - before.z) > .001;
-        if (caught) { this.horror.scare(.7); this.audio.effect('sting'); this.audio.voice('scream'); this.captureTime = .7; this.input.clear(); this.ui.face(true, this.settings.gentleScares); }
+        if (caught) {
+          this.horror.scare(.7); this.audio.effect('sting'); this.audio.voice('scream'); this.captureTime = .7; this.input.clear();
+          this.ui.face(true, this.settings.gentleScares);
+        }
       } else { this.input.consume('KeyE'); this.input.consume('Throw'); this.input.consume('Hide'); }
       this.interactions.updateProjectile(dt, this.ghost, (p, r) => { this.ghost.hear(p, r); this.audio.effect('land', [p.x, p.y + .1, p.z]); }, () => {
         this.audio.effect('hit'); this.speak(`${GHOST_PROFILE.name}: ${this.settings.cleanDialogue ? '“Aguy, sakita oy!”' : '“YAWA, SAKITA OY!”'}`, 2, true, 'hit');

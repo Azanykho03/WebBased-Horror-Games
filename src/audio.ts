@@ -1,11 +1,12 @@
 import type { Position, Settings, Vec3, InteractionId, Hotspot } from './types.ts';
-import { AMBIENCE_AUDIO, assetUrl, MUSIC_AUDIO, VOICE_AUDIO } from './config.ts';
+import { AMBIENCE_AUDIO, assetUrl, CORAZON_AUDIO, MUSIC_AUDIO, VOICE_AUDIO } from './config.ts';
 import type { VoiceCue } from './config.ts';
 import { BackgroundMusic } from './music.ts';
 import type { MusicTrack } from './music.ts';
 import { createAmbienceLoop, HORROR_AMBIENCE_LEVEL } from './ambience.ts';
 import { clamp } from './horror.ts';
 import type { Atmosphere, HauntEvent, Soundscape, Surface } from './horror.ts';
+import { RecordedAudio, proximityLevel } from './recorded-audio.ts';
 
 type Bus = 'music' | 'ambience' | 'effects' | 'voice';
 type Effect = 'pickup' | 'latch' | 'sting' | 'hit' | 'flashlight' | 'detect' | 'objective' | 'throw' | 'land' | 'ui';
@@ -24,6 +25,10 @@ export class AudioSystem {
   private context: AudioContext | null = null;
   private background: BackgroundMusic | null = null;
   private musicTrack: MusicTrack | null = null;
+  private recordings: Record<keyof typeof CORAZON_AUDIO, RecordedAudio> | null = null;
+  private gameplay = false;
+  private nearby = false;
+  private jumpscareLatched = false;
   private master!: GainNode;
   private buses!: Record<Bus, GainNode>;
   private musicDuck!: GainNode;
@@ -74,8 +79,18 @@ export class AudioSystem {
     ambience: { status: this.ambienceStatus, playing: this.active && this.state === 'running' && this.ambienceTarget > 0 && Boolean(this.ambienceSource),
       gain: this.horrorAmbience?.gain.value ?? 0, duration: this.ambienceSource?.buffer?.duration ?? 0,
       time: this.ambienceSource && this.ambienceStarted !== null ? (this.context!.currentTime - this.ambienceStarted) % this.ambienceSource.buffer!.duration : 0 },
+    recordings: this.recordings ? { menu: this.recordings.menu.diagnostics, gameplay: this.recordings.gameplay.diagnostics,
+      proximity: this.recordings.proximity.diagnostics, jumpscare: this.recordings.jumpscare.diagnostics, nearby: this.nearby, jumpscareLatched: this.jumpscareLatched } : null,
     ducking: { music: this.musicDuck?.gain.value ?? 1, ambience: this.ambientDuck?.gain.value ?? 1 } }; }
-  setMusic(track: MusicTrack | null): void { this.musicTrack = track; this.background?.select(track); this.syncAmbience(); }
+  setMusic(track: MusicTrack | null): void {
+    if (track !== this.musicTrack) this.gameplay = track === 'game';
+    this.musicTrack = track; this.background?.select(track); this.syncAmbience(); this.syncRecordings();
+  }
+  setGameplay(active: boolean): void {
+    this.gameplay = active;
+    if (!active) { this.nearby = false; this.recordings?.proximity.setLevel(0, CORAZON_AUDIO.proximity.fade); }
+    this.syncRecordings();
+  }
   start(): void {
     if (this.disposed) return;
     this.active = true;
@@ -83,13 +98,18 @@ export class AudioSystem {
       if (!this.context) this.setup();
       if (this.context?.state !== 'running') void this.context?.resume().then(() => { if (!this.active) void this.context?.suspend().catch(() => {}); }).catch(() => {});
       this.background?.resume();
+      this.syncRecordings();
     } catch { /* Captions and gameplay remain available without Web Audio. */ }
   }
   pause(): void {
     this.active = false; this.background?.pause(); this.silenceAmbience();
     void this.context?.suspend().catch(() => {});
   }
-  reset(): void {
+  reset(preserveJumpscare = false): void {
+    this.nearby = false; this.recordings?.proximity.stop();
+    // The capture picture lasts .7s; let the supplied one-shot finish its tail
+    // on the caught screen. A new run/menu/disposal cancels it and rearms.
+    if (!preserveJumpscare) { this.jumpscareLatched = false; this.recordings?.jumpscare.stop(); }
     this.voiceToken++; this.voicePlaying = null;
     for (const sound of [...this.playing]) sound.stop();
     this.lastEffect.clear(); this.variants.clear();
@@ -125,9 +145,25 @@ export class AudioSystem {
     ambienceFilter.connect(this.ambientDuck); this.horrorAmbience = this.gain(ambienceFilter);
     this.background = new BackgroundMusic(c, this.musicDuck, { menu: assetUrl(MUSIC_AUDIO.menu), game: assetUrl(MUSIC_AUDIO.game) });
     this.background.select(this.musicTrack);
+    this.recordings = {
+      menu: new RecordedAudio(c, this.musicDuck, CORAZON_AUDIO.menu.loop),
+      gameplay: new RecordedAudio(c, this.ambientDuck, CORAZON_AUDIO.gameplay.loop),
+      // A nearby warning remains audible while chase music/ambience are ducked.
+      proximity: new RecordedAudio(c, this.buses.effects, CORAZON_AUDIO.proximity.loop),
+      jumpscare: new RecordedAudio(c, this.buses.effects, CORAZON_AUDIO.jumpscare.loop),
+    };
+    for (const name of Object.keys(CORAZON_AUDIO) as (keyof typeof CORAZON_AUDIO)[]) {
+      const clip = this.recordings[name], path = CORAZON_AUDIO[name].path;
+      void this.load(path).then(buffer => {
+        if (this.disposed) return;
+        clip.setBuffer(buffer);
+        if (!buffer) console.warn(`Audio unavailable: ${path}. Other game audio remains enabled.`);
+        this.syncRecordings();
+      });
+    }
     c.addEventListener('statechange', () => {
       if (c.state !== 'running') { this.background?.pause(); this.silenceAmbience(); }
-      else if (this.active) this.background?.resume();
+      else if (this.active) { this.background?.resume(); this.syncRecordings(); }
     }, { signal: this.pending.signal });
     this.noise = c.createBuffer(1, c.sampleRate * 8, c.sampleRate);
     const samples = this.noise.getChannelData(0), edge = c.sampleRate * .035;
@@ -182,6 +218,32 @@ export class AudioSystem {
     this.horrorAmbience.gain.cancelScheduledValues(this.context.currentTime);
     this.horrorAmbience.gain.setValueAtTime(0, this.context.currentTime);
   }
+  private syncRecordings(): void {
+    if (!this.recordings || !this.active) return;
+    const music = this.background?.diagnostics;
+    if (!this.gameplay) { this.nearby = false; this.recordings.proximity.setLevel(0, CORAZON_AUDIO.proximity.fade); }
+    this.recordings.menu.setLevel(this.musicTrack === 'menu' ? CORAZON_AUDIO.menu.volume : 0, CORAZON_AUDIO.menu.fade);
+    this.recordings.gameplay.setLevel(this.gameplay && music?.playing && music.track === 'game' && music.requested === 'game'
+      ? CORAZON_AUDIO.gameplay.volume : 0, CORAZON_AUDIO.gameplay.fade);
+  }
+  // Called in the same render tick that makes Corazon's face visible. Preloading
+  // keeps this synchronous; a failed/late download must never create a late scare.
+  jumpscare(): void {
+    if (this.jumpscareLatched || !this.gameplay || !this.active || this.context?.state !== 'running') return;
+    this.jumpscareLatched = true; this.nearby = false;
+    this.recordings?.proximity.setLevel(0, .04);
+    // A later, distinct event can cut off an earlier tail, but never stack it.
+    this.recordings?.jumpscare.stop();
+    this.recordings?.jumpscare.setLevel(CORAZON_AUDIO.jumpscare.volume * (this.settings.gentleScares ? .4 : 1), CORAZON_AUDIO.jumpscare.fade);
+  }
+  finishJumpscare(): void { this.jumpscareLatched = false; }
+  private updateProximity(frame: AudioFrame): void {
+    const eligible = this.gameplay && !this.jumpscareLatched && !['ENDING', 'GAME_OVER'].includes(frame.atmosphere.state);
+    const distance = eligible && frame.ghost ? Math.hypot(frame.ghost.x - frame.eye[0], frame.ghost.y + 1.4 - frame.eye[1], frame.ghost.z - frame.eye[2]) : Infinity;
+    const result = proximityLevel(distance, this.nearby, CORAZON_AUDIO.proximity);
+    this.nearby = result.nearby;
+    this.recordings?.proximity.setLevel(result.volume * (this.settings.gentleScares ? .6 : 1), CORAZON_AUDIO.proximity.fade);
+  }
   private syncAmbience(): void {
     const c = this.context, music = this.background?.diagnostics;
     if (!c || !this.horrorAmbience) return;
@@ -199,7 +261,7 @@ export class AudioSystem {
   private duckBackground(): void {
     const c = this.context;
     if (!c) return;
-    const scare = this.stateName === 'JUMPSCARE' || c.currentTime < this.scareUntil;
+    const scare = this.stateName === 'JUMPSCARE' || c.currentTime < this.scareUntil || Boolean(this.recordings?.jumpscare.diagnostics.playing);
     const chase = this.stateName === 'CHASE', voice = this.dialogue > 0;
     const targets = {
       music: (scare ? .08 : Math.min(voice ? .42 : 1, chase ? .7 : 1)) * (1 - this.silence * .92),
@@ -349,7 +411,7 @@ export class AudioSystem {
     if (old !== a.state && a.state === 'CHASE') this.pulse = 0;
     if (old !== a.state && a.state === 'CORAZON_DETECTED_PLAYER') this.effect('detect');
     this.dialogue = Math.max(0, this.dialogue - dt);
-    this.silence = a.silence; this.duckBackground(); this.syncAmbience();
+    this.silence = a.silence; this.duckBackground(); this.syncAmbience(); this.syncRecordings(); this.updateProximity(frame);
     const listener = c.listener;
     if (listener.positionX) {
       listener.positionX.value = frame.eye[0]; listener.positionY.value = frame.eye[1]; listener.positionZ.value = frame.eye[2];
@@ -407,6 +469,8 @@ export class AudioSystem {
   dispose(): void {
     this.disposed = true; this.active = false; this.pending.abort(); this.reset();
     this.background?.dispose(); this.background = null;
+    if (this.recordings) for (const clip of Object.values(this.recordings)) clip.dispose();
+    this.recordings = null;
     for (const source of this.permanent) { try { source.stop(); } catch { /* Already stopped. */ } source.disconnect(); }
     this.ambienceSource?.disconnect(); this.ambienceSource = null; this.ambienceStarted = null; this.ambienceStatus = 'idle'; this.ambienceTarget = 0;
     this.permanent = []; this.buffers.clear(); void this.context?.close().catch(() => {}); this.context = null;
