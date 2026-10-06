@@ -4,6 +4,7 @@ import type { Position, Progress, Settings, Vec3 } from './types.ts';
 import { detectTouch } from './touch.ts';
 import { PlayerPhysics } from './player-physics.ts';
 import { difficultySettings } from './difficulty.ts';
+import { haltPlayerCamera, orientPlayerCamera } from './player-camera.ts';
 
 export class InputSystem {
   readonly keys = new Set<string>();
@@ -153,13 +154,14 @@ export class Player {
   camera(world: World, settings: Settings): void {
     this.direction.set(Math.sin(this.yaw) * Math.cos(this.pitch), Math.sin(this.pitch), -Math.cos(this.yaw) * Math.cos(this.pitch));
     world.camera.position.set(this.position.x, this.position.y + world.data.eyeHeight + (settings.reducedMotion || !this.moving || !this.grounded ? 0 : Math.sin(this.bob) * .012), this.position.z);
-    world.camera.setTarget(world.camera.position.add(this.direction));
+    orientPlayerCamera(world.camera, this.yaw, this.pitch);
   }
   get eye(): Vec3 { return [this.position.x, this.position.y + 1.65, this.position.z]; }
   halt(world: World): void {
     // A presentation never translates the body or advances gravity. Discard
     // stale jump velocity; an airborne player resumes ordinary gravity afterward.
     this.physics.halt(this.position, world.collision);
+    haltPlayerCamera(world.camera);
     this.moving = this.sprinting = false; this.step = this.bob = 0;
   }
 }

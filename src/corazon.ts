@@ -2,8 +2,9 @@ import type * as Babylon from 'babylonjs';
 import { B } from './world.ts';
 import type { GhostStateMachine } from './ghost.ts';
 import type { Settings } from './types.ts';
-import { corazonModelYaw, CORAZON_SCARE, mix, scareFrame, ScareTimeline, smoothStep } from './corazon-motion.ts';
+import { angleDifference, corazonModelYaw, CORAZON_SCARE, mix, scareFrame, ScareTimeline, smoothStep } from './corazon-motion.ts';
 import type { ScareKind } from './corazon-motion.ts';
+import { haltPlayerCamera, orientPlayerCamera } from './player-camera.ts';
 
 // Transform-only animation for the supplied static assembly. Vertices, UVs,
 // textures and mesh scale stay untouched; no replacement model or face plane.
@@ -22,7 +23,8 @@ export class CorazonPresentation {
   private saved?: {
     position: Babylon.Vector3; rotation: Babylon.Quaternion; enabled: boolean;
     torso: Babylon.Quaternion; head: Babylon.Quaternion;
-    cameraPosition: Babylon.Vector3; cameraRotation: Babylon.Quaternion; cameraFov: number;
+    cameraPosition: Babylon.Vector3; cameraYaw: number; cameraPitch: number; cameraFov: number;
+    targetYaw: number; targetPitch: number;
     targetRotation: Babylon.Quaternion;
     meshes: { group: number; visibility: number; fog: boolean }[];
   };
@@ -73,25 +75,28 @@ export class CorazonPresentation {
   }
   start(kind: ScareKind, settings: Settings): boolean {
     if (!this.timeline.start(kind)) return false;
-    const cameraRotation = this.camera.rotationQuaternion?.clone() ?? B.Quaternion.FromEulerVector(this.camera.rotation);
+    const rotation = this.camera.rotationQuaternion?.toEulerAngles() ?? this.camera.rotation;
+    const cameraYaw = -rotation.y, cameraPitch = rotation.x;
     const cameraPosition = this.camera.position.clone();
-    let targetRotation = cameraRotation.clone();
+    let targetYaw = cameraYaw, targetPitch = cameraPitch;
     if (kind === 'capture') {
       const face = this.facePosition();
       if (B.Vector3.Distance(face, cameraPosition) > .05) {
         // Turn toward the actual captor first, even when she caught us from behind.
         // This keeps her travel outside the camera instead of crossing its plane.
-        this.camera.rotationQuaternion = null; this.camera.setTarget(face);
-        targetRotation = B.Quaternion.FromEulerVector(this.camera.rotation);
+        const direction = face.subtract(cameraPosition), horizontal = Math.hypot(direction.x, direction.z);
+        if (horizontal > .0001) targetYaw = Math.atan2(direction.x, -direction.z);
+        targetPitch = Math.atan2(direction.y, horizontal);
       }
     }
     this.saved = {
       position: this.root.position.clone(), rotation: this.root.rotationQuaternion!.clone(), enabled: this.root.isEnabled(),
       torso: this.torso.rotationQuaternion!.clone(), head: this.head.rotationQuaternion!.clone(),
-      cameraPosition, cameraRotation, cameraFov: this.camera.fov, targetRotation,
+      cameraPosition, cameraYaw, cameraPitch, cameraFov: this.camera.fov, targetYaw, targetPitch,
+      targetRotation: B.Quaternion.RotationYawPitchRoll(-targetYaw, targetPitch, 0),
       meshes: this.meshes.map(m => ({ group: m.renderingGroupId, visibility: m.visibility, fog: m.applyFog })),
     };
-    this.camera.rotationQuaternion = cameraRotation.clone();
+    haltPlayerCamera(this.camera);
     this.root.setEnabled(true); this.fill.setEnabled(true);
     for (const mesh of this.meshes) { mesh.renderingGroupId = 2; mesh.applyFog = false; }
     this.render(settings); return true;
@@ -105,12 +110,15 @@ export class CorazonPresentation {
     const saved = this.saved!, kind = this.timeline.kind!;
     const frame = scareFrame(kind, this.timeline.time, settings.reducedMotion, settings.gentleScares);
     const camera = this.camera;
-    B.Quaternion.SlerpToRef(saved.cameraRotation, saved.targetRotation, frame.approach, camera.rotationQuaternion!);
+    // Interpolate yaw by the shortest turn and pitch independently: quaternion
+    // slerp can bank between two otherwise upright camera poses.
+    orientPlayerCamera(camera, saved.cameraYaw + angleDifference(saved.targetYaw, saved.cameraYaw) * frame.approach,
+      mix(saved.cameraPitch, saved.targetPitch, frame.approach));
     camera.position.copyFrom(saved.cameraPosition);
     const cameraWeight = frame.approach * (kind === 'jumpscare' ? 1 - smoothStep((this.timeline.time - 1.48) / .27) : 1);
     camera.fov = mix(saved.cameraFov, settings.reducedMotion ? saved.cameraFov : 1.02, cameraWeight);
     camera.getViewMatrix(true);
-    this.root.rotationQuaternion!.copyFrom(kind === 'jumpscare' ? camera.rotationQuaternion! : B.Quaternion.Slerp(saved.rotation, saved.targetRotation, frame.approach));
+    this.root.rotationQuaternion!.copyFrom(kind === 'jumpscare' ? B.Quaternion.FromEulerVector(camera.rotation) : B.Quaternion.Slerp(saved.rotation, saved.targetRotation, frame.approach));
     const headRotation = B.Quaternion.RotationYawPitchRoll(frame.yaw, frame.pitch - frame.bodyPitch, frame.roll);
     const torsoRotation = B.Quaternion.RotationYawPitchRoll(0, frame.bodyPitch, 0);
     this.head.rotationQuaternion!.copyFrom(B.Quaternion.Slerp(saved.head, headRotation, frame.approach));
@@ -144,7 +152,8 @@ export class CorazonPresentation {
       this.root.position.copyFrom(saved.position); this.root.rotationQuaternion!.copyFrom(saved.rotation); this.root.setEnabled(saved.enabled);
       this.torso.rotationQuaternion!.copyFrom(saved.torso); this.head.rotationQuaternion!.copyFrom(saved.head);
       this.camera.position.copyFrom(saved.cameraPosition); this.camera.fov = saved.cameraFov;
-      this.camera.rotationQuaternion = null; this.camera.rotation.copyFrom(saved.cameraRotation.toEulerAngles());
+      haltPlayerCamera(this.camera); orientPlayerCamera(this.camera, saved.cameraYaw, saved.cameraPitch);
+      this.camera.getViewMatrix(true);
       for (const [i, mesh] of this.meshes.entries()) {
         mesh.renderingGroupId = saved.meshes[i].group; mesh.visibility = saved.meshes[i].visibility; mesh.applyFog = saved.meshes[i].fog;
       }

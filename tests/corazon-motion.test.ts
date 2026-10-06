@@ -10,6 +10,8 @@ import { createNavigation } from '../scripts/3d-generation/house-navigation.mjs'
 
 (globalThis as unknown as { window: EventTarget & { BABYLON: typeof Babylon } }).window = Object.assign(new EventTarget(), { BABYLON: Babylon });
 const { CorazonPresentation } = await import('../src/corazon.ts');
+const { Player } = await import('../src/player.ts');
+import type { World } from '../src/world.ts';
 const bytes = readFileSync('public/assets/models/enemies/ghost/ghost.glb');
 const jsonLength = bytes.readUInt32LE(12), gltf = JSON.parse(bytes.subarray(20, 20 + jsonLength).toString());
 function fixture(width = 1280, height = 720) {
@@ -81,6 +83,58 @@ test('accessibility retains timing, increases distance and reduces head/camera m
     assert.equal(reduced.revealed, normal.revealed);
     assert(Math.abs(reduced.roll) < Math.abs(normal.roll)); assert(gentle.distance > normal.distance);
   }
+});
+
+function assertUpright(camera: Babylon.FreeCamera, context: string): void {
+  const basis = camera.getViewMatrix(true).clone().invert();
+  assert(Math.abs(basis.m[1]) < .000001, `${context}: rendered camera right vector has vertical component ${basis.m[1]}`);
+  assert(basis.m[5] > 0, `${context}: camera is upside down`);
+  assert.equal(camera.rotation.z, 0, `${context}: Euler roll`);
+  assert.equal(camera.parent, null, `${context}: player camera must remain a scene root`);
+}
+
+test('repeated regular scares preserve the rendered horizon during subsequent mouse-look turns', () => {
+  const { presentation, camera, engine, scene } = fixture();
+  const player = new Player();
+  const world = { camera, data: { eyeHeight: 1.65 } } as World;
+  try {
+    for (const [yaw, pitch] of [[.8, .7], [1.7, -1.1], [3.12, 1.35], [-3.12, -1.35], [0, 0], [-1.4, .4]]) {
+      player.yaw = yaw; player.pitch = pitch; player.camera(world, DEFAULT_SETTINGS);
+      const position = camera.position.clone();
+      for (let repeat = 0; repeat < 3; repeat++) {
+        assert(presentation.start('jumpscare', DEFAULT_SETTINGS));
+        for (let frame = 0; frame < 110; frame++) {
+          presentation.update(1 / 60, DEFAULT_SETTINGS); scene.render();
+          assertUpright(camera, `scare ${yaw}/${pitch}, repeat ${repeat}, frame ${frame}`);
+          assert(camera.position.equalsWithEpsilon(position, .000001), 'No scare translation or drop');
+        }
+        presentation.finish(); player.camera(world, DEFAULT_SETTINGS);
+        assert.equal(player.yaw, yaw + repeat * .35); assert.equal(player.pitch, pitch);
+        // The stale up-vector only banks the view AFTER changing direction.
+        player.yaw = yaw + (repeat + 1) * .35; player.camera(world, DEFAULT_SETTINGS);
+        for (let frame = 0; frame < 3; frame++) {
+          scene.render(); assertUpright(camera, `recovery ${yaw}/${pitch}, repeat ${repeat}`);
+          assert(Babylon.Vector3.Dot(camera.getForwardRay().direction, player.direction) > .999999, 'View and movement must share the restored heading');
+        }
+      }
+    }
+  } finally { engine.dispose(); }
+});
+
+test('capture turns interpolate yaw and pitch without banking at any intermediate frame', () => {
+  const { presentation, camera, root, engine, scene } = fixture();
+  try {
+    for (const [yaw, pitch] of [[1.8, 1.2], [-1.3, -1.1], [3.12, .8], [-3.12, -.8]]) {
+      camera.rotation.set(pitch, -yaw, 0); camera.upVector.set(0, 1, 0);
+      root.position.set(-.6, 0, -.4); camera.getViewMatrix(true);
+      assert(presentation.start('capture', DEFAULT_SETTINGS));
+      for (let frame = 0; frame < 270; frame++) {
+        presentation.update(1 / 120, DEFAULT_SETTINGS); scene.render();
+        assertUpright(camera, `capture ${yaw}/${pitch}, frame ${frame}`);
+      }
+      presentation.finish(); scene.render(); assertUpright(camera, 'capture cleanup');
+    }
+  } finally { engine.dispose(); }
 });
 test('the face is fully visible and close on the single audio reveal beat', () => {
   for (const kind of ['capture', 'jumpscare'] as const) {

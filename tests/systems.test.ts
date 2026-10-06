@@ -109,6 +109,36 @@ test('touch analog input shares collisions, has no diagonal speed boost, and cla
     assert.equal(player.pitch, -1.35); assert(Math.abs(player.yaw) < 1e-7);
   } finally { cleanup(); }
 });
+test('scare handoff clears camera inertia and keeps WASD aligned with an upright view', () => {
+  const { world, player, progress, input, keys, cleanup } = setup();
+  const update = () => player.update(.05, input, world, progress, DEFAULT_SETTINGS, () => {}, () => {});
+  try {
+    player.reset({ x: 0, y: 0, z: -3, level: 0 }); player.yaw = .8; player.pitch = .7; update();
+    // Seed native motion, including its internal inertia, before the boundary.
+    world.camera.cameraDirection.set(.03, -.02, .04); world.camera.cameraRotation.set(.02, .03);
+    world.scene.render();
+    world.camera.movement.panAccumulatedPixels.set(.01, .02, .03);
+    world.camera.movement.rotationAccumulatedPixels.set(.03, .04, .05);
+    player.halt(world); player.camera(world, DEFAULT_SETTINGS);
+    const cameraPosition = world.camera.position.clone(), rotation = world.camera.rotation.clone();
+    for (let frame = 0; frame < 60; frame++) world.scene.render();
+    assert(world.camera.position.equalsWithEpsilon(cameraPosition, .000001));
+    assert(world.camera.rotation.equalsWithEpsilon(rotation, .000001));
+    assert.equal(player.verticalVelocity, 0); assert(player.grounded);
+    for (const [key, side, forward] of [['KeyW', 0, 1], ['KeyS', 0, -1], ['KeyA', -1, 0], ['KeyD', 1, 0]] as const) {
+      const before = { ...player.position }; keys.add(key); update(); keys.clear(); world.scene.render();
+      const dx = player.position.x - before.x, dz = player.position.z - before.z;
+      assert(Math.abs(dx - (Math.sin(player.yaw) * forward + Math.cos(player.yaw) * side) * 2.1 * .05) < .000001);
+      assert(Math.abs(dz - (-Math.cos(player.yaw) * forward + Math.sin(player.yaw) * side) * 2.1 * .05) < .000001);
+      assert(Math.abs(world.camera.getViewMatrix(true).clone().invert().m[1]) < .000001);
+    }
+    const body = { ...player.position };
+    for (let frame = 0; frame < 60; frame++) { update(); world.scene.render(); }
+    assert.deepEqual(player.position, body, 'No drift, gravity drop or residual movement');
+    assert.equal(world.camera.parent, null, 'No player/camera ancestor carries an offset');
+  } finally { cleanup(); }
+});
+
 test('a wall blocks a thrown tsinelas and its miss remains reachable', () => {
   const { world, player, progress, cleanup } = setup();
   try {

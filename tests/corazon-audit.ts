@@ -18,7 +18,7 @@ export function attachCorazonAudit(parent: Element, host: Host): (dt: number) =>
   const preview = document.createElement('button'); preview.textContent = 'Preview 3D jumpscare';
   const output = document.createElement('pre'); output.setAttribute('aria-label', 'Corazon motion validation');
   parent.append(button, preview, output);
-  const cases = [[0, 0], [Math.PI / 2, 0], [Math.PI, 0], [-Math.PI / 2, 0], [Math.PI, 1.35], [Math.PI, -1.35]];
+  const cases = [[0, 0], [Math.PI / 2, .7], [Math.PI, 0], [-Math.PI / 2, -.7], [Math.PI, 1.35], [Math.PI, -1.35]];
   let index = -1, elapsed = 0, starts = 0, checkedReveal = false, pausedAt = -1, pauseTime = 0, didPause = false;
   let firstPosition = '', firstLook = '', failures: string[] = [], report: string[] = [], pending = false;
   const error = (message: string) => { if (!failures.includes(message)) failures.push(message); };
@@ -52,6 +52,8 @@ export function attachCorazonAudit(parent: Element, host: Host): (dt: number) =>
     }
     elapsed += dt;
     if (p.active) {
+      const camera = host.world.camera, basis = camera.getViewMatrix(true).clone().invert();
+      if (Math.abs(basis.m[1]) > .000001 || basis.m[5] <= 0 || camera.rotation.z !== 0 || camera.rotationQuaternion !== null || camera.parent !== null) error('Capture rolled the camera');
       if (JSON.stringify(host.player.position) !== firstPosition || JSON.stringify([host.player.yaw, host.player.pitch]) !== firstLook) error('Player moved during capture');
       host.input.keys.add('KeyW'); host.input.queue('Space'); host.input.queue('KeyF'); host.input.addLook(20, 10);
       if (p.timeline.time >= .4 && !checkedReveal) {
@@ -70,7 +72,7 @@ export function attachCorazonAudit(parent: Element, host: Host): (dt: number) =>
       if (p.active) error('Game-over retained active presentation');
       if (host.input.active) error('Game-over retained player input');
       if (clip?.sources !== 0) error('Game-over retained scare audio');
-      report.push(`Capture ${index + 1}: yaw ${cases[index][0].toFixed(2)}, pitch ${cases[index][1].toFixed(2)} · real attack → centered face + one sound → caught`);
+      report.push(`Capture ${index + 1}: yaw ${cases[index][0].toFixed(2)}, pitch ${cases[index][1].toFixed(2)} · real attack → upright camera, centered face + one sound → caught`);
       index++; elapsed = 0;
       if (index === cases.length) {
         host.action('retry');
