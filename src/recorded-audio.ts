@@ -9,6 +9,7 @@ export class RecordedAudio {
   private timer: ReturnType<typeof setTimeout> | undefined;
   private envelope = { from: 0, to: 0, start: 0, end: 0 };
   private startedAt = 0;
+  private offset = 0;
   private starts = 0;
   private disposed = false;
   private status: 'loading' | 'ready' | 'unavailable' = 'loading';
@@ -29,9 +30,10 @@ export class RecordedAudio {
     const elapsed = this.source ? this.context.currentTime - this.startedAt : 0;
     return { status: this.status, loop: this.loop, sources: this.source ? 1 : 0, starts: this.starts,
       playing: Boolean(this.source) && this.context.state === 'running', gain: this.level(), target: this.envelope.to,
-      duration: this.buffer?.duration ?? 0, time: this.loop && this.buffer ? elapsed % this.buffer.duration : elapsed };
+      duration: this.buffer?.duration ?? 0, offset: this.offset,
+      time: this.source ? this.loop && this.buffer ? (elapsed + this.offset) % this.buffer.duration : elapsed + this.offset : 0 };
   }
-  setLevel(level: number, fade: number): void {
+  setLevel(level: number, fade: number, offset = 0): void {
     if (this.disposed) return;
     const target = Math.max(0, Math.min(1, level));
     if (target > 0 && !this.source) {
@@ -43,7 +45,8 @@ export class RecordedAudio {
         if (this.source === source) { this.source = null; this.fade(0, 0); }
       };
       this.source = source; this.startedAt = this.context.currentTime; this.starts++;
-      source.start(this.startedAt);
+      this.offset = Math.max(0, Math.min(Number.isFinite(offset) ? offset : 0, this.buffer.duration - .001));
+      source.start(this.startedAt, this.offset);
     } else if (target === this.envelope.to) return;
     clearTimeout(this.timer); this.timer = undefined;
     this.fade(target, fade);

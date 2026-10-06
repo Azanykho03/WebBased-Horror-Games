@@ -1,4 +1,4 @@
-# BALAY NI CORAZON — Horror Audio & Haunted Environment Enhancement Prompt
+# Corazon: The Haunted House — Horror Audio & Haunted Environment Enhancement Prompt
 
 ## Role
 
@@ -14,7 +14,7 @@ The game is inspired by the atmosphere and tension of classic first-person super
 
 Change the official game title everywhere to:
 
-**Balay ni Corazon**
+**Corazon: The Haunted House**
 
 The main supernatural entity / ghost must now be named:
 
@@ -46,7 +46,7 @@ Do not blindly rename internal code identifiers if doing so could break working 
 
 # 2. CORE ATMOSPHERE GOAL
 
-Enhance the haunted house so that **Balay ni Corazon** feels extremely creepy, terrifying, oppressive, unpredictable, and immersive.
+Enhance the haunted house so that **Corazon: The Haunted House** feels extremely creepy, terrifying, oppressive, unpredictable, and immersive.
 
 The horror must not depend only on jumpscares.
 
@@ -411,20 +411,20 @@ Sometimes the scariest event should simply be:
 
 Create randomized ghost whispers.
 
-Examples of possible Cebuano/Bisaya-inspired lines:
+Current serious English dialogue examples:
 
 ```text
-"Aria..."
-"Ayaw'g dagan..."
-"Naa ra ko diri..."
-"Nakita tika..."
-"Ngano nisulod man ka?"
-"Balik diri..."
-"Ayaw pagtan-aw..."
-"Duol..."
+"Turn around."
+"I can hear you breathing."
+"I am closer than you think."
+"I see you."
+"You should never have come here."
+"This house remembers you."
+"Do not look behind you."
+"I have been waiting for you."
 ```
 
-If existing funny or creepy Corazon lines already exist in project documentation, preserve and integrate them appropriately.
+Use the serious English pools in src/config.ts and src/horror.ts. Retire earlier comedic or Bisaya dialogue.
 
 Use voice lines sparingly.
 
@@ -967,7 +967,7 @@ Values should persist locally when possible.
 
 # 29. INTRO ATMOSPHERE
 
-Enhance the opening of **Balay ni Corazon**.
+Enhance the opening of **Corazon: The Haunted House**.
 
 Before gameplay begins:
 
@@ -981,7 +981,7 @@ Before gameplay begins:
 
 Slowly introduce the title:
 
-# BALAY NI CORAZON
+# Corazon: The Haunted House
 
 The intro should feel ominous and cinematic without becoming overly long.
 
@@ -1046,7 +1046,7 @@ The game may take inspiration from survival horror pacing and atmosphere, but:
 - Do not copy unique characters
 - Do not copy proprietary assets
 
-Keep **Balay ni Corazon** original.
+Keep **Corazon: The Haunted House** original.
 
 ---
 
@@ -1196,7 +1196,7 @@ Report:
 
 Turn the existing project into a much more terrifying and immersive supernatural horror experience called:
 
-# **Balay ni Corazon**
+# **Corazon: The Haunted House**
 
 Corazon should feel like a supernatural presence haunting the entire house rather than merely an enemy that appears during scripted encounters.
 

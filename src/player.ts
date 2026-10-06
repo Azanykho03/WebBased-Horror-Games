@@ -156,4 +156,10 @@ export class Player {
     world.camera.setTarget(world.camera.position.add(this.direction));
   }
   get eye(): Vec3 { return [this.position.x, this.position.y + 1.65, this.position.z]; }
+  halt(world: World): void {
+    // A presentation never translates the body or advances gravity. Discard
+    // stale jump velocity; an airborne player resumes ordinary gravity afterward.
+    this.physics.halt(this.position, world.collision);
+    this.moving = this.sprinting = false; this.step = this.bob = 0;
+  }
 }

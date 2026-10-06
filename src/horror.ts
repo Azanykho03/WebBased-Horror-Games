@@ -42,7 +42,7 @@ export function soundDirection(eye: Vec3, forward: Vec3, source: Vec3): string {
   if (Math.abs(side) > Math.abs(along) * .8) return side > 0 ? 'to your right' : 'to your left';
   return along < 0 ? 'behind you' : 'ahead';
 }
-export const WHISPERS = ['Aria...', "Ayaw’g dagan...", 'Naa ra ko diri...', 'Nakita tika...', 'Ngano nisulod man ka?', 'Balik diri...', 'Ayaw pagtan-aw...', 'Duol...'];
+export const WHISPERS = ['Turn around.', 'I can hear you breathing.', 'I am closer than you think.', 'I see you.', 'You should never have come here.', 'This house remembers you.', 'Do not look behind you.', 'I have been waiting for you.'];
 const unsettling = new Set(['F06', 'F07', 'F08', 'U00', 'U03', 'U06']);
 
 // One simulation-clock scheduler. Pause freezes it; retry resets every pending event.

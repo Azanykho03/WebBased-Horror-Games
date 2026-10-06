@@ -15,6 +15,20 @@ function setup(colliders: Collider[] = []) {
 const start = (): Position => ({ x: 0, y: 0, z: -8, level: 0 });
 const solid = (id: string, min: [number, number, number], max: [number, number, number]): Collider => ({ id, room: 'TEST', min, max });
 
+test('a scare halt clears velocity without moving the body and preserves supported/airborne recovery', () => {
+  const { physics, collision } = setup([solid('platform', [-1, 0, -9], [1, .5, -7])]);
+  for (const y of [.5, 1.1]) {
+    const p = { ...start(), y }, before = { ...p };
+    physics.velocity = JUMP.velocity;
+    physics.halt(p, collision);
+    assert.deepEqual(p, before); assert.equal(physics.velocity, 0);
+    assert.equal(physics.grounded, y === .5);
+    const moved = physics.update(p, 1 / 60, .5, 0, false, collision);
+    assert(moved.x > p.x, 'Horizontal movement must resume on the next frame');
+    assert(y === .5 ? moved.y === y : moved.y < y, 'Only an already airborne player should fall');
+  }
+});
+
 test('physical jump has bounded height, gravity, no second jump, and stable rearming after landing', () => {
   const { physics, collision } = setup(); let p = start(), peak = 0;
   for (let i = 0; i < 60; i++) {

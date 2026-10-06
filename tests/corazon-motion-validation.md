@@ -1,5 +1,7 @@
 # Corazon motion validation
 
+> Historical validation. The scare audio and cleanup described here are superseded by [the current validation](scare-recovery-validation.md).
+
 ## Preserved assets and reference inspection
 
 The existing `public/assets/models/enemies/ghost/ghost.glb` has two textured meshes,
@@ -35,7 +37,7 @@ these changes are deterministic motion/timing and require no AI service.
 ## Implementation checks
 
 - One guarded presentation clock owns each scare. Duplicate starts are rejected.
-- The first visible/illuminated face and `JumpScareCorazon.mp3` share a reveal tick.
+- The first visible/illuminated face and `Retired scare recording` share a reveal tick.
   Even a long frame must render the reveal before it can end the sequence.
   After the reveal, elapsed time keeps the animation at the audio's pace.
 - Capture starts at the actual captor's position. The camera turns smoothly toward
@@ -98,7 +100,7 @@ All three files below match Git HEAD and their production copies byte-for-byte:
 | --- | --- |
 | `ghost.glb` | `6909796ed3f3973e290b35fb4f61411b65714b06ac344b93de8bc22f1a1f86f1` |
 | `ghost-face-reference.png` | `89a44a290825f70d6488925db10cfb653c191b357e5102f085e20eb87c429975` |
-| `JumpScareCorazon.mp3` | `a2b2d03191deed9094d36ec3b84b2356f4371876173542d02afc29ffa0410191` |
+| `Retired scare recording` | `a2b2d03191deed9094d36ec3b84b2356f4371876173542d02afc29ffa0410191` |
 
 ## Reproduce
 

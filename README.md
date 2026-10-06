@@ -1,4 +1,4 @@
-# Balay ni Corazon
+# Corazon: The Haunted House
 
 A desktop and Android browser survival horror game built around the project's existing
 two-storey house, ghost, flashlight arm and red key. TypeScript, Babylon.js and
@@ -97,6 +97,9 @@ items and put the enemy away from the player with a recovery window.
   The kitchen face attack lasts 1.75 seconds; the capture lasts 2.2 seconds before
   fading into the existing Game Over menu. Both use camera-relative face framing,
   a single reveal/audio event, pause-safe timing, and restored camera/model state.
+  Neither sequence translates the camera or player body. The controller clears
+  input and vertical velocity at the boundaries; normal scares immediately
+  restore walking/look and ordinary gravity if the player was already airborne.
   The supplied Slendrina GLBs were inspected as motion references only; they are
   neither loaded by the game nor included in its build. Their arm animation cannot
   be applied to Corazon's unrigged body without changing that assembly.
@@ -128,10 +131,10 @@ items and put the enemy away from the player with a recovery window.
   stops on capture, escape or menu return. `CreepyCurseSound.mp3` follows the
   existing ghost's distance, entering at 8 m, growing louder toward 2 m, and
   fading out past 11 m even when Corazon is around a corner. The warning and
-  `JumpScareCorazon.mp3` use the Effects slider. The preloaded jumpscare starts
+  `peircing.wavJumpscare.mp3` use the Effects slider. The preloaded jumpscare starts
   in the shared face-reveal render tick for both the kitchen scene and captures,
-  plays once per complete sequence, and finishes on the caught screen. A later
-  scare replaces any remaining tail; retry/menu cancels it. Gentle scares also
+  skips the quiet first 0.20 seconds, and stops at the end of the sequence.
+  No scare audio continues onto the caught screen; retry/menu also cancels it. Gentle scares also
   reduce both cues.
   Adjust the four clips' volumes, loops, fades and distance thresholds in
   `CORAZON_AUDIO` in `src/config.ts`. Each recording has at most one source in
@@ -153,7 +156,7 @@ Set the ghost name, model, face and optional normal/clean voice paths in
 configured recordings automatically. Empty entries use captions and temporary
 synthesized cues. Clean dialogue never falls back to an unclean recording.
 See [AUDIO_CREDITS.md](AUDIO_CREDITS.md) for the recording manifest, provenance and
-optional source searches. Spoken Bisaya recordings are not included; the captions
+optional source searches. Spoken English recordings are not included; the captions
 and clearly documented synthesized vocal placeholders work without missing requests.
 
 Asset generation records and source references remain with their models. The
@@ -172,6 +175,14 @@ the real capture/game-over flow; they are separate from the ordinary journey.
 No validation UI or reference assets enter the production build. See
 [Corazon motion validation](tests/corazon-motion-validation.md) for reference
 observations and the latest verification record.
+
+The current audio, English dialogue, title and control-recovery acceptance record
+is [scare recovery validation](tests/scare-recovery-validation.md). **Check scare
+recovery** exercises grounded/airborne desktop and touch input, pause/resume,
+fixed body/camera position, one impact, sequence-end silence and restored movement.
+The authored ghost pools in `src/config.ts` avoid immediate repetition and leave
+eight seconds between incidental lines; environmental whispers retain their
+existing separate scheduler and history.
 
 The abandoned interior uses the existing house and furniture with an additional
 room-batched decay layer (`src/decay.ts`). Shared 512px surface maps and one 1024px
@@ -228,7 +239,7 @@ for the results and the physical-device testing limit.
 **Check four Corazon audio integrations** measures real samples from the menu
 pair and all three gameplay layers, crosses each new native loop boundary,
 checks proximity hysteresis and fade reversal, and verifies one-shot gating,
-gentle mode, caught-screen tails, suspension, mute and cleanup. The validation
+gentle mode, sequence-end silence, suspension, mute and cleanup. The validation
 panel also observes the live face overlay to verify same-frame sound and one
 trigger per actual capture. See [tests/corazon-recordings-validation.md](tests/corazon-recordings-validation.md).
 **Check desktop jumping** and **Check touch jumping** walk the actual player to

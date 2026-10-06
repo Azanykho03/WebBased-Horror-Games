@@ -66,6 +66,16 @@ export function attachCorazonAudioAudit(panel: Element, pauseGame: () => void): 
         const data = clip.buffer.getChannelData(0);
         return `${name} ${Math.sqrt(data.reduce((sum, sample) => sum + sample * sample, 0) / data.length).toFixed(5)}`;
       }).join(', ')}`);
+      const samples = clips.jumpscare.buffer.getChannelData(0), rate = clips.jumpscare.buffer.sampleRate;
+      const window = Math.round(rate * .02), energy = (start: number) => {
+        let sum = 0; for (let i = start; i < Math.min(start + window, samples.length); i++) sum += samples[i] ** 2;
+        return Math.sqrt(sum / window);
+      };
+      let strongest = 0;
+      for (let i = 0; i + window <= samples.length; i += window) strongest = Math.max(strongest, energy(i));
+      const attack = energy(Math.round(CORAZON_AUDIO.jumpscare.offset * rate));
+      check(attack >= strongest * .9, 'Configured offset misses the strongest impact');
+      report.push(`Impact offset ${CORAZON_AUDIO.jumpscare.offset.toFixed(2)}s: first 20ms RMS ${attack.toFixed(5)} / strongest ${strongest.toFixed(5)}`);
 
       // Exercise each native loop boundary with its real decoded MP3 buffer.
       for (const name of ['menu', 'gameplay', 'proximity'] as const) {
@@ -106,19 +116,24 @@ export function attachCorazonAudioAudit(panel: Element, pauseGame: () => void): 
       for (let i = 0; i < 20; i++) audio.jumpscare();
       check(clips.jumpscare.diagnostics.starts === scareStarts + 1 && !clips.jumpscare.diagnostics.loop, 'Jumpscare duplicated or loops');
       check((await measure(outputs.scare, 350)).peak > .00001, 'Jumpscare produced no immediate samples');
-      audio.reset(true); audio.setGameplay(false);
-      check(clips.jumpscare.diagnostics.playing, 'Caught-screen cleanup truncated the one-shot');
-      await delay(400); check(audio.diagnostics.ducking.music < .15, 'Caught-screen music obscures the one-shot tail');
-      await until(() => clips.jumpscare.diagnostics.sources === 0, 'One-shot never ended');
-      audio.setGameplay(true);
-      audio.jumpscare(); check(clips.jumpscare.diagnostics.starts === scareStarts + 1, 'Finished recording rearmed during the same sequence');
+      check(clips.jumpscare.diagnostics.offset === CORAZON_AUDIO.jumpscare.offset, 'Scare played the quiet lead-in');
+      audio.pause(); await delay(100); const pausedScare = clips.jumpscare.diagnostics.time;
+      await delay(200); check(clips.jumpscare.diagnostics.time === pausedScare, 'Pause advanced the scare audio');
+      audio.start(); await until(() => audio.state === 'running', 'Scare did not resume');
+      audio.jumpscare(); check(clips.jumpscare.diagnostics.starts === scareStarts + 1, 'Resume duplicated the impact');
+      audio.finishJumpscare();
+      check(clips.jumpscare.diagnostics.sources === 0 && clips.jumpscare.diagnostics.gain === 0, 'Sequence completion retained a tail');
+      await delay(100); check((await measure(outputs.scare, 100)).peak < .00001, 'Sequence end is not silent');
       audio.finishJumpscare(); audio.apply({ ...settings, gentleScares: true }); audio.jumpscare();
       check(clips.jumpscare.diagnostics.starts === scareStarts + 2 && clips.jumpscare.diagnostics.target === CORAZON_AUDIO.jumpscare.volume * .4, 'New scare did not rearm or honor gentle mode');
       const oldScare = clips.jumpscare.source;
       audio.finishJumpscare(); audio.jumpscare();
       check(clips.jumpscare.diagnostics.sources === 1 && clips.jumpscare.source !== oldScare && clips.jumpscare.diagnostics.starts === scareStarts + 3, 'A new sequence stacked the previous tail');
       audio.reset(); audio.apply(settings);
-      report.push('Jumpscare: immediate samples, non-looping, 20 duplicate calls ignored, full tail on caught screen, no replay before sequence completion, next event + gentle mode, tail replacement without overlap');
+      audio.setGameplay(false);
+      check(clips.jumpscare.diagnostics.sources === 0, 'Game-over/reset retained scare audio');
+      audio.setGameplay(true);
+      report.push('Jumpscare: strongest burst at reveal, non-looping, 20 duplicate calls ignored, pause/resume without replay, silent at sequence end/game over, gentle mode, no overlapping sources');
 
       const girlSource = clips.gameplay.source, girlStarts = clips.gameplay.diagnostics.starts;
       audio.pause(); await delay(100); const paused = clips.gameplay.diagnostics.time, oldMusic = media.currentTime;

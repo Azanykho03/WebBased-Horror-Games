@@ -59,7 +59,7 @@ The current request extends that work into a playable escape game.
   collision, line of sight and enemy navigation.
 - One ghost with Dormant/Patrol/Investigate/Chase/Search/Stunned/Catch states,
   view cone and wall checks, noise investigation, stair navigation and hiding rules.
-- Kitchen face reveal, captioned Bisaya dialogue, configurable identity/optional
+- Kitchen face reveal, captioned dialogue (now serious English; see tests/scare-recovery-validation.md), configurable identity/optional
   recordings, clean dialogue, safe reveal spawn and recovery window.
 - Swept tsinelas collision, two-second stun, immunity and accessible drop recovery.
 - Versioned save/settings validation, fair checkpoints and inventory preservation;

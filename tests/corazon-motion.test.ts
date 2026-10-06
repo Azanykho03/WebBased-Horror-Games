@@ -61,6 +61,7 @@ test('camera-relative face stays centered and clear of clipping at every heading
     let reveals = 0;
     for (let i = 0; i < Math.ceil(CORAZON_SCARE[kind].duration * 60); i++) {
       const event = p.update(1 / 60, DEFAULT_SETTINGS); reveals += Number(event.reveal);
+      assert(Babylon.Vector3.Distance(camera.position, originalPosition) < .00001, 'Scares must not translate/drop the camera');
       if (p.timeline.time < CORAZON_SCARE[kind].settle) continue;
       const face = p.facePosition(), local = Babylon.Vector3.TransformCoordinates(face, camera.getViewMatrix(true));
       assert(Math.abs(local.x) < .015 && Math.abs(local.y) < .015, `${kind} ${yaw}/${pitch}: face ${local.asArray()}`);
@@ -77,9 +78,17 @@ test('camera-relative face stays centered and clear of clipping at every heading
 test('accessibility retains timing, increases distance and reduces head/camera motion', () => {
   for (const kind of ['capture', 'jumpscare'] as const) {
     const normal = scareFrame(kind, .75), reduced = scareFrame(kind, .75, true), gentle = scareFrame(kind, .75, false, true);
-    assert.equal(reduced.revealed, normal.revealed); assert.equal(reduced.recoil, 0);
+    assert.equal(reduced.revealed, normal.revealed);
     assert(Math.abs(reduced.roll) < Math.abs(normal.roll)); assert(gentle.distance > normal.distance);
   }
+});
+test('the face is fully visible and close on the single audio reveal beat', () => {
+  for (const kind of ['capture', 'jumpscare'] as const) {
+    const frame = scareFrame(kind, CORAZON_SCARE[kind].reveal);
+    assert.equal(frame.approach, 1); assert.equal(frame.visibility, 1);
+    assert(frame.distance <= .66);
+  }
+  assert.equal(scareFrame('jumpscare', CORAZON_SCARE.jumpscare.reveal - .001).visibility, 0);
 });
 test('portrait and landscape keep the whole head within the camera frustum', () => {
   for (const [width, height] of [[390, 844], [844, 390]]) {

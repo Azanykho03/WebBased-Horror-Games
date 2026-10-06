@@ -10,7 +10,7 @@ export const ASSETS = {
   key: 'models/items/keys/key.glb',
   face: 'models/enemies/ghost/source/ghost-face-reference.png',
 };
-export const GAME_TITLE = 'Balay ni Corazon';
+export const GAME_TITLE = 'Corazon: The Haunted House';
 // Camera-relative origin for the uploaded rig, after its display scale is undone.
 export const VIEWMODEL = { position: [.13, -1.9, -.02] as const };
 // Existing F02 coffee table: preserved boards top out at approximately .47 m.
@@ -28,12 +28,25 @@ export const CORAZON_AUDIO = {
   gameplay: { path: 'audio/CreepyLittleGirl.mp3', volume: .16, loop: true, fade: .8 },
   proximity: { path: 'audio/CreepyCurseSound.mp3', volume: .38, loop: true, fade: .45,
     enterDistance: 8, exitDistance: 11, fullVolumeDistance: 2, minimumVolume: .09 },
-  jumpscare: { path: 'audio/JumpScareCorazon.mp3', volume: .85, loop: false, fade: .006 },
+  // The supplied recording's strongest 20 ms burst starts at .20 s. Skip its
+  // quiet lead-in at playback, without altering the original MP3.
+  jumpscare: { path: 'audio/peircing.wavJumpscare.mp3', volume: .85, loop: false, fade: .003, offset: .20 },
 };
 export type VoiceCue = 'kitchen-player' | 'kitchen-ghost' | 'recognition' | 'spotted' | 'sprint' | 'lost' | 'exit' | 'hit' | `whisper-${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8}` | 'cry' | 'hum' | 'laugh' | 'scream';
 // Optional asset paths under public/assets. Captions and synthesized cues work
 // when recordings are absent. Clean mode never falls back to an unclean clip.
 export const VOICE_AUDIO: Partial<Record<VoiceCue, { normal?: string; clean?: string }>> = {};
+// Context is known by the state machine. Short authored pools keep that logic
+// offline and predictable; the existing subtitle/voice cooldown owns timing.
+export const GHOST_DIALOGUE = {
+  'kitchen-ghost': ['You should never have come here.', 'I have been waiting for you.', 'You cannot leave this place.'],
+  spotted: ['I see you.', 'I know where you are.', 'You cannot hide from me.'],
+  sprint: ["Don't run from me.", "Keep running. It won't save you.", 'There is nowhere left to hide.'],
+  lost: ['I can hear you breathing.', 'The walls cannot hide you.', 'I will find you.'],
+  exit: ['You belong to this house now.', 'That door will not save you.', 'You cannot leave me here.'],
+  hit: ['You cannot stop me.', 'You will not escape.', 'I am still here.'],
+  capture: ['You belong to this house now.', 'There is nowhere left to run.', 'Stay with me. Forever.'],
+} as const;
 export const CHECKPOINTS: Record<string, Position> = {
   entrance: { x: 0, y: 0, z: -2.5, level: 0 },
   breaker: { x: 0, y: 3.24, z: -4.65, level: 1 },
@@ -60,4 +73,4 @@ export const HOTSPOTS: Hotspot[] = [
   { id: 'hide-master', label: 'Hide among the hanging clothes', position: [2.79, 4.6, -18.57], room: 'U06', kind: 'hide', radius: .4 },
 ];
 
-export const WARNING = 'Ayaw pagsulod. You accepted the dare. Now the latch will not move. Find the fuse in the kitchen. Restore the breaker upstairs, beside the first master bedroom. Return our locket, letter, and music box to the glass cabinet. The red key opens the service exit opposite it. If you hear her, break her line of sight. A wardrobe may hide you—unless she saw you enter.';
+export const WARNING = 'Do not enter. Now the latch will not move. Find the fuse in the kitchen. Restore the breaker upstairs, beside the first master bedroom. Return our locket, letter, and music box to the glass cabinet. The red key opens the service exit opposite it. If you hear her, break her line of sight. A wardrobe may hide you—unless she saw you enter.';

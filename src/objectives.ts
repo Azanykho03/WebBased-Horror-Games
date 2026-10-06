@@ -19,7 +19,7 @@ export function objective(p: Progress): { title: string; detail: string } {
     case 'M02': return { title: 'Restore the lights', detail: has(p, 'fuse') ? 'Install the fuse in the upstairs breaker, near Master 1.' : 'Pangitaa ang fuse sa kusina. Search the kitchen counter.' };
     case 'M03': return { title: `Recover the keepsakes · ${keepsakeCount(p)}/3`, detail: 'Locket: guest bedroom. Letter: garage workbench. Music box: far master bedroom.' };
     case 'M04': return { title: 'Return what belongs here', detail: 'Place all three keepsakes in the glass cabinet downstairs.' };
-    case 'M05': return { title: 'Leave the house', detail: !has(p, 'exit-key') ? 'Take the red key from the glass cabinet.' : !p.exitUnlocked ? 'Unlock the service exit opposite the cabinet.' : 'Cross the service doorway. Ayaw paglingi.' };
+    case 'M05': return { title: 'Leave the house', detail: !has(p, 'exit-key') ? 'Take the red key from the glass cabinet.' : !p.exitUnlocked ? 'Unlock the service exit opposite the cabinet.' : 'Cross the service doorway. Do not look back.' };
   }
 }
 export interface InteractionResult { changed: boolean; message: string; checkpoint?: boolean }

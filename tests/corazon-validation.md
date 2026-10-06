@@ -1,4 +1,4 @@
-# Balay ni Corazon — audio, environment and mobile validation
+# Corazon: The Haunted House — audio, environment and mobile validation
 
 Implementation and validation date: 2026-10-02.
 
@@ -39,7 +39,7 @@ code; no network inference dependency was needed for this deterministic game.
 
 | Area | Implemented behavior |
 | --- | --- |
-| Identity and story | Balay ni Corazon title; Corazon dialogue/keepsakes; short skippable rain-backed intro; original missions retained |
+| Identity and story | Corazon: The Haunted House title; Corazon dialogue/keepsakes; short skippable rain-backed intro; original missions retained |
 | Mixer | One AudioContext, master plus music/ambience/effects/voice buses, smooth gains, compressor, contextual ducking |
 | Adaptive music | Ten states: exploration, uneasy, nearby, detection, chase, hiding, jumpscare, recovery, game over and ending |
 | Ambience/weather | Original synthesized wind, room tone and filtered rain; local window exposure; delayed thunder after lightning; exterior rain streaks |
@@ -121,7 +121,7 @@ viewport. It is not a physical Android performance claim.
 
 ## Audio recordings and physical-device checks
 
-All gameplay effects and music function with original synthesis. **Spoken Bisaya
+All gameplay effects and music function with original synthesis. **Spoken English
 voice recordings are not included.** Airy vocal textures and subtitles are explicit
 placeholders. `../AUDIO_CREDITS.md` gives exact cue/filename suggestions, source
 searches and licensing/provenance requirements. No copyrighted audio was downloaded.

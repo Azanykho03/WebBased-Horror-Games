@@ -1,5 +1,7 @@
 # Corazon recording integration — 2026-10-03
 
+> Historical validation. The scare audio and cleanup described here are superseded by [the current validation](scare-recovery-validation.md).
+
 Implemented in the existing game and AudioSystem. Original MELANCHOLIA, ILI ILI,
 Mixkit, procedural effects, voice placeholders, assets and gameplay remain.
 No additional AudioContext, audio dependency or ghost controller was introduced.
@@ -15,7 +17,7 @@ and limiter.
 | CreepyNightBreeze.mp3 | Menu / pre-game loop alongside MELANCHOLIA | 0.24 / 0.8 s | Music |
 | CreepyLittleGirl.mp3 | Gameplay loop alongside ILI ILI and Mixkit | 0.16 / 0.8 s | Ambience |
 | CreepyCurseSound.mp3 | Enter at 8 m, leave beyond 11 m, maximum at 2 m | 0.09–0.38 / 0.45 s | Effects |
-| JumpScareCorazon.mp3 | One-shot when the face overlay becomes visible | 0.85 / 0.006 s attack | Effects |
+| Retired scare recording | One-shot when the face overlay becomes visible | 0.85 / 0.006 s attack | Effects |
 
 The curse uses the existing ghost's position, including through occluding walls.
 Distance changes and reversed fades reuse one source. Faded-out sources stop.

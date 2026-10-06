@@ -69,6 +69,7 @@ export function attachCorazonAudit(parent: Element, host: Host): (dt: number) =>
       if (!checkedReveal) error('Capture skipped the face reveal');
       if (p.active) error('Game-over retained active presentation');
       if (host.input.active) error('Game-over retained player input');
+      if (clip?.sources !== 0) error('Game-over retained scare audio');
       report.push(`Capture ${index + 1}: yaw ${cases[index][0].toFixed(2)}, pitch ${cases[index][1].toFixed(2)} · real attack → centered face + one sound → caught`);
       index++; elapsed = 0;
       if (index === cases.length) {

@@ -1,17 +1,17 @@
-# Balay ni Corazon
+# Corazon: The Haunted House
 
 ## 1. Project overview
 
-**Working title:** BALAY: Ayaw Pagsulod  
-**Genre:** 3D objective-based survival horror with Bisaya comedy  
+**Official title:** Corazon: The Haunted House
+**Genre:** 3D objective-based psychological/survival horror
 **Platform:** Desktop web browser  
 **Perspective:** First person  
 **Mode:** Single player  
 **Stack:** HTML, CSS, TypeScript, Babylon.js, Vite, and localStorage
 
-The player accepts a dare to enter an old Bisaya-style haunted house during a rainy night. Once inside, the entrance locks. To escape, the player must complete a sequence of missions while avoiding a ghost with their friend's face and recorded Bisaya voice.
+The player accepts a dare to enter an old Bisaya-style haunted house during a rainy night. Once inside, the entrance locks. To escape, the player must complete a sequence of missions while avoiding Corazon, using the existing ghost model and serious English dialogue.
 
-The experience should begin as serious horror: dark hallways, rain against windows, flickering lights, creaking wooden floors, and footsteps from an apparently empty room. The friend's face reveal introduces comedy, but the ghost remains a real gameplay threat.
+The experience should begin as serious horror: dark hallways, rain against windows, flickering lights, creaking wooden floors, and footsteps from an apparently empty room. The close face reveal reinforces the threat; Corazon remains disturbing and serious.
 
 Slendrina is the main inspiration for exploration, tension, and ghost encounters. Use an original house layout, story, character presentation, audio, and assets.
 
@@ -21,9 +21,9 @@ Slendrina is the main inspiration for exploration, tension, and ghost encounters
 
 - Make the player feel physically present through first-person movement and spatial sound.
 - Require clear missions before the escape door can open.
-- Build fear before revealing the comedy.
-- Use natural Bisaya dialogue and a consenting friend's face and voice.
-- Keep running, hiding, and limited defense meaningful after the funny reveal.
+- Build fear before the sudden close encounter.
+- Use short, serious English dialogue and preserve the existing Corazon model.
+- Keep running, hiding, and limited defense meaningful after the threatening reveal.
 - Keep the initial game small enough to finish and demonstrate in class.
 
 ## 3. Story and atmosphere
@@ -34,7 +34,7 @@ The ghost resembles a friend, but recognizing the face does not end the haunting
 
 Art direction: weathered wooden walls, sliding windows, woven mats, old family photographs, an aging dining table, a kitchen with a kaldero, and rain visible outside. Use these as visual references for this fictional house, rather than claiming every Bisaya home looks the same.
 
-Humor should come from surprise, dialogue, and the familiar face. Avoid constant jokes that remove tension.
+Keep the ghost threatening and mysterious. Use short English lines sparingly, with no jokes or playful reactions.
 
 ## 4. Core gameplay loop
 
@@ -123,11 +123,11 @@ Escalate patrol frequency and pursuit pressure after mission milestones. Keep an
 Trigger this sequence once when the player enters the kitchen during M02:
 
 1. A metal pot falls off-screen.
-2. The player says: **“Yawa, unsa man tong tingoga?”**
+2. The player says: **“Something is in here.”**
 3. The kitchen light goes out briefly. Rain remains audible.
-4. A giant image of the friend's face appears with a short sound sting.
-5. Ghost: **“HOY! NGANONG NISULOD MAN KA DIRI?!”**
-6. Player: **“YAWA, SI [FRIEND'S NAME] RA DIAY!”**
+4. The existing 3D face appears close to the camera with one synchronized impact. The player body remains fixed.
+5. Ghost: **“You should never have come here.”**
+6. Player: **“I need to get out.”**
 7. The face retracts and the ghost appears at the far end of the room.
 8. After a short recovery window, normal enemy behavior begins.
 
@@ -137,14 +137,14 @@ Additional voice lines:
 
 | Trigger | Ghost dialogue |
 | --- | --- |
-| Spots the player | “HOYYYY!” |
-| Begins a chase | “ARI DIRI!” |
-| Player sprints away | “Ayaw dagan!” |
-| Player breaks line of sight | “PAGHULAT BA!” |
-| Player approaches the final exit | “ASA MAN KA PADULONG?! BALIK DIRI!” |
-| Hit by a tsinelas | “YAWA, SAKITA OY!” |
+| Spots the player | “I see you.” |
+| Begins a chase | “I know where you are.” |
+| Player sprints away | “Don't run from me.” |
+| Player breaks line of sight | “I can hear you breathing.” |
+| Player approaches the final exit | “You belong to this house now.” |
+| Hit by a tsinelas | “You cannot stop me.” |
 
-Give voice lines cooldowns and prevent overlapping dialogue. Display subtitles for every spoken line. Include an optional clean-dialogue mode using alternate text/audio such as “Aguy, sakita oy!”
+Give voice lines cooldowns and prevent overlapping dialogue. Display subtitles for every spoken line. All authored lines are clean; retain the existing optional clean-recording setting.
 
 ## 10. Tsinelas mechanic
 
@@ -168,10 +168,10 @@ Required assets:
 - Front-facing face photo exported as a transparent PNG.
 - A face texture for a floating ghost body or camera-facing plane.
 - A separate screen-space face overlay for short jump scares.
-- Individual recordings of the selected Bisaya voice lines.
+- Individual recordings of the selected English voice lines.
 - A configuration value for `[FRIEND'S NAME]`, shared by subtitles and dialogue.
 
-Suggested filenames: `friend-face.png`, `hoy.ogg`, `ari-diri.ogg`, `ayaw-dagan.ogg`, `paghulat-ba.ogg`, `balik-diri.ogg`, and `sakita.ogg`.
+Suggested filenames: `spotted.wav`, `sprint.wav`, `lost.wav`, `exit.wav`, and `hit.wav`; preserve the existing face asset.
 
 Keep the world ghost's visual mesh separate from its collision volume. Match perceived audio loudness across recordings and avoid clipping. The demo must run with placeholders if personal assets are absent.
 
@@ -257,7 +257,7 @@ Brace notation above abbreviates separate files or directories; braces are not l
 - Save completed mission IDs, collected item IDs, unlocked doors, inventory, a safe checkpoint ID, and completed scare flags.
 - Restore the ghost to a designated safe starting state rather than saving an active chase.
 - Version the save format, validate loaded data, and fall back gracefully on corrupt or unavailable storage.
-- Game over offers Retry Checkpoint and Main Menu. Escape shows completion time and a short closing Bisaya exchange.
+- Game over offers Retry Checkpoint and Main Menu. Escape shows completion time and a short, serious English closing scene.
 - Settings include volume sliders, sensitivity, subtitles, brightness, reduced flashing, reduced camera motion, and scare intensity.
 
 ## 15. Performance targets
@@ -274,7 +274,7 @@ Test actual desktop browsers and record hardware, settings, frame rate, and load
 2. **Playable house:** Graybox rooms, collision, movement, flashlight, interaction prompts.
 3. **Complete mission loop:** All objectives, inventory, locked doors, exit validation, win screen.
 4. **Survival threat:** Enemy navigation, detection, chase/search, hiding, capture and retry.
-5. **Signature comedy:** Kitchen reveal, placeholder/friend face, subtitles, recorded lines, tsinelas stun.
+5. **Signature encounter:** Kitchen reveal, existing Corazon model, serious subtitles, synchronized impact, tsinelas stun.
 6. **Polish:** Environmental audio, lighting, save/load, settings, performance, credits.
 
 The first playable milestone should contain the entrance, hallway, kitchen, one mission, one ghost encounter, and a working exit condition. Expand to the full house only after that loop works.

@@ -6,7 +6,7 @@ export const mix = (a: number, b: number, t: number) => a + (b - a) * t;
 
 export type ScareKind = 'jumpscare' | 'capture';
 export const CORAZON_SCARE = {
-  jumpscare: { duration: 1.75, reveal: .16, settle: .22 },
+  jumpscare: { duration: 1.75, reveal: .16, settle: .16 },
   capture: { duration: 2.2, reveal: .38, settle: .38 },
 } as const;
 
@@ -44,10 +44,9 @@ export function scareFrame(kind: ScareKind, time: number, reducedMotion = false,
   const lunge = smoothStep((t - (kind === 'capture' ? 1.7 : 1.35)) / (kind === 'capture' ? .34 : .35));
   return {
     approach, pitch: pitch * amount, yaw: yaw * amount, roll: roll * amount, bodyPitch: bodyPitch * amount,
-    distance: (kind === 'capture' ? mix(.65, .46, lunge) : mix(mix(1.85, 1.05, approach), .48, lunge)) + (gentle ? .3 : 0),
-    visibility: kind === 'capture' ? 1 : (t >= tuning.reveal ? smoothStep((t - tuning.reveal + .016) / .045) : 0) * (1 - smoothStep((t - 1.68) / .07)),
+    distance: (kind === 'capture' ? mix(.65, .46, lunge) : mix(mix(1.85, .65, approach), .48, lunge)) + (gentle ? .3 : 0),
+    visibility: kind === 'capture' ? 1 : (t >= tuning.reveal ? 1 : 0) * (1 - smoothStep((t - 1.68) / .07)),
     fade: kind === 'capture' ? smoothStep((t - 2.02) / .18) : 0,
-    recoil: kind === 'capture' && !reducedMotion ? .085 * smoothStep((t - .4) / .9) : 0,
     revealed: t >= tuning.reveal, finished: time >= tuning.duration,
   };
 }

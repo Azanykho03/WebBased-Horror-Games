@@ -105,11 +105,9 @@ export class AudioSystem {
     this.active = false; this.background?.pause(); this.silenceAmbience();
     void this.context?.suspend().catch(() => {});
   }
-  reset(preserveJumpscare = false): void {
+  reset(): void {
     this.nearby = false; this.recordings?.proximity.stop();
-    // Let the supplied one-shot finish its tail after the 3D capture sequence
-    // on the caught screen. A new run/menu/disposal cancels it and rearms.
-    if (!preserveJumpscare) { this.jumpscareLatched = false; this.recordings?.jumpscare.stop(); }
+    this.finishJumpscare();
     this.voiceToken++; this.voicePlaying = null;
     for (const sound of [...this.playing]) sound.stop();
     this.lastEffect.clear(); this.variants.clear();
@@ -232,11 +230,13 @@ export class AudioSystem {
     if (this.jumpscareLatched || !this.gameplay || !this.active || this.context?.state !== 'running') return;
     this.jumpscareLatched = true; this.nearby = false;
     this.recordings?.proximity.setLevel(0, .04);
-    // A later, distinct event can cut off an earlier tail, but never stack it.
+    // Cancel a voice already playing (or loading) so only the impact owns this beat.
+    this.voice();
     this.recordings?.jumpscare.stop();
-    this.recordings?.jumpscare.setLevel(CORAZON_AUDIO.jumpscare.volume * (this.settings.gentleScares ? .4 : 1), CORAZON_AUDIO.jumpscare.fade);
+    this.recordings?.jumpscare.setLevel(CORAZON_AUDIO.jumpscare.volume * (this.settings.gentleScares ? .4 : 1), CORAZON_AUDIO.jumpscare.fade, CORAZON_AUDIO.jumpscare.offset);
+    this.duckBackground();
   }
-  finishJumpscare(): void { this.jumpscareLatched = false; }
+  finishJumpscare(): void { this.recordings?.jumpscare.stop(); this.jumpscareLatched = false; }
   private updateProximity(frame: AudioFrame): void {
     const eligible = this.gameplay && !this.jumpscareLatched && !['ENDING', 'GAME_OVER'].includes(frame.atmosphere.state);
     const distance = eligible && frame.ghost ? Math.hypot(frame.ghost.x - frame.eye[0], frame.ghost.y + 1.4 - frame.eye[1], frame.ghost.z - frame.eye[2]) : Infinity;

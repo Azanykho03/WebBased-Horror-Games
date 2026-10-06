@@ -369,14 +369,14 @@ This is an optional gameplay layer. Preserve existing objectives, controls, and 
 - The front door and garage shutter are visibly jammed if unavailable; the exit door has a readable lock prompt.
 - Optional room scares never determine whether the player can finish.
 
-### Optional Bisaya flavor
+### Optional English horror lines
 
 Use short lines sparingly so the abandoned-house atmosphere stays tense:
 
-- At the dark garage: “Ngano nisulod man jud ko diri?”
-- At the piano: “Kinsa may nagtukar ana?”
-- At the old meal: “Ayaw na lang jud na kaona.”
-- Near the escape door: “Abli na, palihog!”
+- At the dark garage: “I should never have come here.”
+- At the piano: “There is no one at the piano.”
+- At the old meal: “Someone was here before me.”
+- Near the escape door: “Please. Let me out.”
 
 ## 8. Scare pacing and environmental motion
 

@@ -44,7 +44,7 @@ export class InteractionSystem {
           // Correct the horizontal canvas UV orientation in the RH game scene.
           ink.uScale = -1; ink.uOffset = 1;
           const context = ink.getContext(); context.fillStyle = '#b8aa80'; context.fillRect(0, 0, 512, 640);
-          context.fillStyle = '#30291f'; context.font = 'bold 42px serif'; context.fillText('AYAW PAGSULOD.', 35, 85);
+          context.fillStyle = '#30291f'; context.font = 'bold 42px serif'; context.fillText('DO NOT ENTER.', 35, 85);
           context.font = '28px serif';
           ['Return what belongs', 'to this house.', '', 'Find the kitchen fuse.', 'Restore the lights.', '', 'Break her line of sight.', 'Hide only when unseen.'].forEach((line, i) => context.fillText(line, 36, 160 + i * 48));
           ink.update();

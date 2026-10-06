@@ -1,10 +1,10 @@
-# Balay ni Corazon — Continue Development + Android Mobile Support
+# Corazon: The Haunted House — Continue Development + Android Mobile Support
 
-Continue from where you already stopped in the existing **Balay ni Corazon** project. Do not restart, rebuild, or undo the work you have already completed. Review the current implementation and continue improving it based on the existing project files and `Balay-ni-Corazon-Audio-and-Haunted-Environment-Prompt.md`.
+Continue from where you already stopped in the existing **Corazon: The Haunted House** project. Do not restart, rebuild, or undo the work you have already completed. Review the current implementation and continue improving it based on the existing project files and `Balay-ni-Corazon-Audio-and-Haunted-Environment-Prompt.md`.
 
 # IMPORTANT COMPLETION GOAL
 
-Your goal is to **continue developing Balay ni Corazon until the requested work is fully implemented and the game is in a complete playable state**.
+Your goal is to **continue developing Corazon: The Haunted House until the requested work is fully implemented and the game is in a complete playable state**.
 
 Do not intentionally stop after implementing only a small portion of the requirements.
 
@@ -25,7 +25,7 @@ Do not treat a partial implementation as finished.
 
 Before declaring the task complete, verify the project against the requirements in this prompt and `Balay-ni-Corazon-Audio-and-Haunted-Environment-Prompt.md`.
 
-The final objective is to leave **Balay ni Corazon in a functional, playable, tested state**, not merely provide suggestions or unfinished placeholder code.
+The final objective is to leave **Corazon: The Haunted House in a functional, playable, tested state**, not merely provide suggestions or unfinished placeholder code.
 
 ---
 
@@ -545,6 +545,6 @@ Clearly identify anything that still needs testing on a physical Android phone.
 
 **Android Phone:** Touch joystick + touch-look + on-screen action buttons
 
-A player should be able to open the hosted **Balay ni Corazon** URL in a supported Android browser and play the game without installing a separate app.
+A player should be able to open the hosted **Corazon: The Haunted House** URL in a supported Android browser and play the game without installing a separate app.
 
 Continue from the existing project state and keep progressing until the requested implementation is complete.

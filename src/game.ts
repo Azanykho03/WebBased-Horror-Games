@@ -9,7 +9,7 @@ import { UI } from './ui.ts';
 import { bearingsFound, canEscape, interact, has, mission } from './objectives.ts';
 import { freshProgress } from './types.ts';
 import type { Progress, Screen, Settings, Vec3 } from './types.ts';
-import { CHECKPOINTS, GHOST_PROFILE, WARNING } from './config.ts';
+import { CHECKPOINTS, GHOST_DIALOGUE, GHOST_PROFILE, WARNING } from './config.ts';
 import type { VoiceCue } from './config.ts';
 import { HorrorDirector, calmAtmosphere, surfaceForRoom } from './horror.ts';
 import type { HauntEvent, Soundscape } from './horror.ts';
@@ -58,6 +58,7 @@ export class Game {
   private revealStage = -1;
   private subtitleCooldown = 0;
   private sprintVoiceCooldown = 0;
+  private lastGhostLines = new Map<keyof typeof GHOST_DIALOGUE, string>();
   private canvas: HTMLCanvasElement;
   private abort = new AbortController();
   private validationStep?: (dt: number) => void;
@@ -145,10 +146,9 @@ export class Game {
     if (screen === 'menu' || screen === 'won') this.runStarted = false;
     this.display.sync(screen === 'playing' || screen === 'intro');
     if (screen !== 'playing') this.input.stop();
-    if (screen === 'menu' || screen === 'caught' || screen === 'won') this.audio.reset(screen === 'caught');
+    if (screen === 'menu' || screen === 'caught' || screen === 'won') this.audio.reset();
     this.syncAudio();
     this.ui.screen(screen, this.progress, this.settings, this.storage.load() !== null, detail, this.selectedDifficulty);
-    if (screen === 'caught') this.audio.finishJumpscare();
     this.syncTouch();
   }
   private syncAudio(): void {
@@ -195,6 +195,7 @@ export class Game {
     this.ghost.difficulty = this.horror.difficulty = progress.difficulty;
     this.progress = structuredClone(progress); this.revealTime = -1; this.revealStage = -1; this.autosave = 0; this.subtitleCooldown = 0;
     this.sprintVoiceCooldown = 0; this.world.kitchenBlackout = false;
+    this.lastGhostLines.clear();
     this.world.corazon.reset(); this.ui.scareFade(0); this.ui.cinematic(false);
     this.introPlayed = progress.collected.length > 0; this.introTime = 0; this.soundSightTick = this.weatherTick = 0;
     this.horror.reset(); this.world.environment.reset(); this.world.atmosphere = calmAtmosphere();
@@ -223,6 +224,15 @@ export class Game {
     this.ui.say(text, seconds); this.subtitleCooldown = seconds;
     if (voice) this.audio.voice(voice, this.revealTime >= 0 ? [-5.7, 1.4, -19] : undefined);
   }
+  private speakGhost(cue: keyof typeof GHOST_DIALOGUE, force = false, voiced = true): void {
+    if (!force && this.subtitleCooldown > 0) return;
+    const lines = GHOST_DIALOGUE[cue].filter(line => line !== this.lastGhostLines.get(cue));
+    const line = lines[Math.floor(Math.random() * lines.length)];
+    this.lastGhostLines.set(cue, line);
+    this.speak(`${GHOST_PROFILE.name}: “${line}”`, 3, force, voiced && cue !== 'capture' ? cue : undefined);
+    // Leave silence between lines, including adjacent state changes.
+    this.subtitleCooldown = 8;
+  }
   private use(): void {
     if (this.player.hidden) { this.player.hidden = this.player.hideExposed = false; this.ui.notice('You step out.'); return; }
     const target = this.interactions.target;
@@ -245,7 +255,7 @@ export class Game {
       if (before !== mission(this.progress)) this.audio.effect('objective');
       this.world.syncProgress(this.progress); this.interactions.sync(this.progress); this.save();
       if (result.checkpoint) this.ghost.grace = Math.max(difficultySettings[this.progress.difficulty].objectiveGrace, this.ghost.grace);
-      if (target.id === 'exit') this.speak(`${GHOST_PROFILE.name}: “ASA MAN KA PADULONG?! BALIK DIRI!”`, 3, true, 'exit');
+      if (target.id === 'exit') this.speakGhost('exit', true);
     }
   }
   private kitchen(dt: number): boolean {
@@ -258,9 +268,9 @@ export class Game {
     const stage = this.revealTime < 1.8 ? 0 : this.revealTime < 3.8 ? 1 : this.revealTime < 5.8 ? 2 : 3;
     if (stage !== this.revealStage) {
       this.revealStage = stage;
-      if (stage === 0) this.speak(this.settings.cleanDialogue ? 'You: “Aguy, unsa man tong tingoga?”' : 'You: “Yawa, unsa man tong tingoga?”', 1.8, true, 'kitchen-player');
-      if (stage === 1) { this.startScare('jumpscare'); this.speak(`${GHOST_PROFILE.name}: “HOY! NGANONG NISULOD MAN KA DIRI?!”`, 2, true, 'kitchen-ghost'); }
-      if (stage === 2) this.speak(`You: “${this.settings.cleanDialogue ? 'AGUY' : 'YAWA'}, SI ${GHOST_PROFILE.name.toUpperCase()} RA DIAY!”`, 2, true, 'recognition');
+      if (stage === 0) this.speak('You: “Something is in here.”', 1.8, true, 'kitchen-player');
+      if (stage === 1) this.startScare('jumpscare');
+      if (stage === 2) this.speak('You: “I need to get out.”', 2, true, 'recognition');
       if (stage === 3) {
         this.audio.finishJumpscare();
         this.progress.kitchenSeen = true; this.revealTime = -1; this.ghost.reveal(this.player.position, this.world.nav); this.world.ghost.setEnabled(true);
@@ -273,7 +283,7 @@ export class Game {
   }
   private startScare(kind: ScareKind): void {
     if (!this.world.corazon.start(kind, this.settings)) return;
-    this.input.clear(); this.player.moving = this.player.sprinting = false;
+    this.input.clear(); this.player.halt(this.world);
     this.ghostMoving = false; this.world.arms.setEnabled(false);
     this.horror.scare(CORAZON_SCARE[kind].duration); this.ui.cinematic(true); this.syncTouch();
   }
@@ -282,11 +292,14 @@ export class Game {
     this.input.clear();
     const event = presentation.update(dt, this.settings);
     // Both the 3D pose and the preloaded recording change in this render tick.
-    if (event.reveal) { this.audio.jumpscare(); this.ui.face(true, this.settings.gentleScares); }
+    if (event.reveal) {
+      this.ui.face(true, this.settings.gentleScares); this.audio.jumpscare();
+      this.speakGhost(kind === 'capture' ? 'capture' : 'kitchen-ghost', true, false);
+    }
     this.ui.scareFade(scareFrame(kind, presentation.timeline.time).fade);
     if (!event.finished) return;
     presentation.finish(); this.ui.face(false, this.settings.gentleScares); this.ui.cinematic(false);
-    this.audio.finishJumpscare(); this.input.clear();
+    this.audio.finishJumpscare(); this.input.clear(); this.player.halt(this.world);
     if (kind === 'capture') this.show('caught');
     else {
       this.player.camera(this.world, this.settings);
@@ -318,7 +331,7 @@ export class Game {
         this.updateScare(realDt);
         // Keep kitchen dialogue behind the reveal when a frame stalls. The
         // scare clock may hold at the reveal to guarantee it is rendered once.
-        if (kind === 'jumpscare') {
+        if (kind === 'jumpscare' && this.revealTime >= 0) {
           const advance = this.world.corazon.active ? this.world.corazon.timeline.time - scareTime : CORAZON_SCARE.jumpscare.duration - scareTime;
           this.kitchen(Math.max(0, advance));
         }
@@ -339,7 +352,7 @@ export class Game {
         if (this.input.consume('KeyE') || hide && (this.player.hidden || this.interactions.target?.kind === 'hide')) this.use();
         if (this.input.consume('Throw') && this.interactions.throw(this.player)) { this.ghost.hear(this.player.position, 8); this.audio.effect('throw'); }
         const before = { ...this.ghost.position };
-        const caught = this.ghost.update(dt, this.world, this.player, this.progress, event => this.speak(`${GHOST_PROFILE.name}: ${event === 'spotted' ? '“HOYYYY! ARI DIRI!”' : '“PAGHULAT BA!”'}`, 3, false, event));
+        const caught = this.ghost.update(dt, this.world, this.player, this.progress, event => this.speakGhost(event));
         this.ghostMoving = Math.hypot(this.ghost.position.x - before.x, this.ghost.position.z - before.z) > .001;
         this.world.corazon.updateLocomotion(dt, this.ghost, this.settings);
         if (caught) {
@@ -347,12 +360,12 @@ export class Game {
         }
       } else { this.input.consume('KeyE'); this.input.consume('Throw'); this.input.consume('Hide'); }
       this.interactions.updateProjectile(dt, this.ghost, (p, r) => { this.ghost.hear(p, r); this.audio.effect('land', [p.x, p.y + .1, p.z]); }, () => {
-        this.audio.effect('hit'); this.speak(`${GHOST_PROFILE.name}: ${this.settings.cleanDialogue ? '“Aguy, sakita oy!”' : '“YAWA, SAKITA OY!”'}`, 2, true, 'hit');
+        this.audio.effect('hit'); this.speakGhost('hit');
       });
       if (revealing && !this.world.corazon.active) this.world.corazon.updateLocomotion(dt, this.ghost, this.settings);
       this.sprintVoiceCooldown = Math.max(0, this.sprintVoiceCooldown - dt);
       if (this.ghost.state === 'Chase' && this.player.sprinting && this.sprintVoiceCooldown === 0 && this.subtitleCooldown === 0) {
-        this.speak(`${GHOST_PROFILE.name}: “Ayaw dagan!”`, 2, false, 'sprint'); this.sprintVoiceCooldown = 18;
+        this.speakGhost('sprint'); this.sprintVoiceCooldown = 18;
       }
       if (this.screen === 'playing' && !this.world.corazon.active && this.player.position.level === 0 && this.player.position.x < -1.9 && this.player.position.z > -14.3 && this.player.position.z < -12.7 && canEscape(this.progress)) {
         this.storage.clear(); this.show('won');

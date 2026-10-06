@@ -1,4 +1,4 @@
-# Balay ni Corazon — haunted house environment
+# Corazon: The Haunted House — haunted house environment
 
 An explorable, two-storey environment assembled from the owner's complete blueprint
 and the supplied interior video frames. The existing ghost, arms, and key assets

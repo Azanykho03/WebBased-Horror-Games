@@ -18,6 +18,7 @@ import { attachJumpAudit } from './jump-audit.ts';
 import { attachDisplayAudit } from './display-audit.ts';
 import { attachCorazonAudioAudit } from './corazon-audio-audit.ts';
 import { attachCorazonAudit } from './corazon-audit.ts';
+import { attachScareRecoveryAudit } from './scare-recovery-audit.ts';
 import type { Settings } from '../src/types.ts';
 import type { ScareKind } from '../src/corazon-motion.ts';
 
@@ -41,6 +42,7 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
   const content = panel.querySelector('details > div')!;
   const jumpAudit = attachJumpAudit(content, host);
   const corazonAudit = attachCorazonAudit(content, host);
+  const recoveryAudit = attachScareRecoveryAudit(content, host);
   attachDisplayAudit(content, host.world);
   attachAudioAudit(content, () => host.action('journal'));
   attachMusicAudit(content, () => host.action('journal'));
@@ -138,6 +140,7 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
   }
   return dt => {
     corazonAudit(dt);
+    recoveryAudit(dt);
     jumpAudit(dt);
     if (mixTime + dt > .25) {
       const clips = host.audioDiagnostics().recordings;

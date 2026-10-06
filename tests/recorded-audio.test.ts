@@ -6,12 +6,12 @@ import { CORAZON_AUDIO } from '../src/config.ts';
 
 function fixture(t: TestContext, loop = true) {
   t.mock.timers.enable({ apis: ['setTimeout'] });
-  const sources: { loop: boolean; stopped: boolean; onended: (() => void) | null }[] = [];
+  const sources: { loop: boolean; stopped: boolean; offset: number; onended: (() => void) | null }[] = [];
   const context = { currentTime: 0, state: 'running',
     createGain: () => ({ connect() {}, disconnect() {}, gain: { value: 0, cancelScheduledValues() {}, setValueAtTime() {}, linearRampToValueAtTime() {} } }),
     createBufferSource: () => {
-      const source = { loop: false, stopped: false, onended: null as (() => void) | null,
-        connect() {}, disconnect() {}, start() {}, stop() { this.stopped = true; } };
+      const source = { loop: false, stopped: false, offset: 0, onended: null as (() => void) | null,
+        connect() {}, disconnect() {}, start(_time: number, offset: number) { this.offset = offset; }, stop() { this.stopped = true; } };
       sources.push(source); return source;
     },
   };
@@ -75,4 +75,14 @@ test('proximity has separate entry and exit thresholds and monotonic intensity',
   assert.equal(proximityLevel(NaN, true, tune).volume, 0);
   assert.ok(proximityLevel(3, true, tune).volume > proximityLevel(7, true, tune).volume);
   assert.equal(proximityLevel(0, true, tune).volume, tune.volume);
+});
+
+test('the scare starts at the measured impact and stops with no live tail', t => {
+  const { clip, buffer, sources, advance } = fixture(t, false);
+  clip.setBuffer(buffer); clip.setLevel(.85, .003, CORAZON_AUDIO.jumpscare.offset);
+  assert.equal(sources[0].offset, .2); assert.equal(clip.diagnostics.time, .2);
+  advance(1.5); clip.stop();
+  assert(sources[0].stopped); assert.equal(clip.diagnostics.sources, 0); assert.equal(clip.diagnostics.gain, 0);
+  clip.setLevel(.85, .003, CORAZON_AUDIO.jumpscare.offset);
+  assert.equal(clip.diagnostics.sources, 1); assert.equal(sources[1].offset, .2);
 });

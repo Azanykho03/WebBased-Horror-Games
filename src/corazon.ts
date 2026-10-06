@@ -106,7 +106,7 @@ export class CorazonPresentation {
     const frame = scareFrame(kind, this.timeline.time, settings.reducedMotion, settings.gentleScares);
     const camera = this.camera;
     B.Quaternion.SlerpToRef(saved.cameraRotation, saved.targetRotation, frame.approach, camera.rotationQuaternion!);
-    camera.position.copyFrom(saved.cameraPosition); camera.position.y -= frame.recoil;
+    camera.position.copyFrom(saved.cameraPosition);
     const cameraWeight = frame.approach * (kind === 'jumpscare' ? 1 - smoothStep((this.timeline.time - 1.48) / .27) : 1);
     camera.fov = mix(saved.cameraFov, settings.reducedMotion ? saved.cameraFov : 1.02, cameraWeight);
     camera.getViewMatrix(true);
@@ -134,7 +134,7 @@ export class CorazonPresentation {
       }
       if (clearance > 0) this.root.position.addInPlace(forward.scale(clearance));
     }
-    const revealLight = this.timeline.time >= CORAZON_SCARE[kind].reveal ? smoothStep((this.timeline.time - CORAZON_SCARE[kind].reveal + .016) / .045) : 0;
+    const revealLight = this.timeline.time >= CORAZON_SCARE[kind].reveal ? 1 : 0;
     this.fill.intensity = (settings.gentleScares ? .85 : 1.3) * settings.brightness * (1 - frame.fade) * revealLight;
     for (const [i, mesh] of this.meshes.entries()) mesh.visibility = saved.meshes[i].visibility * frame.visibility;
   }

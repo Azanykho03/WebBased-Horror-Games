@@ -1,4 +1,4 @@
-# BALAY NI CORAZON — Complete Game Discussion
+# Corazon: The Haunted House — Complete Game Discussion
 
 **Bisaya/Cebuano-English discussion para sa college project report, demonstration, ug presentation**  
 **Implementation reviewed:** October 3, 2026 · project package version `0.1.0`
@@ -37,9 +37,9 @@ Ang discussion adunay story ug ending spoilers kay intended kini para sa complet
 
 ## 1. Project overview ug game concept
 
-**Balay ni Corazon** usa ka single-player, first-person, web-based survival horror game. Ang player mosulod sa usa ka karaan nga two-storey house tungod sa usa ka dare, apan ma-lock ang entrance. Kinahanglan niyang mangita sa importanteng items, ibalik ang keepsakes sa balay, ug makagawas samtang naglikay kang Corazon.
+**Corazon: The Haunted House** usa ka single-player, first-person, web-based survival horror game. Ang player mosulod sa usa ka karaan nga two-storey house tungod sa usa ka dare, apan ma-lock ang entrance. Kinahanglan niyang mangita sa importanteng items, ibalik ang keepsakes sa balay, ug makagawas samtang naglikay kang Corazon.
 
-Ang title nga **“Balay ni Corazon”** diretso nga nagpasabot sa house nga iyang gi-haunt. Ang tagline nga **“Ayaw Pagsulod”** nag-introduce sa central conflict: gisulod sa player ang lugar bisan adunay warning. Ang menu mismo nag-frame sa experience isip **“One house · One ghost · Find your way out.”**
+Ang title nga **“Corazon: The Haunted House”** diretso nga nagpasabot sa house nga iyang gi-haunt. Ang tagline nga **“Do not enter”** nag-introduce sa central conflict: gisulod sa player ang lugar bisan adunay warning. Ang menu mismo nag-frame sa experience isip **“One house · One ghost · Find your way out.”**
 
 | Aspect | Implemented concept |
 | --- | --- |
@@ -55,7 +55,7 @@ Ang title nga **“Balay ni Corazon”** diretso nga nagpasabot sa house nga iya
 
 Ang challenge gikan sa kombinasyon sa **exploration, resource management, spatial awareness, ug pressure gikan sa ghost**. Kinahanglan kabalo ang player asa siya padulong, pila pa ang stamina, ug unsang corner o hiding place ang makatabang kung magsugod ang chase.
 
-Ang local identity makita sa Cebuano/Bisaya dialogue, title, familiar household spaces, ug tsinelas defense. Ang banter mahimong kataw-anan sa pipila ka moments, apan ang actual gameplay nagpadayon sa horror atmosphere pinaagi sa dark rooms, sound cues, pursuit, ug close-up scares.
+The familiar household spaces and tsinelas defense preserve the local setting. Corazon now uses short, serious English threats; dark rooms, pursuit and close encounters maintain the horror atmosphere.
 
 **Source basis:** [game configuration](src/config.ts), [UI ug story screens](src/ui.ts), [game orchestration](src/game.ts).
 
@@ -83,7 +83,7 @@ Kini nga details nagpasabot nga importante kang Corazon ang personal belongings 
 
 Ang story gipresentar pinaagi sa menu text, short intro, warning note, objective descriptions, pickup messages, journal, ug Cebuano captions. Dili kinahanglan ug lengthy cutscene aron masabtan ang mission.
 
-Pananglitan, sa kitchen encounter, mo-react ang player sa tingog, mosulti si Corazon og **“HOY! NGANONG NISULOD MAN KA DIRI?!”**, ug mailhan siya sa player. Sa chase adunay **“HOYYYY! ARI DIRI!”** ug **“Ayaw dagan!”** Ang **Clean dialogue** setting mopuli sa selected profanity og “Aguy.”
+Pananglitan, sa kitchen encounter, mo-react ang player sa tingog, mosulti si Corazon og **“You should never have come here.”**, ug mailhan siya sa player. Sa chase adunay **“I know where you are.”** ug **“Don't run from me.”** All current dialogue is clean English. The existing Clean dialogue setting remains compatible with optional recordings.
 
 Sa successful ending, makita ang exchange nga **“Nakuha nimo ang proof?” / “Oo. Dili na ko mobalik.”** Kini ending text; walay implemented camera, photo-taking action, o separate proof-collection objective.
 
@@ -491,19 +491,19 @@ Ang ghost reveal location gipili gikan sa valid navigation candidates sa kitchen
 
 Ang active scare naggamit sa **actual 3D Corazon head ug body**. Ang head gi-frame relative sa camera, adunay neck rotation, body lean, approach, ug final lunge. Adunay dedicated fill light ug viewport/near-plane clearance aron dili ma-clip ang head bisan portrait ang screen o lahi ang camera pitch.
 
-Adunay `face-overlay` element sa UI, apan sa current **spatial** presentation ang flat face image ug “HOY!” text hidden pinaagi sa CSS. Vignette/support overlay ang gamit niini; ang makita nga attacking face gikan sa 3D model.
+Adunay `face-overlay` element sa UI, apan sa current **spatial** presentation ang flat face image ug “Turn around.” text hidden pinaagi sa CSS. Vignette/support overlay ang gamit niini; ang makita nga attacking face gikan sa 3D model.
 
 ### 14.3 Audio synchronization ug duplicate protection
 
 Usa ka guarded `ScareTimeline` ang nagdumala sa timing. Ang kitchen scare adunay reveal beat at `0.16 s`; ang capture sequence adunay reveal beat at `0.38 s`.
 
-Sa reveal render tick, i-trigger ang preloaded `JumpScareCorazon.mp3` ug visual reveal together. Kung adunay long frame, ang timeline mohunong una sa reveal beat aron ma-render kini before mahimong matapos ang sequence. Ang duplicate scare starts rejected, ug ang one-shot audio gi-latch aron dili mag-stack sa matag frame.
+Sa reveal render tick, i-trigger ang preloaded `peircing.wavJumpscare.mp3` from its measured 0.20-second impact ug visual reveal together. The source stops at the end of the sequence, before game over or restored play. Kung adunay long frame, ang timeline mohunong una sa reveal beat aron ma-render kini before mahimong matapos ang sequence. Ang duplicate scare starts rejected, ug ang one-shot audio gi-latch aron dili mag-stack sa matag frame.
 
 Kung wala pa ma-load o unavailable ang scare recording, dili kini ipa-play late human sa visual event. Ang gameplay ug ubang available sounds mahimong mopadayon.
 
 ### 14.4 Accessibility during scares
 
-**Reduced motion** mopagamay sa head/body motion ug motangtang sa capture recoil/FOV motion. **Gentle scares** mopahilayo sa face, mopahumok sa presentation, ug mopaubos sa scare audio. Ang scare timing ug progression nagpabilin.
+**Reduced motion** mopagamay sa head/body motion ug motangtang sa FOV motion; no mode translates or drops the player/camera. **Gentle scares** mopahilayo sa face, mopahumok sa presentation, ug mopaubos sa scare audio. Ang scare timing ug progression nagpabilin.
 
 **Reduced flicker** disables lightning pulses ug flashlight interruption, ug avoids the kitchen electric-light blackout modulation. Ang player mahimong mopili sa settings before o during a run pinaagi sa pause menu.
 
@@ -526,13 +526,13 @@ Ang visible caught screen nag-ingon **“SHE HEARD YOU”** ug **“Not this tim
 - **Retry checkpoint:** restore the most recently saved progress at its checkpoint anchor.
 - **Main menu:** return sa menu, diin available ang saved run kung naa pa.
 
-Ang jumpscare recording mahimong mohuman sa iyang remaining audio tail sa caught screen. Ang retry o menu return mo-cancel sa old tail; another distinct scare mahimong mopuli niini imbis mag-overlap.
+The jumpscare recording stops when the presentation ends. No tail continues onto the caught screen. Retry, menu return and disposal also stop it.
 
 Wala’y player health bar, medkit loop, o multiple-hit damage system. Ang valid capture mao ang failure trigger. Wala usab lives counter nga mopugong sa sunod retry.
 
 ### 15.3 Successful ending
 
-Human makompleto ang objectives, ma-unlock ang service exit, ug malabangan ang threshold, makita ang **“YOU MADE IT OUT”**, **“Ayaw na og balik.”**, elapsed time, ug short proof-related dialogue.
+Human makompleto ang objectives, ma-unlock ang service exit, ug malabangan ang threshold, makita ang **“YOU MADE IT OUT”**, **“Never return.”**, elapsed time, ug a serious closing line about a voice inside the house.
 
 I-clear ang run checkpoint sa success. Mahimong mopili og **Another night** para bag-ong difficulty/run o **Main menu**. Ang time usa ka local run result display; wala’y online leaderboard o score-submission feature sa current implementation.
 
@@ -612,7 +612,7 @@ Ang browser audio mag-unlock pinaagi sa click, tap, o key interaction. Kung bloc
 | `CreepyNightBreeze.mp3` | Extra menu layer with MELANCHOLIA; fades out on game entry |
 | `CreepyLittleGirl.mp3` | Gameplay ambience layer; fades out on capture screen, ending, o menu return |
 | `CreepyCurseSound.mp3` | Distance-based Corazon proximity warning through Effects |
-| `JumpScareCorazon.mp3` | Single playback sa face-reveal beat; may finish its tail on Game Over |
+| `peircing.wavJumpscare.mp3` | Single playback sa face-reveal beat; stops at sequence completion |
 
 Ang duha ka long music tracks nag-share og **one streaming audio element**. Sa track change, adunay `0.8 s` fade out, source switch at silence, ug `0.8 s` fade in. Dili sila duha dungan nga nag-play.
 
@@ -655,10 +655,10 @@ Ang music ug ambience **duck**, meaning mohinay, during important dialogue, chas
 
 ### 17.6 Spoken dialogue status ug lifecycle
 
-Ang current `VOICE_AUDIO` configuration empty. Ang authored Bisaya dialogue kay **readable captions with synthesized vocal placeholders**, dili complete recorded Bisaya voice acting. Ang supplied music/scare recordings lahi sa optional spoken-line manifest.
+Ang current `VOICE_AUDIO` configuration empty. The authored English dialogue uses **readable captions with synthesized vocal placeholders**, not recorded English voice acting. Ang supplied music/scare recordings lahi sa optional spoken-line manifest.
 
 Ang Clean dialogue mo-usab sa selected caption wording, ug kung adunay future clean/normal voice files, dili mo-fallback sa unclean recording ang clean mode. Ang main dialogue adunay priority kaysa incidental whispers.
 
-Pause ug browser backgrounding mo-suspend sa context ug mag-pause sa streaming track. Resume keeps the track position. Retry/menu/reset mag-clean up sa transient sounds ug pending voice state, samtang ang caught-screen scare tail adunay explicit exception. Ang disposal mo-stop/disconnect sa sources ug close sa context.
+Pause ug browser backgrounding mo-suspend sa context ug mag-pause sa streaming track. Resume keeps the track position. Retry/menu/reset mag-clean up sa transient sounds ug pending voice state, including the scare recording, with no caught-screen exception. Ang disposal mo-stop/disconnect sa sources ug close sa context.
 
 **Source basis:** [audio mixer](src/audio.ts), [music lifecycle](src/music.ts), [ambience loop](src/ambience.ts), [recorded audio](src/recorded-audio.ts), [configuration](src/config.ts), [audio credits ug recording manifest](AUDIO_CREDITS.md).

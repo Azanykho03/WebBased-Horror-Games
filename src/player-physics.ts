@@ -151,6 +151,11 @@ export class PlayerPhysics {
   velocity = 0;
   grounded = false;
   reset(): void { this.velocity = 0; this.grounded = false; }
+  halt(position: Position, collision: PlayerCollision): void {
+    this.velocity = 0;
+    const support = collision.support(position);
+    this.grounded = !!support && Math.abs(support.y - position.y) < .002;
+  }
   update(position: Position, dt: number, vx: number, vz: number, jump: boolean, collision: PlayerCollision): Position {
     let p = { ...position };
     const support = collision.support(p);

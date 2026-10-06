@@ -1,4 +1,4 @@
-# Balay ni Corazon — background music, audio palette and optional recordings
+# Corazon: The Haunted House — background music, audio palette and optional recordings
 
 ## Supplied background music
 
@@ -31,7 +31,7 @@ They use the existing Web Audio context and mixer; source files are unchanged.
 | `CreepyNightBreeze.mp3` | Loops with MELANCHOLIA on pre-game screens; fades out on entry | Music |
 | `CreepyLittleGirl.mp3` | Loops with the existing ILI ILI / Mixkit gameplay bed | Ambience |
 | `CreepyCurseSound.mp3` | Single proximity loop, 8 m entry / 11 m exit | Effects |
-| `JumpScareCorazon.mp3` | One-shot on Corazon's face reveal; full tail on caught screen | Effects |
+| `peircing.wavJumpscare.mp3` | One-shot from the 0.20 s impact on Corazon's close face reveal; stops with the sequence | Effects |
 
 Creator, source URL and license metadata were not supplied for these files;
 none is inferred from their names.
@@ -43,7 +43,7 @@ interaction effects and supernatural textures are original Web Audio synthesis
 in `src/audio.ts`. These effects remain alongside the two recordings and require
 no audio downloads. No external audio library has been added.
 
-Corazon's airy vocal textures are **synthesized placeholders, not spoken Bisaya**.
+Corazon's airy vocal textures are **synthesized placeholders, not spoken English**.
 The lines are readable as subtitles. The playable game does not require recordings,
 but a fully voiced release needs the clips below. Empty configuration entries do
 not request missing files. Do not create empty `.wav` files as substitutes.
@@ -59,22 +59,23 @@ loudness in the recording; the mixer supplies the scare impact separately.
 
 | Cue | Suggested filename | Content |
 | --- | --- | --- |
-| `whisper-1` | `whisper_01.wav` | Aria… |
-| `whisper-2` | `whisper_02.wav` | Ayaw'g dagan… |
-| `whisper-3` | `whisper_03.wav` | Naa ra ko diri… |
-| `whisper-4` | `whisper_04.wav` | Nakita tika… |
-| `whisper-5` | `whisper_05.wav` | Ngano nisulod man ka? |
-| `whisper-6` | `whisper_06.wav` | Balik diri… |
-| `whisper-7` | `whisper_07.wav` | Ayaw pagtan-aw… |
-| `whisper-8` | `whisper_08.wav` | Duol… |
-| `kitchen-player` | `kitchen_player.wav` / `kitchen_player_clean.wav` | Yawa / Aguy, unsa man tong tingoga? |
-| `kitchen-ghost` | `kitchen_ghost.wav` | Hoy! Nganong nisulod man ka diri?! |
-| `recognition` | `recognition.wav` / `recognition_clean.wav` | Yawa / Aguy, si Corazon ra diay! |
-| `spotted` | `spotted.wav` | Hoyyyy! Ari diri! |
-| `sprint` | `sprint.wav` | Ayaw dagan! |
-| `lost` | `lost.wav` | Paghulat ba! |
-| `exit` | `exit.wav` | Asa man ka padulong?! Balik diri! |
-| `hit` | `hit.wav` / `hit_clean.wav` | Yawa / Aguy, sakita oy! |
+| `whisper-1` | `whisper_01.wav` | Turn around. |
+| `whisper-2` | `whisper_02.wav` | I can hear you breathing. |
+| `whisper-3` | `whisper_03.wav` | I am closer than you think. |
+| `whisper-4` | `whisper_04.wav` | I see you. |
+| `whisper-5` | `whisper_05.wav` | You should never have come here. |
+| `whisper-6` | `whisper_06.wav` | This house remembers you. |
+| `whisper-7` | `whisper_07.wav` | Do not look behind you. |
+| `whisper-8` | `whisper_08.wav` | I have been waiting for you. |
+| `kitchen-player` | `kitchen_player.wav` | Something is in here. |
+| `kitchen-ghost` | Caption only during impact | Pool in `GHOST_DIALOGUE`; no voice layered over the scare |
+| `recognition` | `recognition.wav` | I need to get out. |
+| `spotted` | `spotted.wav` | I see you. |
+| `sprint` | `sprint.wav` | Don't run from me. |
+| `lost` | `lost.wav` | I can hear you breathing. |
+| `exit` | `exit.wav` | You belong to this house now. |
+| `hit` | `hit.wav` | You cannot stop me. |
+| `capture` | Caption only during impact | Pool in `GHOST_DIALOGUE`; no second scare sound |
 | `cry`, `hum`, `laugh`, `scream` | `cry.wav`, `hum.wav`, `laugh.wav`, `scream.wav` | Short performed vocalizations, no copied character performance |
 
 For clips with no profanity, set both `normal` and `clean` to the same file.
@@ -93,7 +94,7 @@ Record with a consenting performer; retain the recording and redistribution term
 ## Optional source searches
 
 The procedural effects are complete. These are optional replacement sources,
-not dependencies or assets already licensed for this project. Specific Bisaya
+not dependencies or assets already licensed for this project. Specific English
 lines are best recorded for the game. Verified source pages on 2026-10-02:
 
 | Category | Source and suggested search |
