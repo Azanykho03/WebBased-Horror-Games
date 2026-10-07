@@ -25,7 +25,7 @@ test('proximity uses walls and floors; direction captions follow camera orientat
 test('soundtrack detects once, enters chase, quiets while hiding, and recovers gradually', () => {
   const director = new HorrorDirector(data, rng()), state = input(); director.reset();
   state.ghost = { ...state.player, z: -7 }; state.ghostState = 'Chase';
-  assert.equal(director.update(.05, state).atmosphere.state, 'CORAZON_DETECTED_PLAYER');
+  assert.equal(director.update(.05, state).atmosphere.state, 'CELESTINA_DETECTED_PLAYER');
   for (let i = 0; i < 100; i++) director.update(.05, state);
   assert.equal(director.atmosphere.state, 'CHASE'); assert(director.atmosphere.fear > .95);
   state.hidden = true; state.ghostState = 'Search';

@@ -25,6 +25,7 @@ import type { HidingSystem } from '../src/hiding.ts';
 import { attachHidingAudit } from './hiding-audit.ts';
 import { worldHit } from '../src/geometry.ts';
 import { attachHidingPerceptionAudit } from './hiding-perception-audit.ts';
+import { attachGhostDoorAudit } from './ghost-door-audit.ts';
 import { anchorPosition } from '../src/fixtures.ts';
 
 interface JourneyHost {
@@ -49,6 +50,7 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
   const jumpAudit = attachJumpAudit(content, host);
   const hidingAudit = attachHidingAudit(content, host);
   const hidingPerceptionAudit = attachHidingPerceptionAudit(content, host);
+  const ghostDoorAudit = attachGhostDoorAudit(content, host);
   const corazonAudit = attachCorazonAudit(content, host);
   const recoveryAudit = attachScareRecoveryAudit(content, host);
   attachDisplayAudit(content, host.world);
@@ -70,7 +72,7 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
     faceVisible = visible;
   }).observe(face, { attributes: true, attributeFilter: ['hidden'] });
   const mix = document.createElement('pre'); mix.setAttribute('aria-label', 'Audio diagnostics'); content.append(mix);
-  const recordings = document.createElement('pre'); recordings.setAttribute('aria-label', 'Corazon recording diagnostics'); content.append(recordings);
+  const recordings = document.createElement('pre'); recordings.setAttribute('aria-label', 'Celestina recording diagnostics'); content.append(recordings);
   const audition = document.createElement('button'); audition.textContent = 'Audition weather / haunt'; content.append(audition);
   let auditionIndex = 0, mixTime = 0;
   const auditionKinds: HauntEvent['kind'][] = ['thunder', 'light', 'whisper', 'object', 'footsteps', 'window', 'curtain', 'radio', 'shadow', 'apparition'];
@@ -155,6 +157,7 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
     jumpAudit(dt);
     hidingAudit(dt);
     hidingPerceptionAudit(dt);
+    ghostDoorAudit(dt);
     if (mixTime + dt > .25) {
       const clips = host.audioDiagnostics().recordings;
       recordings.textContent = clips ? (['menu', 'gameplay', 'proximity', 'jumpscare'] as const).map(name => {

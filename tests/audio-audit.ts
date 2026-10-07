@@ -23,7 +23,7 @@ export function attachAudioAudit(panel: Element, pauseGame: () => void): void {
       check(mixer().context === context, 'Repeated start created another context');
       analyser = context.createAnalyser(); analyser.fftSize = 2048; mixer().master.connect(analyser);
       const frame = { atmosphere: calmAtmosphere(), eye: [0, 1.65, 0] as [number, number, number], direction: [0, 0, -1] as [number, number, number], room: 'F01', ghost: { x: 2, y: 0, z: -4, level: 0 as const }, ghostOccluded: false, ghostMoving: true, rainExposure: .8, window: [3, 2, 0] as [number, number, number] };
-      const states: Soundscape[] = ['CALM_EXPLORATION', 'UNEASY', 'CORAZON_NEARBY', 'CORAZON_DETECTED_PLAYER', 'CHASE', 'HIDING', 'JUMPSCARE', 'POST_JUMPSCARE', 'GAME_OVER', 'ENDING'];
+      const states: Soundscape[] = ['CALM_EXPLORATION', 'UNEASY', 'CELESTINA_NEARBY', 'CELESTINA_DETECTED_PLAYER', 'CHASE', 'HIDING', 'JUMPSCARE', 'POST_JUMPSCARE', 'GAME_OVER', 'ENDING'];
       for (const state of states) { frame.atmosphere = { ...calmAtmosphere(), state, fear: .8, proximity: .8, exertion: .7 }; audio.update(.1, frame); }
       audio.effect('sting'); await delay(200);
       const samples = new Float32Array(analyser.fftSize); analyser.getFloatTimeDomainData(samples);

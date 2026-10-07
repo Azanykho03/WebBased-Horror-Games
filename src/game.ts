@@ -247,7 +247,7 @@ export class Game {
       const cabinet = this.world.fixtures3d.cabinets.find(c => c.id === target.id)!;
       if (!this.hiding.enter(cabinet, this.ghost)) { this.ui.notice('Stand on the clear floor in front of the cabinet.'); return; }
       this.audio.effect('latch', target.position);
-      this.ui.notice(this.player.hideExposed ? 'She saw you enter. This hiding place will not protect you.' : this.input.touchMode ? 'Stay quiet. Tap Leave to step out.' : 'Stay quiet. E to leave.', 5); return;
+      this.ui.notice(this.player.hideExposed ? 'She saw you. Get fully inside before she reaches you.' : 'Keep quiet while you get inside.', 5); return;
     }
     if (target.kind === 'door') {
       const door = this.world.fixtures3d.doors.find(d => d.id === target.id)!;
@@ -299,6 +299,7 @@ export class Game {
     return stage < 3;
   }
   private startScare(kind: ScareKind): void {
+    if (kind === 'capture' && this.player.hidden) return;
     if (!this.world.corazon.start(kind, this.settings)) return;
     this.input.clear(); this.player.halt(this.world);
     this.ghostMoving = false; this.world.arms.setEnabled(false);
@@ -364,8 +365,10 @@ export class Game {
       const transitioningDoors = new Set(this.world.fixtures3d.doors.filter(d => d.hinge.busy).map(d => d.id));
       this.world.fixtures3d.update(dt, [this.player.position, ...(this.ghost.state === 'Dormant' ? [] : [this.ghost.position])]);
       const exposed = this.player.hideExposed;
+      const wasHidden = this.player.hidden;
       this.hiding.update(dt, this.ghost);
-      if (!exposed && this.player.hideExposed) this.ui.notice('She saw where you hid. Be ready to leave.', 5);
+      if (!wasHidden && this.player.hidden) this.ui.notice(this.input.touchMode ? 'Hidden. Stay quiet. Tap Leave to step out.' : 'Hidden. Stay quiet. E to leave.', 4);
+      else if (!exposed && this.player.hideExposed) this.ui.notice('She saw you entering. Get fully inside.', 4);
       this.player.update(dt, this.input, this.world, this.progress, this.settings, (p, radius) => this.ghost.hear(p, radius), () => {
         const p = this.player.position; this.audio.footstep(surfaceForRoom(this.world.room(p).id, p), this.player.sprinting, [p.x, p.y + .12, p.z]);
       });
@@ -379,6 +382,7 @@ export class Game {
         if (this.input.consume('Throw') && this.interactions.throw(this.player)) { this.ghost.hear(this.player.position, 8); this.audio.effect('throw'); }
         const before = { ...this.ghost.position };
         const caught = this.ghost.update(dt, this.world, this.player, this.progress, event => this.speakGhost(event));
+        if (this.ghost.openedDoor) this.audio.effect('latch', this.ghost.openedDoor);
         this.ghostMoving = Math.hypot(this.ghost.position.x - before.x, this.ghost.position.z - before.z) > .001;
         this.world.corazon.updateLocomotion(dt, this.ghost, this.settings);
         if (caught) {

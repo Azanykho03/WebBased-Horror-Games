@@ -8,8 +8,8 @@ import type { RecordedAudio } from '../src/recorded-audio.ts';
 // Validation build only. Real MP3 decoding, Web Audio output and normal gesture
 // activation; the production game keeps its original UI and one AudioSystem.
 export function attachCorazonAudioAudit(panel: Element, pauseGame: () => void): void {
-  const button = document.createElement('button'); button.textContent = 'Check four Corazon audio integrations';
-  const status = document.createElement('pre'); status.setAttribute('aria-label', 'Corazon audio audit result'); status.style.whiteSpace = 'pre-wrap';
+  const button = document.createElement('button'); button.textContent = 'Check four Celestina audio integrations';
+  const status = document.createElement('pre'); status.setAttribute('aria-label', 'Celestina audio audit result'); status.style.whiteSpace = 'pre-wrap';
   panel.append(button, status);
   button.addEventListener('click', async () => {
     pauseGame(); button.disabled = true; status.textContent = 'Checking menu layers and all four supplied MP3s…';
@@ -150,7 +150,7 @@ export function attachCorazonAudioAudit(panel: Element, pauseGame: () => void): 
       report.push('Pause/resume keeps clocks and sources; mixer mute; end stops new loops; return restores menu pair');
       audio.dispose(); await delay(100);
       check(context.state === 'closed' && Object.values(clips).every(clip => clip.diagnostics.sources === 0), 'Dispose retained a recording');
-      status.textContent = `PASS · Four Corazon audio integrations\n${report.join('\n')}\nAll sources disposed`;
+      status.textContent = `PASS · Four Celestina audio integrations\n${report.join('\n')}\nAll sources disposed`;
     } catch (error) { status.textContent = `FAIL · ${String(error)}\n${report.join('\n')}\n${JSON.stringify(audio.diagnostics)}`; }
     finally { clearInterval(tick); for (const analyser of analysers) analyser.disconnect(); audio.dispose(); button.disabled = false; }
   });

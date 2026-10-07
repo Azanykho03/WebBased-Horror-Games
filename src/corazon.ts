@@ -31,9 +31,9 @@ export class CorazonPresentation {
   constructor(scene: Babylon.Scene, camera: Babylon.FreeCamera, root: Babylon.TransformNode) {
     this.root = root; this.camera = camera; this.meshes = root.getChildMeshes();
     const head = this.meshes.find(m => m.name === 'Ghost_head');
-    if (!(head instanceof B.Mesh)) throw new Error('Corazon’s existing head mesh is missing.');
+    if (!(head instanceof B.Mesh)) throw new Error('Celestina’s existing head mesh is missing.');
     this.head = head;
-    this.torso = new B.TransformNode('corazon-body-motion', scene);
+    this.torso = new B.TransformNode('celestina-body-motion', scene);
     for (const child of root.getChildren()) if (child !== this.torso) child.parent = this.torso;
     this.torso.parent = root;
     this.torso.setPivotPoint(new B.Vector3(0, .95, 0));
@@ -44,7 +44,7 @@ export class CorazonPresentation {
     // The visible facial surface is forward of the head's volume center.
     const bounds = head.getBoundingInfo().boundingBox;
     this.faceAnchor = bounds.center.clone(); this.faceAnchor.z = bounds.maximum.z - .035;
-    this.fill = new B.PointLight('corazon-scare-fill', new B.Vector3(-.18, .18, 0), scene);
+    this.fill = new B.PointLight('celestina-scare-fill', new B.Vector3(-.18, .18, 0), scene);
     this.fill.parent = camera; this.fill.diffuse.set(.83, .87, .91);
     this.fill.includedOnlyMeshes = this.meshes; this.fill.range = 4; this.fill.radius = .4;
     this.fill.setEnabled(false);

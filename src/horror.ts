@@ -1,9 +1,10 @@
 import type { GhostState, HouseManifest, Position, Vec3 } from './types.ts';
+import { GHOST_PROFILE } from './config.ts';
 import type { VoiceCue } from './config.ts';
 import { difficultySettings } from './difficulty.ts';
 import type { Difficulty } from './difficulty.ts';
 
-export type Soundscape = 'CALM_EXPLORATION' | 'UNEASY' | 'CORAZON_NEARBY' | 'CORAZON_DETECTED_PLAYER' | 'CHASE' | 'HIDING' | 'JUMPSCARE' | 'POST_JUMPSCARE' | 'GAME_OVER' | 'ENDING';
+export type Soundscape = 'CALM_EXPLORATION' | 'UNEASY' | 'CELESTINA_NEARBY' | 'CELESTINA_DETECTED_PLAYER' | 'CHASE' | 'HIDING' | 'JUMPSCARE' | 'POST_JUMPSCARE' | 'GAME_OVER' | 'ENDING';
 export type Surface = 'wood' | 'tile' | 'concrete' | 'metal' | 'dirt';
 export type HauntKind = 'creak' | 'knock' | 'scratch' | 'footsteps' | 'window' | 'object' | 'curtain' | 'radio' | 'whisper' | 'silence' | 'light' | 'shadow' | 'apparition' | 'door' | 'thunder' | 'piano' | 'drip' | 'glass' | 'paper' | 'metal';
 export interface HauntEvent {
@@ -91,7 +92,7 @@ export class HorrorDirector {
     const threat = input.ghostState === 'Chase' || input.ghostState === 'Catch' ? 1 : pressure;
     a.fear = smooth(a.fear, Math.max(threat, this.recovery > 0 ? .55 : 0, input.hidden && a.proximity > .1 ? .5 : 0), dt, threat > a.fear ? 1.2 : 7);
     a.silence = smooth(a.silence, this.quiet > 0 ? 1 : 0, dt, this.quiet > 0 ? .7 : 2.7);
-    a.state = this.scareTime > 0 ? 'JUMPSCARE' : input.hidden ? 'HIDING' : this.detection > 0 ? 'CORAZON_DETECTED_PLAYER' : input.ghostState === 'Chase' ? 'CHASE' : this.recovery > 0 ? 'POST_JUMPSCARE' : a.proximity > .28 ? 'CORAZON_NEARBY' : unsettling.has(input.room) || a.fear > .25 ? 'UNEASY' : 'CALM_EXPLORATION';
+    a.state = this.scareTime > 0 ? 'JUMPSCARE' : input.hidden ? 'HIDING' : this.detection > 0 ? 'CELESTINA_DETECTED_PLAYER' : input.ghostState === 'Chase' ? 'CHASE' : this.recovery > 0 ? 'POST_JUMPSCARE' : a.proximity > .28 ? 'CELESTINA_NEARBY' : unsettling.has(input.room) || a.fear > .25 ? 'UNEASY' : 'CALM_EXPLORATION';
     if (input.suppressed || this.scareTime > 0 || input.ghostState === 'Catch') return { atmosphere: { ...a }, events };
     if (this.quietWhisper > 0) {
       this.quietWhisper -= dt;
@@ -139,7 +140,7 @@ export class HorrorDirector {
     let position = this.source(input);
     if (behind) position = [input.eye[0] - input.direction[0] * 2.7, input.eye[1], input.eye[2] - input.direction[2] * 2.7];
     else if (input.ghost && this.random() < .55) position = [input.ghost.x, input.ghost.y + 1.5, input.ghost.z];
-    return { kind: 'whisper', room: input.room, position, duration: 3, strength: this.between(.45, .75), voice: `whisper-${line + 1}` as VoiceCue, caption: `Corazon, ${soundDirection(input.eye, input.direction, position)}: “${WHISPERS[line]}”` };
+    return { kind: 'whisper', room: input.room, position, duration: 3, strength: this.between(.45, .75), voice: `whisper-${line + 1}` as VoiceCue, caption: `${GHOST_PROFILE.name}, ${soundDirection(input.eye, input.direction, position)}: “${WHISPERS[line]}”` };
   }
   private makeEvent(kind: HauntKind, input: HorrorInput): HauntEvent {
     if (kind === 'whisper') return this.whisper(input);

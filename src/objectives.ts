@@ -69,7 +69,7 @@ export function interact(p: Progress, id: InteractionId): InteractionResult {
     flashlight: 'Taking the flashlight. F switches it on or off once it settles. Read the warning beside it.',
     note: 'Warning read. Find the kitchen fuse, then the breaker upstairs.',
     fuse: 'Kitchen fuse collected. The breaker is upstairs near Master 1.',
-    locket: 'Corazon’s locket. The little portrait has been carefully kept.', letter: 'A folded letter: “Corazon, we left the light on for you.”', 'music-box': 'Corazon’s music box. One unfinished melody, then silence.',
+    locket: 'Celestina’s locket. The little portrait has been carefully kept.', letter: 'A folded letter: “Celestina, we left the light on for you.”', 'music-box': 'Celestina’s music box. One unfinished melody, then silence.',
     'exit-key': 'The final key is yours. Return to the main entrance.',
     'master-key': 'Master bedroom key collected. The locked bedroom is at the far end upstairs.',
     tsinelas: 'Tsinelas ready. Left click to throw. It can be picked up again.',

@@ -1,4 +1,4 @@
-# Corazon: The Haunted House — background music, audio palette and optional recordings
+# Escape the Haunting — background music, audio palette and optional recordings
 
 ## Supplied background music
 
@@ -19,7 +19,7 @@ for 0.8 seconds after playback starts. The recordings never overlap. A first
 click, tap or key press enables audio; later interactions retry browser-blocked
 playback. Pause/backgrounding freezes the track and resumes at its position.
 
-## Supplied Corazon layers and cues
+## Supplied Celestina layers and cues
 
 The following four MP3s were supplied by the user from Downloads and copied
 byte-for-byte into `public/assets/audio/`. `CORAZON_AUDIO` in `src/config.ts`
@@ -31,7 +31,7 @@ They use the existing Web Audio context and mixer; source files are unchanged.
 | `CreepyNightBreeze.mp3` | Loops with MELANCHOLIA on pre-game screens; fades out on entry | Music |
 | `CreepyLittleGirl.mp3` | Loops with the existing ILI ILI / Mixkit gameplay bed | Ambience |
 | `CreepyCurseSound.mp3` | Single proximity loop, 8 m entry / 11 m exit | Effects |
-| `peircing.wavJumpscare.mp3` | One-shot from the 0.20 s impact on Corazon's close face reveal; stops with the sequence | Effects |
+| `peircing.wavJumpscare.mp3` | One-shot from the 0.20 s impact on Celestina's close face reveal; stops with the sequence | Effects |
 
 Creator, source URL and license metadata were not supplied for these files;
 none is inferred from their names.
@@ -43,7 +43,7 @@ interaction effects and supernatural textures are original Web Audio synthesis
 in `src/audio.ts`. These effects remain alongside the two recordings and require
 no audio downloads. No external audio library has been added.
 
-Corazon's airy vocal textures are **synthesized placeholders, not spoken English**.
+Celestina's airy vocal textures are **synthesized placeholders, not spoken English**.
 The lines are readable as subtitles. The playable game does not require recordings,
 but a fully voiced release needs the clips below. Empty configuration entries do
 not request missing files. Do not create empty `.wav` files as substitutes.

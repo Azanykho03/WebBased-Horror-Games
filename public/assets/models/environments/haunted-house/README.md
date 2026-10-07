@@ -1,4 +1,4 @@
-# Corazon: The Haunted House — haunted house environment
+# Escape the Haunting — haunted house environment
 
 An explorable, two-storey environment assembled from the owner's complete blueprint
 and the supplied interior video frames. The existing ghost, arms, and key assets

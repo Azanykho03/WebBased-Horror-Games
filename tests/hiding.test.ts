@@ -71,7 +71,7 @@ test('both cabinet configurations repeat entry/exit, suspend gravity, clamp look
   } finally { world.dispose(); engine.dispose(); }
 });
 
-test('witnessed hiding targets the external cabinet entrance; unwitnessed hiding keeps search active', () => {
+test('completed hiding suppresses capture even after witnessed entry; searching stays active', () => {
   const data = JSON.parse(readFileSync('public/assets/models/environments/haunted-house/house-manifest.json', 'utf8')) as HouseManifest;
   const nav = createNavigation(data), env = { nav, clearSight: () => true }, progress = freshProgress();
   const ghost = new GhostStateMachine(), entrance: Position = { x: 0, y: 0, z: -5, level: 0 };
@@ -80,7 +80,8 @@ test('witnessed hiding targets the external cabinet entrance; unwitnessed hiding
   assert(!ghost.sees(player, env)); assert(!ghost.update(.2, env, player, progress, () => {})); assert.notEqual(ghost.state, 'Dormant');
   player.hideExposed = true; ghost.position = { ...entrance }; assert(!ghost.sees(player, env));
   let caught = false; for (let i = 0; i < 60; i++) caught ||= ghost.update(1 / 60, env, player, progress, () => {});
-  assert(caught, 'Witnessed cabinet is searchable even when the concealed body is outside attack range');
+  assert(!caught, 'Witness metadata must never permit capture through a closed cabinet');
+  assert.equal(ghost.state, 'Search');
 });
 
 test('new locks require the supplied keys; old powered checkpoints migrate without losing progress', () => {

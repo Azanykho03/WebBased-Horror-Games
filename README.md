@@ -1,4 +1,4 @@
-# Corazon: The Haunted House
+# Escape the Haunting
 
 A desktop and Android browser survival horror game built around the project's existing
 two-storey house, ghost, flashlight arm and supplied keys. TypeScript, Babylon.js and
@@ -84,17 +84,27 @@ The doors open, the player moves inside and turns toward a narrow viewing slot,
 then the doors close. E / Interact exits through the same animated sequence.
 Walking, jumping and unrelated interactions are blocked throughout the sequence;
 hidden look is limited and the camera stays at a dedicated internal anchor.
-Pause freezes animations. An unseen entry breaks direct perception while Corazon
-keeps investigating. If she witnesses entry, she can approach and search that cabinet.
+Pause freezes animations. Protection begins only at `HIDDEN`, after the doors
+finish closing, even if Celestina witnessed entry. She cannot see or catch a hidden
+player through the cabinet. Entry and exit remain vulnerable; leaving gives no
+extra invisibility. Movement, camera, gravity and controls recover after exit.
 
 All 17 house doorways use the supplied wooden door's separate leaf, handles and
 stationary frame. Unlocked doors start open, including the kitchen. E / Interact
-closes or reopens them. A swing pauses before colliding with the player or Corazon;
+closes or reopens them. A swing pauses before colliding with the player or Celestina;
 moving away lets it finish. Transition-time input is discarded. The bedroom and
-main entrance retain their key guards; the service door stays sealed.
+main entrance retain their key guards; the service door stays sealed. Celestina
+uses these same hinges during chase, investigation, search and patrol. She
+approaches from her side, stops outside the swing, opens a normal door once and
+continues after it finishes. She never unlocks mission doors or opens the final
+entrance; the bedroom becomes usable only after the player unlocks it.
 
-The kitchen introduces Corazon once per saved run. Walls block sight, footsteps
-attract her, and a hiding place only conceals an entry she did not witness.
+The kitchen introduces Celestina once per saved run. Walls block sight and footsteps
+attract her. After losing sight or a completed hide, she searches for 30 seconds
+on every difficulty. She remembers only the last visible player position, checks
+clear nearby points and rooms, briefly listens, and can open doors along the way.
+Seeing the player again immediately resumes chase; otherwise she returns to
+patrol. Pause freezes the search clock, and restart/capture clears search work.
 The recoverable tsinelas stuns for two seconds on Medium (2.8 on Easy, 1.5 on Hard),
 with immunity afterward.
 Escape is possible without a successful throw. Checkpoints preserve collected
@@ -118,7 +128,7 @@ items and put the enemy away from the player with a recovery window.
   restore walking/look and ordinary gravity if the player was already airborne.
   The supplied Slendrina GLBs were inspected as motion references only; they are
   neither loaded by the game nor included in its build. Their arm animation cannot
-  be applied to Corazon's unrigged body without changing that assembly.
+  be applied to Celestina's unrigged body without changing that assembly.
 - Player: `public/assets/models/player/arms/flashlight-arms/`; existing combined
   arm and flashlight model.
 - Interactive props: `public/assets/models/interactive/`; supplied wooden door,
@@ -148,7 +158,7 @@ items and put the enemy away from the player with a recovery window.
   on entry. `CreepyLittleGirl.mp3` joins ILI ILI and Mixkit during gameplay, and
   stops on capture, escape or menu return. `CreepyCurseSound.mp3` follows the
   existing ghost's distance, entering at 8 m, growing louder toward 2 m, and
-  fading out past 11 m even when Corazon is around a corner. The warning and
+  fading out past 11 m even when Celestina is around a corner. The warning and
   `peircing.wavJumpscare.mp3` use the Effects slider. The preloaded jumpscare starts
   in the shared face-reveal render tick for both the kitchen scene and captures,
   skips the quiet first 0.20 seconds, and stops at the end of the sequence.
@@ -159,7 +169,7 @@ items and put the enemy away from the player with a recovery window.
   the same context, and failed loads leave the original soundscape playable.
 - Horror director: bounded, room-aware events, recent-event memory, silence before
   whispers, weather, cloth/window movement, falling picture moulding, a flickering
-  CRT, moving shadows and brief Corazon afterimages that disappear under the light.
+  CRT, moving shadows and brief Celestina afterimages that disappear under the light.
   Shared ghost proximity controls sound, heartbeat and room dimming. Events never
   modify progression, navigation or the real ghost's position.
 - Accessibility: sound captions, clean dialogue, separate mixer levels, brightness,
@@ -184,22 +194,26 @@ Babylon.js 9.28.0 is Apache-2.0; its license is preserved with the vendor files.
 
 ## Validation
 
-The latest hiding and door checks are in [tests/hiding-door-validation.md](tests/hiding-door-validation.md).
+The current Celestina AI checks and testing limitations are in
+[tests/celestina-ai-validation.md](tests/celestina-ai-validation.md).
+Earlier cabinet animation checks are in [tests/hiding-door-validation.md](tests/hiding-door-validation.md);
+their older witnessed-capture expectation has been superseded by completed-hide protection.
 The validation build includes **Check cabinet cycles**, **Check touch cabinet cycles**,
-**Check all hinged doors**, **Check touch hinged doors**, and **Check Corazon cabinet search**. These are deliberate
+**Check all hinged doors**, **Check touch hinged doors**, **Check Celestina door navigation**,
+**Check Celestina cabinet search**, and **Check touch Celestina cabinet search**. These are deliberate
 fixture tests with position/progression setup; their interactions run through the
 actual game loop, input, camera, collision and AI. The full journeys still use normal
 movement and pickups. **Preview dining cabinet** and **Preview upstairs cabinet**
 provide manual visual review without adding debug controls to production.
 
 Open `http://127.0.0.1:5173/tests/corazon-review.html` during development to scrub
-the actual Corazon presentation at different camera directions and pitches,
+the actual Celestina presentation at different camera directions and pitches,
 including reduced-motion and gentle modes. `npm run build:validation` and
 `npm run preview:validation` expose the existing full desktop/touch journeys,
 plus six deliberate capture fixtures and the audio checks. These fixtures enter
 the real capture/game-over flow; they are separate from the ordinary journey.
 No validation UI or reference assets enter the production build. See
-[Corazon motion validation](tests/corazon-motion-validation.md) for reference
+[Celestina motion validation](tests/corazon-motion-validation.md) for reference
 observations and the latest verification record.
 
 The current audio, English dialogue, title and control-recovery acceptance record
@@ -262,7 +276,7 @@ to each recording's end to verify looping, checks sequential fades and independe
 music/master mute, then tests pause/resume, resets and disposal during a fade.
 See [tests/background-music-validation.md](tests/background-music-validation.md)
 for the results and the physical-device testing limit.
-**Check four Corazon audio integrations** measures real samples from the menu
+**Check four Celestina audio integrations** measures real samples from the menu
 pair and all three gameplay layers, crosses each new native loop boundary,
 checks proximity hysteresis and fade reversal, and verifies one-shot gating,
 gentle mode, sequence-end silence, suspension, mute and cleanup. The validation

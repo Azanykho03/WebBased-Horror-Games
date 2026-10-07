@@ -409,7 +409,7 @@ export class AudioSystem {
     if (!c || !this.active || c.state !== 'running') return;
     const a = frame.atmosphere, old = this.stateName; this.stateName = a.state;
     if (old !== a.state && a.state === 'CHASE') this.pulse = 0;
-    if (old !== a.state && a.state === 'CORAZON_DETECTED_PLAYER') this.effect('detect');
+    if (old !== a.state && a.state === 'CELESTINA_DETECTED_PLAYER') this.effect('detect');
     this.dialogue = Math.max(0, this.dialogue - dt);
     this.silence = a.silence; this.duckBackground(); this.syncAmbience(); this.syncRecordings(); this.updateProximity(frame);
     const listener = c.listener;
@@ -429,8 +429,8 @@ export class AudioSystem {
       set(this.wind, (.085 + frame.rainExposure * .07) * (.8 + Math.sin(c.currentTime * .16) * .2));
       set(this.rain, .07 + frame.rainExposure * .19); this.rainFilter.frequency.setTargetAtTime(650 + frame.rainExposure * 2100, c.currentTime, 1);
       set(this.roomtone, .1); set(this.layers.drone, ending ? .005 : over ? .025 : .012);
-      set(this.layers.tension, a.state === 'UNEASY' ? .025 : a.state === 'CORAZON_DETECTED_PLAYER' ? .065 : a.state === 'CORAZON_NEARBY' ? .035 : 0, 1.6);
-      set(this.layers.nearby, a.state === 'CORAZON_NEARBY' ? .015 : a.state === 'HIDING' ? .004 : 0, 2);
+      set(this.layers.tension, a.state === 'UNEASY' ? .025 : a.state === 'CELESTINA_DETECTED_PLAYER' ? .065 : a.state === 'CELESTINA_NEARBY' ? .035 : 0, 1.6);
+      set(this.layers.nearby, a.state === 'CELESTINA_NEARBY' ? .015 : a.state === 'HIDING' ? .004 : 0, 2);
       set(this.layers.chase, chase ? .027 : 0, chase ? .3 : 2.2); set(this.layers.ending, ending ? .027 : 0, 2);
       set(this.ghostBreath, frame.ghost && !ending && !over ? (.04 + .08 * a.proximity) * (.55 + .45 * Math.sin(c.currentTime * 1.1) ** 2) : 0);
       this.ghostFilter.frequency.setTargetAtTime(frame.ghostOccluded ? 550 : 2600, c.currentTime, .25);
@@ -455,7 +455,7 @@ export class AudioSystem {
     if (this.pulse <= 0) {
       this.pulse = chase ? .43 : 8 + Math.random() * 10;
       if (chase) { this.note({ frequency: this.phrase++ % 4 === 0 ? 73.4 : 49, endFrequency: 38, duration: .28, volume: .15, bus: 'music' }); this.note({ noise: true, filter: 1500, duration: .08, volume: .07, bus: 'music' }); }
-      else if (a.state === 'UNEASY' || a.state === 'CORAZON_NEARBY') this.note({ buffer: this.reverse, duration: 2, volume: .055, bus: 'music' });
+      else if (a.state === 'UNEASY' || a.state === 'CELESTINA_NEARBY') this.note({ buffer: this.reverse, duration: 2, volume: .055, bus: 'music' });
     }
     if (this.ghostStep <= 0) {
       this.ghostStep = chase ? .55 : 1.3 + Math.random() * 1.4;

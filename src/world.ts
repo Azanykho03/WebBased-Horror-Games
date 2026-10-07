@@ -12,6 +12,7 @@ import { AbandonedInterior } from './decay.ts';
 import { PlayerCollision } from './player-physics.ts';
 import { CorazonPresentation } from './corazon.ts';
 import { CABINETS, InteractiveFixtures } from './fixtures.ts';
+import { GhostNavigation } from './ghost-navigation.ts';
 
 export const B = (window as unknown as { BABYLON: typeof Babylon }).BABYLON;
 export const vector = (p: Vec3) => B.Vector3.FromArray(p);
@@ -32,6 +33,7 @@ export class World {
   key!: Babylon.TransformNode;
   masterKey!: Babylon.TransformNode;
   fixtures3d!: InteractiveFixtures;
+  ghostNavigation?: GhostNavigation;
   private fixtures: { definition: HouseManifest['lights'][number]; light: Babylon.PointLight }[] = [];
   private dynamic: Collider[] = [];
   private shadow: Babylon.ShadowGenerator;
@@ -201,9 +203,14 @@ export class World {
   }
   setFixtureColliders(colliders: Collider[]): void {
     this.dynamic = colliders; this.nav.setDynamicColliders(colliders); this.collision.setDynamicColliders(colliders);
+    if (this.fixtures3d) {
+      this.ghostNavigation ??= new GhostNavigation(this.data, this.nav, this.fixtures3d);
+      this.ghostNavigation.sync(colliders);
+    }
   }
   syncProgress(p: Progress): void {
     this.fixtures3d.syncProgress(p);
+    this.ghostNavigation?.sync(this.dynamic);
     this.key.setEnabled(p.cabinet && !p.collected.includes('exit-key'));
     this.masterKey.setEnabled(!p.collected.includes('master-key'));
   }

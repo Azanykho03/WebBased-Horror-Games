@@ -13,12 +13,12 @@ export const ASSETS = {
   hidingCabinet: 'models/interactive/cabinetForHiding.glb',
   face: 'models/enemies/ghost/source/ghost-face-reference.png',
 };
-export const GAME_TITLE = 'Corazon: The Haunted House';
+export const GAME_TITLE = 'Escape the Haunting';
 // Camera-relative origin for the uploaded rig, after its display scale is undone.
 export const VIEWMODEL = { position: [.13, -1.9, -.02] as const };
 // Existing F02 coffee table: preserved boards top out at approximately .47 m.
 export const FLASHLIGHT_PICKUP = { position: [5.9, .515, -3.28] as [number, number, number], rotation: [.053, -.3, 0] as [number, number, number] };
-export const GHOST_PROFILE = { name: 'Corazon', face: ASSETS.face, model: ASSETS.ghost };
+export const GHOST_PROFILE = { name: 'Celestina', face: ASSETS.face, model: ASSETS.ghost };
 export const MUSIC_AUDIO = {
   menu: 'audio/MELANCHOLIA Music Box Sad, creepy song.mp3',
   game: 'audio/ILI ILI Tulog Anay Scary Version Music Box Cover.mp3',
@@ -72,4 +72,4 @@ export const HOTSPOTS: Hotspot[] = [
   { id: 'tsinelas', label: 'Pick up the tsinelas', position: [-3.2, .12, -18.8], room: 'F05', kind: 'pickup', radius: .3 },
 ];
 
-export const WARNING = 'Do not enter. The front door is locked. Find the fuse in the kitchen. Restore the breaker upstairs. The study holds the master bedroom key. Return our locket, letter, and music box to the glass cabinet. The final key opens the main entrance. Break her line of sight before hiding in the dining or upstairs cabinet. If she sees you enter, she knows where to search.';
+export const WARNING = 'Do not enter. The front door is locked. Find the fuse in the kitchen. Restore the breaker upstairs. The study holds the master bedroom key. Return our locket, letter, and music box to the glass cabinet. The final key opens the main entrance. Break her line of sight before hiding in the dining or upstairs cabinet. You are concealed only after the cabinet closes. Stay hidden while she searches the nearby rooms.';

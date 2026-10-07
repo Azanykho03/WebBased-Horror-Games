@@ -45,7 +45,7 @@ export class HauntedEnvironment {
     const dust = new B.StandardMaterial('dust-motes', world.scene); dust.disableLighting = true; dust.emissiveColor.set(.46, .43, .32); dust.alpha = .23;
     this.dust.material = dust; this.dust.isPickable = false; this.dust.alwaysSelectAsActiveMesh = true;
     this.dust.thinInstanceSetBuffer('matrix', this.dustMatrices, 16, false);
-    this.apparition = world.ghost.clone('corazon-afterimage', null, false);
+    this.apparition = world.ghost.clone('celestina-afterimage', null, false);
     if (this.apparition) {
       // The real ghost now uses quaternions; this independent afterimage still
       // uses its original Euler look-at animation.

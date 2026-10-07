@@ -16,7 +16,7 @@ interface Host {
 export function attachCorazonAudit(parent: Element, host: Host): (dt: number) => void {
   const button = document.createElement('button'); button.textContent = 'Check capture angles';
   const preview = document.createElement('button'); preview.textContent = 'Preview 3D jumpscare';
-  const output = document.createElement('pre'); output.setAttribute('aria-label', 'Corazon motion validation');
+  const output = document.createElement('pre'); output.setAttribute('aria-label', 'Celestina motion validation');
   parent.append(button, preview, output);
   const cases = [[0, 0], [Math.PI / 2, .7], [Math.PI, 0], [-Math.PI / 2, -.7], [Math.PI, 1.35], [Math.PI, -1.35]];
   let index = -1, elapsed = 0, starts = 0, checkedReveal = false, pausedAt = -1, pauseTime = 0, didPause = false;
