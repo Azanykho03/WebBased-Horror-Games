@@ -11,6 +11,7 @@ import type { Atmosphere } from './horror.ts';
 import { AbandonedInterior } from './decay.ts';
 import { PlayerCollision } from './player-physics.ts';
 import { CorazonPresentation } from './corazon.ts';
+import { CABINETS, InteractiveFixtures } from './fixtures.ts';
 
 export const B = (window as unknown as { BABYLON: typeof Babylon }).BABYLON;
 export const vector = (p: Vec3) => B.Vector3.FromArray(p);
@@ -29,10 +30,10 @@ export class World {
   arms!: Babylon.TransformNode;
   viewmodel!: FlashlightViewmodel;
   key!: Babylon.TransformNode;
+  masterKey!: Babylon.TransformNode;
+  fixtures3d!: InteractiveFixtures;
   private fixtures: { definition: HouseManifest['lights'][number]; light: Babylon.PointLight }[] = [];
-  private gates = new Map<string, { mesh: Babylon.Mesh; collider: Collider }>();
   private dynamic: Collider[] = [];
-  private gateState = '';
   private shadow: Babylon.ShadowGenerator;
   private shadowQuality = '';
   private viewmodelFill?: Babylon.PointLight;
@@ -70,10 +71,34 @@ export class World {
     if (!response.ok) throw new Error(`House manifest could not load (${response.status}).`);
     this.data = await response.json() as HouseManifest;
     if (this.data.version !== 1 || !Array.isArray(this.data.colliders) || this.data.rooms.length !== 17) throw new Error('The house manifest is incompatible.');
+    const replacements = new Set(CABINETS.map(c => c.replaces as string).filter(Boolean));
+    for (const p of this.data.props) if (p.kind === 'open-door') replacements.add(p.id);
+    const removedFurniture = this.data.colliders.filter(c => replacements.has(c.id));
+    this.data.colliders = this.data.colliders.filter(c => !replacements.has(c.id));
     this.nav = createNavigation(this.data);
     report('Opening the old house', 20);
     const house = await this.import(ASSETS.house);
-    this.meshes = house.meshes.filter(m => m.getTotalVertices() > 0);
+    this.meshes = house.meshes.filter(m => m.getTotalVertices() > 0 && ![...replacements].some(id => m.name.startsWith(id)));
+    for (const mesh of house.meshes) if ([...replacements].some(id => mesh.name.startsWith(id))) mesh.setEnabled(false);
+    // House furniture is batched by room/material. Remove only the triangles
+    // contained in the replaced wardrobe's authored bounds, not the room mesh.
+    for (const mesh of this.meshes) for (const c of removedFurniture) {
+      if (!c.center || !mesh.name.startsWith(`${c.room}__`)) continue;
+      const positions = mesh.getVerticesData(B.VertexBuffer.PositionKind), indices = mesh.getIndices();
+      if (!positions || !indices) continue;
+      const keep: number[] = [];
+      for (let i = 0; i < indices.length; i += 3) {
+        const triangle = [indices[i], indices[i + 1], indices[i + 2]];
+        const inside = triangle.every(index => {
+          const x = positions[index * 3] - c.center![0], z = positions[index * 3 + 2] - c.center![2];
+          return Math.abs(x * Math.cos(c.yaw) - z * Math.sin(c.yaw)) < c.size[0] / 2 + .08
+            && Math.abs(x * Math.sin(c.yaw) + z * Math.cos(c.yaw)) < c.size[2] / 2 + .08
+            && Math.abs(positions[index * 3 + 1] - c.center![1]) < c.size[1] / 2 + .08;
+        });
+        if (!inside) keep.push(...triangle);
+      }
+      if (mesh instanceof B.Mesh) mesh.setIndices(keep);
+    }
     this.standardMaterials(this.meshes, true);
     for (const mesh of this.meshes) {
       mesh.freezeWorldMatrix(); mesh.receiveShadows = true;
@@ -85,15 +110,18 @@ export class World {
     report('Preparing the rooms and lights', 55);
     for (const definition of this.data.lights) this.addLight(definition);
     for (const [i, w] of this.data.windows.entries()) this.addLight({ id: `window-${i}`, room: w.room, position: [w.position[0], w.position[1] + w.height * .6, w.position[2]], intensity: .58, range: 4.5, color: [.49, .63, .71], period: 18, phase: i, electric: false });
-    this.createGate('front', 'outside-front--F01');
-    this.createGate('exit', 'F08--outside-escape');
-    this.createGate('bedroom', 'U00--U06');
-    report(`Loading ${GHOST_PROFILE.name}, your flashlight, and the red key`, 65);
-    const [ghost, rig, flashlight, key] = await Promise.all([
+    this.fixtures3d = new InteractiveFixtures(this); await this.fixtures3d.load();
+    const interactiveMeshes = [...this.fixtures3d.cabinets.flatMap(c => c.root.getChildMeshes()), ...this.fixtures3d.doors.flatMap(d => d.root.getChildMeshes())];
+    for (const mesh of interactiveMeshes) { this.shadow.addShadowCaster(mesh); mesh.receiveShadows = true; }
+    this.meshes.push(...interactiveMeshes);
+    for (const f of this.fixtures) f.light.includedOnlyMeshes.push(...interactiveMeshes.filter(m => m.name.startsWith(f.definition.room)));
+    report(`Loading ${GHOST_PROFILE.name}, your flashlight, and the keys`, 65);
+    const [ghost, rig, flashlight, key, masterKey] = await Promise.all([
       this.model(GHOST_PROFILE.model, 'ghost'), this.import(ASSETS.arms),
       this.model(ASSETS.flashlight, 'held-flashlight', true), this.model(ASSETS.key, 'exit-key'),
+      this.model(ASSETS.masterKey, 'master-key'),
     ]);
-    this.ghost = ghost; this.key = key;
+    this.ghost = ghost; this.key = key; this.masterKey = masterKey;
     this.corazon = new CorazonPresentation(this.scene, this.camera, ghost);
     this.viewmodel = new FlashlightViewmodel(this.scene, this.camera, rig, flashlight);
     this.arms = this.viewmodel.root;
@@ -109,7 +137,8 @@ export class World {
     this.flashlight.excludedMeshes = armMeshes;
     // Only the foreground arm clears depth; it cannot clip into a nearby wall.
     this.scene.setRenderingAutoClearDepthStencil(1, true, true, true);
-    this.key.position.set(.58, 1.38, -13.5); this.key.scaling.setAll(1.6); this.key.setEnabled(false);
+    this.normalizeItem(this.key, .24); this.key.position.set(.58, 1.38, -13.5); this.key.setEnabled(false);
+    this.normalizeItem(this.masterKey, .25); this.masterKey.position.set(-4.3, 3.99, -7.17);
     this.environment = new HauntedEnvironment(this);
     report('Waiting for textures', 94);
     // Fixtures start disabled. Compiling every room light at once can exceed
@@ -164,30 +193,19 @@ export class World {
     light.includedOnlyMeshes = this.meshes.filter(m => m.name.startsWith(definition.room) || definition.room === 'U00' && m.name.startsWith('F03') || m.name === 'F00-ceiling__plaster');
     this.fixtures.push({ definition, light });
   }
-  private createGate(id: string, doorId: string): void {
-    const d = this.data.doors.find(door => door.id === doorId);
-    if (!d) throw new Error(`Missing existing doorway ${doorId}.`);
-    const size: Vec3 = d.axis === 'x' ? [d.width, d.height, .10] : [.10, d.height, d.width];
-    const center: Vec3 = [d.position[0], d.position[1] + d.height / 2, d.position[2]];
-    const mesh = B.MeshBuilder.CreateBox(`latched-${id}`, { width: size[0], height: size[1], depth: size[2] }, this.scene);
-    mesh.position.copyFromFloats(...center);
-    mesh.material = this.scene.materials.find(m => m.name === (id === 'exit' ? 'damp-game' : 'wood-game')) ?? null;
-    mesh.receiveShadows = true;
-    this.shadow.addShadowCaster(mesh);
-    this.gates.set(id, { mesh, collider: { id: `gate-${id}`, room: d.source, center, size, yaw: 0 } });
+  private normalizeItem(root: Babylon.TransformNode, length: number): void {
+    const bounds = root.getHierarchyBoundingVectors(true), center = bounds.min.add(bounds.max).scale(.5);
+    const size = bounds.max.subtract(bounds.min), scale = length / Math.max(size.x, size.y, size.z);
+    for (const child of root.getChildren()) if (child instanceof B.TransformNode) child.position.subtractInPlace(center);
+    root.scaling.setAll(scale);
+  }
+  setFixtureColliders(colliders: Collider[]): void {
+    this.dynamic = colliders; this.nav.setDynamicColliders(colliders); this.collision.setDynamicColliders(colliders);
   }
   syncProgress(p: Progress): void {
-    const state = `${p.power}:${p.exitUnlocked}`;
-    if (this.gateState !== state) {
-      this.gateState = state; this.dynamic = [];
-      for (const [id, gate] of this.gates) {
-        const closed = id === 'front' || id === 'exit' && !p.exitUnlocked || id === 'bedroom' && !p.power;
-        gate.mesh.setEnabled(closed); if (closed) this.dynamic.push(gate.collider);
-      }
-      this.nav.setDynamicColliders(this.dynamic);
-      this.collision.setDynamicColliders(this.dynamic);
-    }
+    this.fixtures3d.syncProgress(p);
     this.key.setEnabled(p.cabinet && !p.collected.includes('exit-key'));
+    this.masterKey.setEnabled(!p.collected.includes('master-key'));
   }
   get colliders(): Collider[] { return this.data.colliders.concat(this.dynamic); }
   clearSight(a: Vec3, b: Vec3): boolean { const hit = worldHit(a, b, this.colliders); return hit === null || hit > .985; }
@@ -240,8 +258,6 @@ export class World {
       const dim = d.electric ? (1 - this.atmosphere.proximity * .18) * (1 - (e?.affectedRoom === d.room ? e.lightDip : 0)) : 1 + (e?.lightning ?? 0) * 2;
       f.light.intensity = d.intensity * power * flicker * dim * settings.brightness * (d.electric ? .82 : 1);
     }
-    const gate = this.gates.get('front');
-    if (gate) gate.mesh.rotation.y = settings.reducedMotion ? 0 : e?.doorShudder ?? 0;
   }
   weather(p: Position): { rainExposure: number; window: Vec3 | null } {
     const room = this.room(p).id, windows = this.data.windows.filter(w => w.room === room);

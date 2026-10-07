@@ -5,6 +5,8 @@ import { detectTouch } from './touch.ts';
 import { PlayerPhysics } from './player-physics.ts';
 import { difficultySettings } from './difficulty.ts';
 import { haltPlayerCamera, orientPlayerCamera } from './player-camera.ts';
+import type { HidingState } from './hiding.ts';
+import { angleDifference } from './corazon-motion.ts';
 
 export class InputSystem {
   readonly keys = new Set<string>();
@@ -90,6 +92,11 @@ export class Player {
   stamina = 6;
   flashlight = false;
   hidden = false;
+  hidingState: HidingState = 'NORMAL';
+  hidingAt: Position | null = null;
+  hideYaw = 0;
+  hidingEye: Vec3 | null = null;
+  get movementLocked(): boolean { return this.hidingState !== 'NORMAL'; }
   hideExposed = false;
   moving = false;
   sprinting = false;
@@ -102,10 +109,23 @@ export class Player {
     this.position = { ...position }; this.yaw = 0; this.pitch = 0;
     this.stamina = 6; this.recovery = 0; this.exhausted = false;
     this.hidden = this.hideExposed = this.moving = this.sprinting = false;
+    this.hidingState = 'NORMAL'; this.hidingAt = null; this.hidingEye = null;
     this.flashlight = false; this.step = 0; this.bob = 0;
     this.physics.reset();
   }
   update(dt: number, input: InputSystem, world: World, progress: Progress, settings: Settings, noise: (p: Position, radius: number) => void, footstep: () => void): void {
+    if (this.movementLocked) {
+      const [dx, dy] = input.look();
+      if (this.hidingState === 'HIDDEN') {
+        const sensitivity = input.touchMode ? settings.touchSensitivity : settings.sensitivity;
+        const turn = dx * .0022 * sensitivity + (Number(input.keys.has('ArrowRight')) - Number(input.keys.has('ArrowLeft'))) * dt;
+        this.yaw = this.hideYaw + Math.max(-.42, Math.min(.42, angleDifference(this.yaw + turn, this.hideYaw)));
+        this.pitch = Math.max(-.22, Math.min(.22, this.pitch - dy * .0022 * sensitivity));
+      }
+      input.consume('Space'); input.consume('KeyF'); this.halt(world); this.camera(world, settings);
+      world.viewmodel.update(dt, { owned: progress.collected.includes('flashlight'), hidden: true, distance: 0, moving: false, sprinting: false, reducedMotion: settings.reducedMotion });
+      return;
+    }
     const [dx, dy] = input.look();
     const sensitivity = input.touchMode ? settings.touchSensitivity : settings.sensitivity;
     this.yaw += dx * .0022 * sensitivity;
@@ -154,9 +174,10 @@ export class Player {
   camera(world: World, settings: Settings): void {
     this.direction.set(Math.sin(this.yaw) * Math.cos(this.pitch), Math.sin(this.pitch), -Math.cos(this.yaw) * Math.cos(this.pitch));
     world.camera.position.set(this.position.x, this.position.y + world.data.eyeHeight + (settings.reducedMotion || !this.moving || !this.grounded ? 0 : Math.sin(this.bob) * .012), this.position.z);
+    if (this.hidden && this.hidingEye) world.camera.position.copyFromFloats(...this.hidingEye);
     orientPlayerCamera(world.camera, this.yaw, this.pitch);
   }
-  get eye(): Vec3 { return [this.position.x, this.position.y + 1.65, this.position.z]; }
+  get eye(): Vec3 { return this.hidden && this.hidingEye ? [...this.hidingEye] : [this.position.x, this.position.y + 1.65, this.position.z]; }
   halt(world: World): void {
     // A presentation never translates the body or advances gravity. Discard
     // stale jump velocity; an airborne player resumes ordinary gravity afterward.

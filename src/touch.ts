@@ -100,7 +100,7 @@ export class TouchControls {
     const [side, forward] = joystickVector(x - this.origin.x, y - this.origin.y, this.origin.radius);
     this.input.setMove(side, forward); this.nub.style.transform = `translate(${side * this.origin.radius}px,${-forward * this.origin.radius}px)`;
   }
-  sync(playing: boolean, canHide: boolean, hidden: boolean, canThrow: boolean, hasLight: boolean, grounded = true): void {
+  sync(playing: boolean, canHide: boolean, hidden: boolean, canThrow: boolean, hasLight: boolean, grounded = true, movementLocked = false): void {
     this.element.hidden = !playing || !this.input.touchMode;
     this.element.classList.toggle('portrait-dismissed', this.portraitDismissed);
     const hide = this.element.querySelector<HTMLButtonElement>('[data-touch="Hide"]')!;
@@ -108,7 +108,9 @@ export class TouchControls {
     this.element.querySelector<HTMLButtonElement>('[data-touch="Throw"]')!.disabled = !canThrow;
     this.element.querySelector<HTMLButtonElement>('[data-touch="KeyF"]')!.disabled = !hasLight || hidden;
     const jump = this.element.querySelector<HTMLButtonElement>('[data-touch="Space"]')!;
-    jump.disabled = hidden;
+    jump.disabled = movementLocked || hidden;
+    this.element.querySelector<HTMLButtonElement>('[data-touch="KeyE"]')!.disabled = movementLocked && !hidden;
+    this.element.querySelector<HTMLButtonElement>('[data-touch="Sprint"]')!.disabled = movementLocked;
     jump.dataset.grounded = String(grounded);
     this.element.querySelector('[data-touch="Sprint"]')!.setAttribute('aria-pressed', String(this.input.touchSprint));
   }

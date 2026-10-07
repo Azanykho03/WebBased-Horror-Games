@@ -20,11 +20,13 @@ import type { Difficulty } from './difficulty.ts';
 import { MobileDisplay } from './mobile-display.ts';
 import { CORAZON_SCARE, scareFrame } from './corazon-motion.ts';
 import type { ScareKind } from './corazon-motion.ts';
+import { HidingSystem } from './hiding.ts';
 
 export class Game {
   private engine!: Babylon.Engine;
   private world!: World;
   private interactions!: InteractionSystem;
+  private hiding!: HidingSystem;
   private player = new Player();
   private ghost = new GhostStateMachine();
   private storage = new SaveSystem();
@@ -114,6 +116,7 @@ export class Game {
       this.world = new World(this.engine);
       await this.world.load((label, percent) => this.ui.loading(label, percent));
       this.interactions = new InteractionSystem(this.world);
+      this.hiding = new HidingSystem(this.player, this.input, this.world);
       this.horror = new HorrorDirector(this.world.data);
       this.loaded = true;
       this.world.syncProgress(this.progress);
@@ -126,7 +129,7 @@ export class Game {
       if (import.meta.env.MODE === 'validation') {
         const { attachJourney } = await import('../tests/browser-journey.ts');
         this.validationStep = attachJourney({
-          world: this.world, player: this.player, ghost: this.ghost, input: this.input, interactions: this.interactions,
+          world: this.world, player: this.player, ghost: this.ghost, input: this.input, interactions: this.interactions, hiding: this.hiding,
           progress: () => this.progress, screen: () => this.screen, revealing: () => this.revealTime >= 0,
           audioState: () => this.audio.state,
           audioDiagnostics: () => this.audio.diagnostics,
@@ -183,6 +186,7 @@ export class Game {
     if (action === 'menu') {
       if (!['menu', 'difficulty', 'won', 'caught'].includes(this.screen)) this.save();
       this.world.corazon.finish(); this.ui.scareFade(0); this.ui.cinematic(false);
+      this.hiding.reset();
       this.show('menu');
     }
     if (action === 'journal') this.show('journal');
@@ -200,7 +204,8 @@ export class Game {
     this.introPlayed = progress.collected.length > 0; this.introTime = 0; this.soundSightTick = this.weatherTick = 0;
     this.horror.reset(); this.world.environment.reset(); this.world.atmosphere = calmAtmosphere();
     this.progress.battery = Math.max(this.progress.battery, difficultySettings[progress.difficulty].restoredBattery);
-    this.player.reset(CHECKPOINTS[this.progress.checkpoint]);
+    this.hiding.reset(); this.player.reset(CHECKPOINTS[this.progress.checkpoint]);
+    this.world.fixtures3d.reset(this.progress);
     this.world.viewmodel.reset(has(this.progress, 'flashlight'));
     this.player.flashlight = has(this.progress, 'flashlight');
     this.ghost.reset(this.progress.kitchenSeen, this.player.position);
@@ -234,15 +239,27 @@ export class Game {
     this.subtitleCooldown = 8;
   }
   private use(): void {
-    if (this.player.hidden) { this.player.hidden = this.player.hideExposed = false; this.ui.notice('You step out.'); return; }
+    if (this.player.hidingState === 'HIDDEN') { if (this.hiding.exit()) this.audio.effect('latch'); return; }
+    if (this.player.movementLocked) return;
     const target = this.interactions.target;
     if (!target) return;
     if (target.kind === 'hide') {
-      if (!this.player.grounded) return;
-      this.player.hideExposed = this.ghost.sees(this.player, this.world);
-      this.player.hidden = true; this.player.flashlight = false;
+      const cabinet = this.world.fixtures3d.cabinets.find(c => c.id === target.id)!;
+      if (!this.hiding.enter(cabinet, this.ghost)) { this.ui.notice('Stand on the clear floor in front of the cabinet.'); return; }
       this.audio.effect('latch', target.position);
       this.ui.notice(this.player.hideExposed ? 'She saw you enter. This hiding place will not protect you.' : this.input.touchMode ? 'Stay quiet. Tap Leave to step out.' : 'Stay quiet. E to leave.', 5); return;
+    }
+    if (target.kind === 'door') {
+      const door = this.world.fixtures3d.doors.find(d => d.id === target.id)!;
+      if (door.hinge.busy) return;
+      if (door.locked) {
+        const result = interact(this.progress, target.id); this.ui.notice(result.message);
+        this.world.syncProgress(this.progress); this.audio.interaction(target.id, target.kind, result.changed, target.position);
+        if (!result.changed) return;
+        this.save(); if (target.id === 'front-door') this.speakGhost('exit', true);
+      }
+      if (door.hinge.request(door.hinge.state === 'CLOSED')) this.audio.effect('latch', target.position);
+      return;
     }
     if (target.id === 'tsinelas') { this.interactions.takeSlipper(this.progress); this.ui.notice(this.input.touchMode ? 'Tsinelas ready. Tap Throw.' : 'Tsinelas ready. Left click to throw.'); this.audio.interaction(target.id, target.kind, true, target.position); this.save(); return; }
     const before = mission(this.progress);
@@ -341,6 +358,14 @@ export class Game {
       this.ui.tick(dt, this.settings.subtitles);
       if (this.input.consume('Tab')) { this.show('journal'); this.world.scene.render(); return; }
       const wasLit = this.player.flashlight;
+      // Input belongs to the state in which it arrived, even when this frame
+      // completes an animation. Do not replay a transition-time press afterward.
+      const transitioningPlayer = this.player.movementLocked && !this.player.hidden;
+      const transitioningDoors = new Set(this.world.fixtures3d.doors.filter(d => d.hinge.busy).map(d => d.id));
+      this.world.fixtures3d.update(dt, [this.player.position, ...(this.ghost.state === 'Dormant' ? [] : [this.ghost.position])]);
+      const exposed = this.player.hideExposed;
+      this.hiding.update(dt, this.ghost);
+      if (!exposed && this.player.hideExposed) this.ui.notice('She saw where you hid. Be ready to leave.', 5);
       this.player.update(dt, this.input, this.world, this.progress, this.settings, (p, radius) => this.ghost.hear(p, radius), () => {
         const p = this.player.position; this.audio.footstep(surfaceForRoom(this.world.room(p).id, p), this.player.sprinting, [p.x, p.y + .12, p.z]);
       });
@@ -349,7 +374,8 @@ export class Game {
       if (!revealing) {
         this.interactions.focus(this.player, this.progress);
         const hide = this.input.consume('Hide');
-        if (this.input.consume('KeyE') || hide && (this.player.hidden || this.interactions.target?.kind === 'hide')) this.use();
+        const use = this.input.consume('KeyE') || hide && (this.player.hidden || this.interactions.target?.kind === 'hide');
+        if (use && !transitioningPlayer && (!this.interactions.target || !transitioningDoors.has(this.interactions.target.id))) this.use();
         if (this.input.consume('Throw') && this.interactions.throw(this.player)) { this.ghost.hear(this.player.position, 8); this.audio.effect('throw'); }
         const before = { ...this.ghost.position };
         const caught = this.ghost.update(dt, this.world, this.player, this.progress, event => this.speakGhost(event));
@@ -367,14 +393,14 @@ export class Game {
       if (this.ghost.state === 'Chase' && this.player.sprinting && this.sprintVoiceCooldown === 0 && this.subtitleCooldown === 0) {
         this.speakGhost('sprint'); this.sprintVoiceCooldown = 18;
       }
-      if (this.screen === 'playing' && !this.world.corazon.active && this.player.position.level === 0 && this.player.position.x < -1.9 && this.player.position.z > -14.3 && this.player.position.z < -12.7 && canEscape(this.progress)) {
+      if (this.screen === 'playing' && !this.world.corazon.active && !this.player.movementLocked && this.player.position.level === 0 && Math.abs(this.player.position.x) < .65 && this.player.position.z > .65 && canEscape(this.progress) && this.world.fixtures3d.doors.find(d => d.id === 'front-door')?.hinge.state === 'OPEN') {
         this.storage.clear(); this.show('won');
       }
       this.worldTick += dt; this.autosave += dt;
       if (this.worldTick >= .12) {
         this.worldTick = 0;
         this.world.update(this.player.position, this.player.direction, this.renderSettings, this.progress, has(this.progress, 'flashlight') && this.player.flashlight, this.progress.elapsed);
-        const prompt = revealing ? '' : this.player.hidden ? 'Leave hiding place' : this.interactions.target?.label ?? '';
+        const prompt = revealing ? '' : this.player.hidden ? 'Exit' : this.player.movementLocked ? '' : this.interactions.target?.label ?? '';
         this.ui.update(this.progress, this.player.stamina, this.world.room(this.player.position).name, prompt, this.ghost.state, this.player.hidden, this.interactions.slipperInHand);
         this.syncTouch();
       }
@@ -419,6 +445,9 @@ export class Game {
     this.canvas.setAttribute('aria-label', touch ? 'Haunted house game. Left joystick to move, right drag to look, on-screen buttons to interact.' : 'Haunted house game. WASD to move, mouse to look, Space to jump, E to interact.');
   }
   private applyResolution(): void { this.engine?.setHardwareScalingLevel(this.performanceProfile.scale(this.settings, this.input.touchMode, devicePixelRatio)); }
-  private syncTouch(): void { this.touch.sync(this.screen === 'playing' && !this.world?.corazon?.active, this.interactions?.target?.kind === 'hide' && this.player.grounded, this.player.hidden, this.interactions?.slipperInHand ?? false, has(this.progress, 'flashlight') && this.world.viewmodel.ready, this.player.grounded); }
+  private syncTouch(): void {
+    const locked = this.player.movementLocked;
+    this.touch.sync(this.screen === 'playing' && !this.world?.corazon?.active, !locked && this.interactions?.target?.kind === 'hide' && this.player.grounded, this.player.hidden, !locked && (this.interactions?.slipperInHand ?? false), !locked && has(this.progress, 'flashlight') && this.world.viewmodel.ready, !locked && this.player.grounded, locked);
+  }
   dispose(): void { this.abort.abort(); this.display.dispose(); this.ui.dispose(); this.input.dispose(); this.touch.dispose(); this.audio.dispose(); this.engine?.stopRenderLoop(); this.world?.dispose(); this.engine?.dispose(); }
 }

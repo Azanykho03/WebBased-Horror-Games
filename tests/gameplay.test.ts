@@ -15,7 +15,7 @@ const nav = createNavigation(data);
 const saved = (progress: ReturnType<typeof freshProgress>) => JSON.stringify({ version: 1, progress });
 const complete = () => {
   const p = freshProgress();
-  for (const id of ['flashlight', 'note', 'fuse', 'breaker', 'locket', 'letter', 'music-box', 'cabinet', 'exit-key', 'exit'] as const) assert(interact(p, id).changed, id);
+  for (const id of ['flashlight', 'note', 'fuse', 'breaker', 'master-key', 'bedroom-door', 'locket', 'letter', 'music-box', 'cabinet', 'exit-key', 'exit'] as const) assert(interact(p, id).changed, id);
   return p;
 };
 
@@ -26,14 +26,14 @@ test('five missions complete in order; duplicate pickups cannot advance progress
   assert.equal(interact(p, 'breaker').changed, false);
   interact(p, 'fuse'); interact(p, 'breaker'); assert.equal(mission(p), 'M03');
   interact(p, 'locket'); assert.equal(interact(p, 'locket').changed, false); assert.equal(keepsakeCount(p), 1);
-  interact(p, 'letter'); interact(p, 'music-box'); assert.equal(mission(p), 'M04');
+  interact(p, 'master-key'); interact(p, 'bedroom-door'); interact(p, 'letter'); interact(p, 'music-box'); assert.equal(mission(p), 'M04');
   interact(p, 'cabinet'); assert.equal(mission(p), 'M05');
   assert.equal(canEscape(p), false); interact(p, 'exit-key'); assert.equal(canEscape(p), false);
   interact(p, 'exit'); assert.equal(canEscape(p), true);
 });
 test('exit remains locked at every incomplete stage and the crossing rechecks prerequisites', () => {
   const p = freshProgress();
-  for (const id of ['flashlight', 'note', 'fuse', 'breaker', 'locket', 'letter', 'music-box', 'cabinet'] as const) {
+  for (const id of ['flashlight', 'note', 'fuse', 'breaker', 'master-key', 'bedroom-door', 'locket', 'letter', 'music-box', 'cabinet'] as const) {
     assert.equal(interact(p, 'exit').changed, false); assert.equal(canEscape(p), false); interact(p, id);
   }
   for (const id of ['flashlight', 'note', 'fuse', 'locket', 'letter', 'music-box', 'exit-key'] as const) {
@@ -105,7 +105,7 @@ test('ghost vision respects walls, its cone, floors, and witnessed hiding', () =
   assert.equal(ghost.sees(player, { nav, clearSight: () => false }), false);
   assert.equal(ghost.sees(player, { nav, clearSight: () => true }), true);
   player.hidden = true; assert.equal(ghost.sees(player, { nav, clearSight: () => true }), false);
-  player.hideExposed = true; assert.equal(ghost.sees(player, { nav, clearSight: () => true }), true);
+  player.hideExposed = true; assert.equal(ghost.sees(player, { nav, clearSight: () => true }), false);
   player.position.z = -2; assert.equal(ghost.sees(player, { nav, clearSight: () => true }), false);
 });
 test('enemy capture, reveal grace, two-second stun and immunity are deterministic', () => {

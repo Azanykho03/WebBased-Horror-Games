@@ -8,7 +8,7 @@ export interface GhostEnvironment {
   nav: Navigation;
   clearSight(a: Vec3, b: Vec3): boolean;
 }
-export interface GhostPlayer { position: Position; hidden: boolean; hideExposed: boolean }
+export interface GhostPlayer { position: Position; hidden: boolean; hideExposed: boolean; hidingAt?: Position | null }
 const distance = (a: Position, b: Position) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
 const patrol: Position[] = [
   { x: -3.2, y: 0, z: -18.2, level: 0 },
@@ -63,7 +63,7 @@ export class GhostStateMachine {
     this.yaw = Math.atan2(player.x - this.position.x, this.position.z - player.z);
   }
   sees(player: GhostPlayer, env: GhostEnvironment): boolean {
-    if (player.hidden && !player.hideExposed || Math.abs(this.position.y - player.position.y) > 1.9) return false;
+    if (player.hidden || Math.abs(this.position.y - player.position.y) > 1.9) return false;
     const dx = player.position.x - this.position.x, dz = player.position.z - this.position.z, d = Math.hypot(dx, dz);
     if (d > this.tuning.detectionRange) return false;
     if (d > 2 && (Math.sin(this.yaw) * dx - Math.cos(this.yaw) * dz) / d < .35) return false;
@@ -97,15 +97,19 @@ export class GhostStateMachine {
       return false;
     }
     if (this.grace > 0) { this.speed = 0; return false; }
-    const visible = this.sees(player, env);
+    // A witnessed entry supplies the cabinet's reachable entrance, never x-ray
+    // tracking of the concealed body. Patrol/search still runs for unseen entries.
+    const witnessed = player.hidden && player.hideExposed && player.hidingAt;
+    const quarry: GhostPlayer = witnessed ? { ...player, hidden: false, position: witnessed } : player;
+    const visible = witnessed ? env.clearSight([this.position.x, this.position.y + 1.45, this.position.z], [witnessed.x, witnessed.y + 1.45, witnessed.z]) : this.sees(player, env);
     if (visible) {
       this.noticeTime += dt;
       if (this.state !== 'Chase' && this.noticeTime < tuning.reactionTime) { this.speed = 0; return false; }
       if (this.state !== 'Chase' && this.voiceCooldown <= 0) { say('spotted'); this.voiceCooldown = 10; }
-      this.transition('Chase'); this.lastSeen = { ...player.position }; this.target = this.lastSeen; this.lostSight = 0;
+      this.transition('Chase'); this.lastSeen = { ...quarry.position }; this.target = this.lastSeen; this.lostSight = 0;
       // Low furniture never makes the player invisible or immune to a nearby ghost.
-      const inReach = Math.hypot(this.position.x - player.position.x, this.position.z - player.position.z) < tuning.attackRange
-        && Math.abs(this.position.y - player.position.y) < 1.78;
+      const inReach = Math.hypot(this.position.x - quarry.position.x, this.position.z - quarry.position.z) < tuning.attackRange
+        && Math.abs(this.position.y - quarry.position.y) < 1.78;
       this.attackTime = inReach ? this.attackTime + dt : 0;
       if (this.attackTime >= tuning.attackWindup) { this.speed = 0; this.transition('Catch'); return true; }
     } else {
@@ -125,7 +129,7 @@ export class GhostStateMachine {
       catch { this.route = []; if (this.state === 'Patrol') this.target = null; }
     }
     if (visible && this.state === 'Chase' && this.route.length <= 2) {
-      const end = this.route.at(-1), target = env.nav.point(player.position.x, player.position.z, player.position.level);
+      const end = this.route.at(-1), target = env.nav.point(quarry.position.x, quarry.position.z, quarry.position.level);
       // Track a moving player between repaths on a clear, walkable segment.
       // Keep the normal route around furniture, closed doors and stair turns.
       if (target && (!end || distance(end, target) > .15) && env.nav.segment(this.position, target)) this.route = [target];

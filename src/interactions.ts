@@ -17,7 +17,11 @@ export class InteractionSystem {
   slipperInHand = false;
   private world: World;
 
-  constructor(world: World) { this.world = world; this.build(); }
+  constructor(world: World) {
+    this.world = world;
+    this.hotspots.push(...world.fixtures3d.cabinets.map(c => c.hotspot), ...world.fixtures3d.doors.map(d => d.hotspot));
+    this.build();
+  }
   private build(): void {
     const scene = this.world.scene;
     const brass = new B.StandardMaterial('pickup-brass', scene); brass.diffuseColor.set(.6, .39, .13); brass.emissiveColor.set(.11, .06, .018);
@@ -25,7 +29,7 @@ export class InteractionSystem {
     const red = new B.StandardMaterial('pickup-red', scene); red.diffuseColor.set(.39, .15, .10);
     const metal = new B.StandardMaterial('pickup-metal', scene); metal.diffuseColor.set(.52, .57, .49);
     for (const h of this.hotspots) {
-      if (h.kind !== 'pickup' && h.kind !== 'note' || h.id === 'exit-key' || h.id === 'flashlight') continue;
+      if (h.kind !== 'pickup' && h.kind !== 'note' || h.id === 'exit-key' || h.id === 'master-key' || h.id === 'flashlight') continue;
       const root = new B.TransformNode(`item-${h.id}`, scene); root.position.copyFromFloats(...h.position);
       let mesh: Babylon.Mesh;
       if (h.id === 'locket') {
@@ -59,6 +63,7 @@ export class InteractionSystem {
     }
     // One physical flashlight is loaded once, then moved to the real hand socket.
     this.visuals.set('flashlight', this.world.viewmodel.pickupRoot);
+    this.visuals.set('master-key', this.world.masterKey);
     const hint = new B.StandardMaterial('focus-marker', scene); hint.emissiveColor.set(.78, .70, .43); hint.disableLighting = true;
     this.marker = B.MeshBuilder.CreateTorus('interaction-ring', { diameter: .055, thickness: .008, tessellation: 12 }, scene); this.marker.material = hint; this.marker.isPickable = false;
     for (const root of this.visuals.values()) for (const mesh of root.getChildMeshes()) mesh.isPickable = false;
@@ -78,14 +83,15 @@ export class InteractionSystem {
     if (h.id === 'tsinelas') return progress.kitchenSeen && !this.slipperInHand && !this.projectile;
     if (h.id === 'exit-key') return progress.cabinet && !has(progress, 'exit-key');
     if (h.id === 'cabinet') return !progress.cabinet;
-    if (h.id === 'bedroom-door') return !progress.power;
+    if (h.kind === 'door') return !this.world.fixtures3d.doors.find(d => d.id === h.id)?.hinge.busy;
+    if (h.kind === 'hide') return !this.world.fixtures3d.cabinets.find(c => c.id === h.id)?.hinge.busy;
     if (h.id === 'note') return true;
     if (h.kind === 'pickup') return !has(progress, h.id as ItemId);
     return true;
   }
   focus(player: Player, progress: Progress): Hotspot | null {
     this.target = null;
-    if (player.hidden) { this.marker.setEnabled(false); return null; }
+    if (player.hidden || player.movementLocked) { this.marker.setEnabled(false); return null; }
     const eye = player.eye, dir = player.direction.asArray() as Vec3;
     let best = Infinity;
     for (const h of this.hotspots) {
@@ -95,7 +101,11 @@ export class InteractionSystem {
       const along = delta.reduce((sum, v, i) => sum + v * dir[i], 0);
       if (along < 0) continue;
       const offAxis = Math.sqrt(Math.max(0, distance * distance - along * along));
-      if (offAxis > h.radius || !this.world.clearSight(eye, h.position)) continue;
+      const blockers = this.world.colliders.filter(c => c.id !== `leaf-${h.id}`);
+      const occlusion = worldHit(eye, h.position, blockers);
+      if (offAxis > h.radius || occlusion !== null && occlusion < .985) continue;
+      if (h.kind === 'door') h.label = this.world.fixtures3d.label(this.world.fixtures3d.doors.find(d => d.id === h.id)!);
+      if (h.kind === 'hide' && !player.grounded) continue;
       if (distance < best) { this.target = h; best = distance; }
     }
     this.marker.setEnabled(this.target !== null);
@@ -106,7 +116,7 @@ export class InteractionSystem {
     this.slipperInHand = true; if (!has(progress, 'tsinelas')) progress.collected.push('tsinelas'); this.sync(progress);
   }
   throw(player: Player): boolean {
-    if (!this.slipperInHand || this.projectile || player.hidden) return false;
+    if (!this.slipperInHand || this.projectile || player.hidden || player.movementLocked) return false;
     this.slipperInHand = false;
     const start: Vec3 = [...player.eye];
     const direction = player.direction.asArray() as Vec3;

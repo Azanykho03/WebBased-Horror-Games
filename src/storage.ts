@@ -4,7 +4,7 @@ import { bearingsFound, keepsakeCount, has } from './objectives.ts';
 import { isDifficulty } from './difficulty.ts';
 
 const SAVE_KEY = 'balay.checkpoint.v1', SETTINGS_KEY = 'balay.settings.v1';
-const itemIds: ItemId[] = ['flashlight', 'note', 'fuse', 'locket', 'letter', 'music-box', 'exit-key', 'battery-kitchen', 'battery-study', 'battery-guest', 'tsinelas'];
+const itemIds: ItemId[] = ['flashlight', 'note', 'fuse', 'locket', 'letter', 'music-box', 'exit-key', 'master-key', 'battery-kitchen', 'battery-study', 'battery-guest', 'tsinelas'];
 const record = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 const bounded = (value: unknown, min: number, max: number): value is number => typeof value === 'number' && Number.isFinite(value) && value >= min && value <= max;
 export function parseSave(raw: string | null): Progress | null {
@@ -13,17 +13,24 @@ export function parseSave(raw: string | null): Progress | null {
     const envelope: unknown = JSON.parse(raw);
     if (!record(envelope) || envelope.version !== 1 || !record(envelope.progress)) return null;
     const p = envelope.progress;
+    // Older saves already allowed the powered bedroom. Preserve that progress.
+    if (p.bedroomUnlocked === undefined) {
+      p.bedroomUnlocked = p.power === true;
+      if (p.bedroomUnlocked && Array.isArray(p.collected) && !p.collected.includes('master-key')) p.collected.push('master-key');
+    }
     // Existing v1 checkpoints predate difficulty selection.
     if (p.difficulty === undefined) p.difficulty = 'medium';
     if (!isDifficulty(p.difficulty)) return null;
     if (!Array.isArray(p.collected) || !p.collected.every(id => typeof id === 'string' && itemIds.includes(id as ItemId)) || new Set(p.collected).size !== p.collected.length) return null;
-    if (!['power', 'cabinet', 'exitUnlocked', 'kitchenSeen'].every(key => typeof p[key] === 'boolean')) return null;
+    if (!['power', 'cabinet', 'exitUnlocked', 'kitchenSeen', 'bedroomUnlocked'].every(key => typeof p[key] === 'boolean')) return null;
     if (!bounded(p.battery, 0, 100) || !bounded(p.elapsed, 0, 604800) || !['entrance', 'breaker', 'cabinet'].includes(String(p.checkpoint))) return null;
     const value = p as unknown as Progress;
     // Validate prerequisites as well as shape: a forged or stale save cannot bypass the exit.
     if ((value.power || has(value, 'fuse')) && !bearingsFound(value)) return null;
     if (value.power && !has(value, 'fuse')) return null;
     if (keepsakeCount(value) && !value.power) return null;
+    if (value.bedroomUnlocked && (!value.power || !has(value, 'master-key'))) return null;
+    if (has(value, 'music-box') && !value.bedroomUnlocked) return null;
     if (value.cabinet && (!value.power || keepsakeCount(value) !== 3)) return null;
     if (has(value, 'exit-key') && !value.cabinet) return null;
     if (value.exitUnlocked && !has(value, 'exit-key')) return null;

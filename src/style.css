@@ -53,3 +53,7 @@ html,body{padding:0;min-height:0}body{height:100dvh}#game{position:fixed;inset:0
 #ui[data-cinematic="true"] #hud,#ui[data-cinematic="true"] #toast{visibility:hidden}
 #ui:not([data-screen="playing"]) #face-overlay{display:none}
 #face-overlay.spatial.gentle{border:0}
+
+/* Keep the cabinet viewing slit clear while the player is concealed. */
+#ui #hud[data-hiding='true'] .interact{top:70%}
+#ui #hud[data-hiding='true'] .crosshair{display:none}

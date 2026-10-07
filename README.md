@@ -1,7 +1,7 @@
 # Corazon: The Haunted House
 
 A desktop and Android browser survival horror game built around the project's existing
-two-storey house, ghost, flashlight arm and red key. TypeScript, Babylon.js and
+two-storey house, ghost, flashlight arm and supplied keys. TypeScript, Babylon.js and
 Vite; no account, backend, API key or remote runtime assets are required.
 
 ## Run
@@ -69,13 +69,29 @@ camera and walking bob stops in the air.
 1. Take the flashlight and read the warning near the entrance.
 2. Find the fuse on the kitchen counter. Install it in the upstairs hallway
    breaker beside the first master bedroom.
-3. Recover the garage letter, guest bedroom locket and far master bedroom music box.
-4. Return them to the glass cabinet downstairs and take the red key.
-5. Unlock the service exit directly opposite the cabinet and cross its threshold.
+3. Take the master bedroom key from the study desk and unlock the far master bedroom.
+   Recover the garage letter, guest bedroom locket and far master bedroom music box.
+4. Return them to the glass cabinet downstairs and take the final key.
+5. Unlock and open the main entrance, then physically cross its threshold.
 
-The front latch stays jammed. This route uses the completed house blueprint's
-existing upstairs breaker and service exit. The earlier compact game plan used
-a utility room and front exit; those locations were adapted to the existing house.
+The service exit is jammed. The supplied `Lastkey.glb` now opens the main entrance.
+The existing fuse, breaker and keepsake mission order remains intact. Older powered
+checkpoints migrate to retain access to the master bedroom.
+
+There are two functional hiding cabinets: the dining room's east wall and the
+upstairs guest bedroom. Look at a nearby cabinet and press E or tap Interact.
+The doors open, the player moves inside and turns toward a narrow viewing slot,
+then the doors close. E / Interact exits through the same animated sequence.
+Walking, jumping and unrelated interactions are blocked throughout the sequence;
+hidden look is limited and the camera stays at a dedicated internal anchor.
+Pause freezes animations. An unseen entry breaks direct perception while Corazon
+keeps investigating. If she witnesses entry, she can approach and search that cabinet.
+
+All 17 house doorways use the supplied wooden door's separate leaf, handles and
+stationary frame. Unlocked doors start open, including the kitchen. E / Interact
+closes or reopens them. A swing pauses before colliding with the player or Corazon;
+moving away lets it finish. Transition-time input is discarded. The bedroom and
+main entrance retain their key guards; the service door stays sealed.
 
 The kitchen introduces Corazon once per saved run. Walls block sight, footsteps
 attract her, and a hiding place only conceals an entry she did not witness.
@@ -105,7 +121,9 @@ items and put the enemy away from the player with a recovery window.
   be applied to Corazon's unrigged body without changing that assembly.
 - Player: `public/assets/models/player/arms/flashlight-arms/`; existing combined
   arm and flashlight model.
-- Key: `public/assets/models/items/keys/`; existing red key.
+- Interactive props: `public/assets/models/interactive/`; supplied wooden door,
+  hiding cabinet, master bedroom key and final entrance key. The earlier red key
+  remains preserved in `public/assets/models/items/keys/`.
 - Navigation: `scripts/3d-generation/house-navigation.mjs`; reused by the game,
   environment viewer and validation, with dynamic gates and collision-query caching.
 - Audio: one Web Audio context with master, music, ambience, effects and voice
@@ -165,6 +183,14 @@ reference or personal voice recordings. No personal voice recordings are include
 Babylon.js 9.28.0 is Apache-2.0; its license is preserved with the vendor files.
 
 ## Validation
+
+The latest hiding and door checks are in [tests/hiding-door-validation.md](tests/hiding-door-validation.md).
+The validation build includes **Check cabinet cycles**, **Check touch cabinet cycles**,
+**Check all hinged doors**, **Check touch hinged doors**, and **Check Corazon cabinet search**. These are deliberate
+fixture tests with position/progression setup; their interactions run through the
+actual game loop, input, camera, collision and AI. The full journeys still use normal
+movement and pickups. **Preview dining cabinet** and **Preview upstairs cabinet**
+provide manual visual review without adding debug controls to production.
 
 Open `http://127.0.0.1:5173/tests/corazon-review.html` during development to scrub
 the actual Corazon presentation at different camera directions and pitches,

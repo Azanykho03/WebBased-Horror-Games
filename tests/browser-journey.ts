@@ -21,9 +21,15 @@ import { attachCorazonAudit } from './corazon-audit.ts';
 import { attachScareRecoveryAudit } from './scare-recovery-audit.ts';
 import type { Settings } from '../src/types.ts';
 import type { ScareKind } from '../src/corazon-motion.ts';
+import type { HidingSystem } from '../src/hiding.ts';
+import { attachHidingAudit } from './hiding-audit.ts';
+import { worldHit } from '../src/geometry.ts';
+import { attachHidingPerceptionAudit } from './hiding-perception-audit.ts';
+import { anchorPosition } from '../src/fixtures.ts';
 
 interface JourneyHost {
   world: World; player: Player; input: InputSystem; ghost: GhostStateMachine; interactions: InteractionSystem;
+  hiding: HidingSystem;
   progress(): Progress; screen(): Screen; revealing(): boolean; action(action: string): void;
   audioState(): string;
   audioDiagnostics(): AudioSystem['diagnostics'];
@@ -41,6 +47,8 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
   document.body.append(panel);
   const content = panel.querySelector('details > div')!;
   const jumpAudit = attachJumpAudit(content, host);
+  const hidingAudit = attachHidingAudit(content, host);
+  const hidingPerceptionAudit = attachHidingPerceptionAudit(content, host);
   const corazonAudit = attachCorazonAudit(content, host);
   const recoveryAudit = attachScareRecoveryAudit(content, host);
   attachDisplayAudit(content, host.world);
@@ -71,7 +79,7 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
     const kind = auditionKinds[auditionIndex++ % auditionKinds.length], p = host.player.position;
     host.haunt({ kind, room: host.world.room(p).id, position: [p.x + 1, p.y + 1, p.z - 4], duration: 4, strength: .65, voice: 'whisper-1', delay: .8, caption: `Validation: ${kind}` });
   });
-  const button = panel.querySelector('button')!, status = panel.querySelector('pre')!;
+  const button = [...panel.querySelectorAll('button')].find(b => b.textContent === 'Run full journey')!, status = panel.querySelector<HTMLElement>('pre[role="status"]')!;
   const retry = panel.querySelector<HTMLButtonElement>('#journey-retry')!;
   const savedRun = panel.querySelector<HTMLButtonElement>('#journey-saved')!;
   const touchRun = panel.querySelector<HTMLButtonElement>('#journey-touch')!;
@@ -87,7 +95,7 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
   const stop = (result: string) => { running = false; touch.release(); host.input.clear(); button.disabled = touchRun.disabled = false; report(result); };
   const begin = (mobile: boolean) => {
     touch.release(); touchMode = mobile; controlsChecked = !mobile; checkStage = checkTime = 0;
-    steps = ['flashlight', 'note', 'fuse', 'tsinelas', 'battery-kitchen', 'breaker', 'letter', 'locket', ...(mobile ? ['hide-guest' as const] : []), 'music-box', 'cabinet', 'exit-key', 'exit'];
+    steps = ['flashlight', 'note', 'fuse', 'tsinelas', 'battery-kitchen', 'breaker', 'master-key', 'bedroom-door', 'letter', 'locket', ...(mobile ? ['hide-guest' as const] : []), 'music-box', 'cabinet', 'exit-key', 'front-door'];
     host.input.setTouchMode(mobile);
     index = extraStep = 0; catches = 0; elapsed = distance = settle = reportAt = 0; route = prior = null; completed.length = fps.length = 0; seenStates.clear(); retry.hidden = true;
     host.action('new'); host.action('start-game'); host.action('resume'); running = true; button.disabled = touchRun.disabled = true; report(mobile ? 'Running with touch pointers' : 'Running');
@@ -95,7 +103,7 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
   button.addEventListener('click', () => begin(false));
   touchRun.addEventListener('click', () => begin(true));
   savedRun.addEventListener('click', () => {
-    steps = ['flashlight', 'note', 'fuse', 'tsinelas', 'battery-kitchen', 'breaker', 'letter', 'locket', 'music-box', 'cabinet', 'exit-key', 'exit'];
+    steps = ['flashlight', 'note', 'fuse', 'tsinelas', 'battery-kitchen', 'breaker', 'master-key', 'bedroom-door', 'letter', 'locket', 'music-box', 'cabinet', 'exit-key', 'front-door'];
     host.action('continue');
     index = steps.findIndex(id => !done(id)); if (index < 0) index = steps.length;
     elapsed = distance = settle = reportAt = catches = 0; route = prior = null;
@@ -118,12 +126,15 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
   }
   function approach(id: InteractionId): Position[] {
     const h = host.interactions.hotspots.find(h => h.id === id)!;
+    const cabinet = host.world.fixtures3d.cabinets.find(c => c.id === id);
+    if (cabinet) return host.world.nav.path(host.player.position, anchorPosition(cabinet.exit, cabinet.floor));
     const candidates: Position[] = [];
     for (const radius of [.8, 1.2, 1.6]) for (let i = 0; i < 24; i++) {
       const p = host.world.nav.point(h.position[0] + Math.sin(i * Math.PI / 12) * radius, h.position[2] + Math.cos(i * Math.PI / 12) * radius, h.position[1] >= 3.24 ? 1 : 0);
       if (!p) continue;
       const eye: Vec3 = [p.x, p.y + 1.65, p.z];
-      if (Math.hypot(...h.position.map((v, i) => v - eye[i])) < 2.03 && host.world.clearSight(eye, h.position)) candidates.push(p);
+      const hit = worldHit(eye, h.position, host.world.colliders.filter(c => c.id !== `leaf-${h.id}`));
+      if (Math.hypot(...h.position.map((v, i) => v - eye[i])) < 2.03 && (hit === null || hit > .985)) candidates.push(p);
     }
     const player = host.player.position;
     candidates.sort((a, b) => Math.hypot(a.x - player.x, a.y - player.y, a.z - player.z) - Math.hypot(b.x - player.x, b.y - player.y, b.z - player.z));
@@ -135,13 +146,15 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
     const p = host.progress();
     if (id === 'breaker') return p.power;
     if (id === 'cabinet') return p.cabinet;
-    if (id === 'exit') return p.exitUnlocked;
+    if (id === 'front-door' || id === 'bedroom-door') return host.world.fixtures3d.doors.find(d => d.id === id)?.hinge.state === 'OPEN';
     return p.collected.some(item => item === id);
   }
   return dt => {
     corazonAudit(dt);
     recoveryAudit(dt);
     jumpAudit(dt);
+    hidingAudit(dt);
+    hidingPerceptionAudit(dt);
     if (mixTime + dt > .25) {
       const clips = host.audioDiagnostics().recordings;
       recordings.textContent = clips ? (['menu', 'gameplay', 'proximity', 'jumpscare'] as const).map(name => {
@@ -196,6 +209,7 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
       else return;
     }
     if (host.revealing()) return;
+    if (host.player.movementLocked && !host.player.hidden) { touch.release(); return; }
     const id = steps[index];
     if (id && done(id)) {
       if (touchMode) {
@@ -211,12 +225,12 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
           if (host.interactions.slipperInHand) { stop('FAIL · Touch throw'); return; }
           completed.push('touch throw');
         }
-        if (id === 'hide-guest') touch.button('Hide');
+        if (id === 'hide-guest' && !touch.button('Hide')) return;
       }
       completed.push(id); index++; extraStep = 0; route = null; settle = 0; return;
     }
     try {
-      if (!route) route = id ? approach(id) : host.world.nav.path(host.player.position, { x: -2.5, z: -13.5, level: 0 });
+      if (!route) route = id ? approach(id) : host.world.nav.path(host.player.position, { x: 0, z: 1.2, level: 0 });
       while (route.length && Math.hypot(route[0].x - host.player.position.x, route[0].z - host.player.position.z) < .09) route.shift();
       if (route.length) {
         const target = route[0]; aim([target.x, target.y + 1.65, target.z]);

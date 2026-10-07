@@ -23,6 +23,7 @@ Object.assign(globalThis, { OffscreenCanvas: class {
 const { World } = await import('../src/world.ts');
 const { Player } = await import('../src/player.ts');
 const { InteractionSystem } = await import('../src/interactions.ts');
+const { InteractiveFixtures } = await import('../src/fixtures.ts');
 const data = JSON.parse(readFileSync('public/assets/models/environments/haunted-house/house-manifest.json', 'utf8')) as HouseManifest;
 function setup() {
   const engine = new Babylon.NullEngine(), world = new World(engine);
@@ -36,6 +37,8 @@ function setup() {
     toggle() {},
   } as unknown as FlashlightViewmodel;
   world.key = new Babylon.TransformNode('test-key', world.scene);
+  world.masterKey = new Babylon.TransformNode('test-master-key', world.scene);
+  world.fixtures3d = new InteractiveFixtures(world);
   const player = new Player(), progress = freshProgress(), keys = new Set<string>();
   const input = { keys, look: () => [0, 0], consume: () => false } as unknown as InputSystem;
   const cleanup = () => { world.dispose(); engine.dispose(); };
