@@ -1,0 +1,3295 @@
+{
+  "sources": [
+    {
+      "file": "haunted_house.glb",
+      "sha256": "d97c4040e57c4b961934b5efa2c1ad829802c2cc3d1bda8869f455f29e5a2323",
+      "asset": {
+        "extras": {
+          "author": "Amy (https://sketchfab.com/uouoamy)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/haunted-house-f0300977ea9640959779453f8373591d",
+          "title": "Haunted House"
+        },
+        "generator": "Sketchfab-12.67.0",
+        "version": "2.0"
+      },
+      "nodes": 310,
+      "meshes": 144,
+      "triangles": 7670,
+      "animations": 0,
+      "materials": [
+        {
+          "doubleSided": true,
+          "name": "material",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 0
+            },
+            "metallicFactor": 0.0,
+            "roughnessFactor": 0.8929713596497552
+          }
+        },
+        {
+          "doubleSided": true,
+          "name": "material_1",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 1
+            },
+            "metallicFactor": 0.0,
+            "roughnessFactor": 0.8929713596497552
+          }
+        },
+        {
+          "doubleSided": true,
+          "name": "material_2",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 2
+            },
+            "metallicFactor": 0.0,
+            "roughnessFactor": 0.8929713596497552
+          }
+        },
+        {
+          "doubleSided": true,
+          "name": "material_3",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 3
+            },
+            "metallicFactor": 0.0,
+            "roughnessFactor": 0.8929713596497552
+          }
+        },
+        {
+          "doubleSided": true,
+          "name": "material_4",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 4
+            },
+            "metallicFactor": 0.0,
+            "roughnessFactor": 0.8929713596497552
+          }
+        },
+        {
+          "doubleSided": true,
+          "name": "material_5",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 5
+            },
+            "metallicFactor": 0.0,
+            "roughnessFactor": 0.8929713596497552
+          }
+        },
+        {
+          "doubleSided": true,
+          "name": "material_6",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 6
+            },
+            "metallicFactor": 0.0,
+            "roughnessFactor": 0.8929713596497552
+          }
+        },
+        {
+          "doubleSided": true,
+          "name": "material_7",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 7
+            },
+            "metallicFactor": 0.0,
+            "roughnessFactor": 0.8929713596497552
+          }
+        },
+        {
+          "doubleSided": true,
+          "name": "material_8",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 8
+            },
+            "metallicFactor": 0.0,
+            "roughnessFactor": 0.8929713596497552
+          }
+        },
+        {
+          "doubleSided": true,
+          "name": "material_9",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 9
+            },
+            "metallicFactor": 0.0,
+            "roughnessFactor": 0.8929713596497552
+          }
+        },
+        {
+          "doubleSided": true,
+          "name": "material_10",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 10
+            },
+            "metallicFactor": 0.0,
+            "roughnessFactor": 0.8929713596497552
+          }
+        },
+        {
+          "doubleSided": true,
+          "name": "material_11",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 11
+            },
+            "metallicFactor": 0.0,
+            "roughnessFactor": 0.8929713596497552
+          }
+        },
+        {
+          "doubleSided": true,
+          "name": "material_12",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 12
+            },
+            "metallicFactor": 0.0,
+            "roughnessFactor": 0.8929713596497552
+          }
+        },
+        {
+          "doubleSided": true,
+          "name": "Material_42",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 13
+            },
+            "metallicFactor": 0.0,
+            "roughnessFactor": 0.8929713596497552
+          }
+        }
+      ],
+      "images": [
+        [
+          512,
+          512
+        ],
+        [
+          128,
+          128
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          128,
+          128
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          256,
+          1024
+        ],
+        [
+          512,
+          1024
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "geometry": [
+        {
+          "node": 4,
+          "mesh": 0,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            -2.95276,
+            -0.0,
+            2.3622
+          ],
+          "max": [
+            2.95276,
+            1.77165,
+            5.90551
+          ]
+        },
+        {
+          "node": 6,
+          "mesh": 1,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            -2.36221,
+            2.36221,
+            -50.39371
+          ],
+          "max": [
+            2.36222,
+            4.33071,
+            -47.24407
+          ]
+        },
+        {
+          "node": 8,
+          "mesh": 2,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            2
+          ],
+          "min": [
+            32.28346,
+            2.3622,
+            -44.78348
+          ],
+          "max": [
+            42.12598,
+            11.02362,
+            -34.84253
+          ]
+        },
+        {
+          "node": 10,
+          "mesh": 3,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            2
+          ],
+          "min": [
+            -14.56692,
+            2.3622,
+            -62.59843
+          ],
+          "max": [
+            -8.66141,
+            6.29921,
+            -60.62992
+          ]
+        },
+        {
+          "node": 12,
+          "mesh": 4,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            3
+          ],
+          "min": [
+            -11.1811,
+            6.29921,
+            -62.1063
+          ],
+          "max": [
+            -10.47244,
+            6.65849,
+            -61.12205
+          ]
+        },
+        {
+          "node": 14,
+          "mesh": 5,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd1\ufffd\ufffd\ufffd - 2\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            -23.42518,
+            2.3622,
+            -34.25198
+          ],
+          "max": [
+            -15.15747,
+            14.17323,
+            -16.53544
+          ]
+        },
+        {
+          "node": 17,
+          "mesh": 6,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            4
+          ],
+          "min": [
+            -23.5433,
+            4.52756,
+            -62.12598
+          ],
+          "max": [
+            -21.5748,
+            4.92126,
+            -60.55118
+          ]
+        },
+        {
+          "node": 19,
+          "mesh": 7,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            4
+          ],
+          "min": [
+            -25.6693,
+            4.52756,
+            -62.12598
+          ],
+          "max": [
+            -23.70079,
+            4.92126,
+            -60.55118
+          ]
+        },
+        {
+          "node": 21,
+          "mesh": 8,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            -26.27953,
+            2.36221,
+            -62.59842
+          ],
+          "max": [
+            -20.96457,
+            6.49607,
+            -54.70472
+          ]
+        },
+        {
+          "node": 23,
+          "mesh": 9,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            4
+          ],
+          "min": [
+            -26.47638,
+            3.74016,
+            -62.20472
+          ],
+          "max": [
+            -20.76772,
+            4.72441,
+            -54.50786
+          ]
+        },
+        {
+          "node": 26,
+          "mesh": 10,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            19.48819,
+            2.36221,
+            -44.68504
+          ],
+          "max": [
+            27.36221,
+            5.31496,
+            -41.14174
+          ]
+        },
+        {
+          "node": 28,
+          "mesh": 11,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            24.31102,
+            2.36221,
+            -46.65355
+          ],
+          "max": [
+            25.88582,
+            6.29921,
+            -44.68505
+          ]
+        },
+        {
+          "node": 30,
+          "mesh": 12,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            24.31102,
+            2.36221,
+            -41.14173
+          ],
+          "max": [
+            25.88582,
+            6.29921,
+            -39.17323
+          ]
+        },
+        {
+          "node": 32,
+          "mesh": 13,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd003_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            20.96457,
+            2.36221,
+            -46.65355
+          ],
+          "max": [
+            22.53937,
+            6.29921,
+            -44.68505
+          ]
+        },
+        {
+          "node": 34,
+          "mesh": 14,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd004_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            20.96457,
+            2.36221,
+            -41.14173
+          ],
+          "max": [
+            22.53937,
+            6.29921,
+            -39.17323
+          ]
+        },
+        {
+          "node": 37,
+          "mesh": 15,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            5
+          ],
+          "min": [
+            -42.12598,
+            2.3622,
+            -25.59056
+          ],
+          "max": [
+            -24.01573,
+            2.3622,
+            -6.69292
+          ]
+        },
+        {
+          "node": 39,
+          "mesh": 16,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            6
+          ],
+          "min": [
+            -42.12598,
+            -0.0,
+            -62.59843
+          ],
+          "max": [
+            42.12599,
+            2.3622,
+            -6.69292
+          ]
+        },
+        {
+          "node": 41,
+          "mesh": 17,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            -13.77953,
+            -0.0,
+            -6.69291
+          ],
+          "max": [
+            13.77953,
+            2.3622,
+            5.90551
+          ]
+        },
+        {
+          "node": 43,
+          "mesh": 18,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            5
+          ],
+          "min": [
+            15.1575,
+            2.3622,
+            -15.74805
+          ],
+          "max": [
+            25.98427,
+            2.3622,
+            -6.69292
+          ]
+        },
+        {
+          "node": 46,
+          "mesh": 19,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            7
+          ],
+          "min": [
+            -41.88976,
+            5.51181,
+            -10.25014
+          ],
+          "max": [
+            -41.6761,
+            5.62992,
+            -10.02548
+          ]
+        },
+        {
+          "node": 48,
+          "mesh": 20,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            8
+          ],
+          "min": [
+            -42.12598,
+            2.3622,
+            -11.22048
+          ],
+          "max": [
+            -39.16452,
+            5.51181,
+            -9.05513
+          ]
+        },
+        {
+          "node": 51,
+          "mesh": 21,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            7
+          ],
+          "min": [
+            -29.6235,
+            3.93701,
+            -13.11839
+          ],
+          "max": [
+            -29.08052,
+            4.25197,
+            -12.47218
+          ]
+        },
+        {
+          "node": 53,
+          "mesh": 22,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            8
+          ],
+          "min": [
+            -29.97783,
+            2.3622,
+            -14.37009
+          ],
+          "max": [
+            -24.07232,
+            3.93701,
+            -11.22048
+          ]
+        },
+        {
+          "node": 56,
+          "mesh": 23,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            9
+          ],
+          "min": [
+            -42.12598,
+            2.3622,
+            -22.74006
+          ],
+          "max": [
+            -40.0,
+            5.11811,
+            -20.77155
+          ]
+        },
+        {
+          "node": 58,
+          "mesh": 24,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            9
+          ],
+          "min": [
+            -42.12598,
+            2.3622,
+            -20.181
+          ],
+          "max": [
+            -40.0,
+            5.11811,
+            -18.2125
+          ]
+        },
+        {
+          "node": 61,
+          "mesh": 25,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            7
+          ],
+          "min": [
+            -24.51581,
+            5.70866,
+            -21.23027
+          ],
+          "max": [
+            -24.09094,
+            6.1811,
+            -20.58406
+          ]
+        },
+        {
+          "node": 63,
+          "mesh": 26,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            8
+          ],
+          "min": [
+            -25.64712,
+            2.3622,
+            -22.08827
+          ],
+          "max": [
+            -24.07232,
+            5.70866,
+            -19.72606
+          ]
+        },
+        {
+          "node": 66,
+          "mesh": 27,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd003_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            4
+          ],
+          "min": [
+            40.07875,
+            4.32438,
+            -26.5748
+          ],
+          "max": [
+            41.65355,
+            4.71808,
+            -24.6063
+          ]
+        },
+        {
+          "node": 68,
+          "mesh": 28,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            34.23228,
+            2.15902,
+            -27.06693
+          ],
+          "max": [
+            42.12599,
+            6.29288,
+            -24.11417
+          ]
+        },
+        {
+          "node": 70,
+          "mesh": 29,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            4
+          ],
+          "min": [
+            34.03543,
+            3.53698,
+            -27.26378
+          ],
+          "max": [
+            41.73228,
+            4.52123,
+            -23.91732
+          ]
+        },
+        {
+          "node": 73,
+          "mesh": 30,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            3
+          ],
+          "min": [
+            -1.41732,
+            4.33071,
+            -43.89764
+          ],
+          "max": [
+            1.41732,
+            6.8504,
+            -41.73228
+          ]
+        },
+        {
+          "node": 75,
+          "mesh": 31,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            -4.33072,
+            2.36221,
+            -44.09452
+          ],
+          "max": [
+            4.33072,
+            4.33071,
+            -41.73228
+          ]
+        },
+        {
+          "node": 78,
+          "mesh": 32,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            15.15747,
+            2.36221,
+            -34.25199
+          ],
+          "max": [
+            17.04725,
+            4.88189,
+            -32.3622
+          ]
+        },
+        {
+          "node": 80,
+          "mesh": 33,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            15.26047,
+            4.88189,
+            -34.19233
+          ],
+          "max": [
+            16.94427,
+            7.04725,
+            -32.42189
+          ]
+        },
+        {
+          "node": 83,
+          "mesh": 34,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            -6.69291,
+            2.36221,
+            -34.25199
+          ],
+          "max": [
+            -4.80313,
+            4.88189,
+            -32.3622
+          ]
+        },
+        {
+          "node": 85,
+          "mesh": 35,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            -6.58991,
+            4.88189,
+            -34.19233
+          ],
+          "max": [
+            -4.90612,
+            7.04725,
+            -32.42188
+          ]
+        },
+        {
+          "node": 87,
+          "mesh": 36,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            2
+          ],
+          "min": [
+            28.77953,
+            2.3622,
+            -34.25198
+          ],
+          "max": [
+            34.2126,
+            5.07874,
+            -31.53544
+          ]
+        },
+        {
+          "node": 89,
+          "mesh": 37,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            2
+          ],
+          "min": [
+            36.22048,
+            2.3622,
+            -34.25198
+          ],
+          "max": [
+            42.12599,
+            6.29921,
+            -32.28347
+          ]
+        },
+        {
+          "node": 91,
+          "mesh": 38,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            2
+          ],
+          "min": [
+            15.1496,
+            2.36221,
+            -31.55118
+          ],
+          "max": [
+            17.48818,
+            10.82835,
+            -25.92913
+          ]
+        },
+        {
+          "node": 94,
+          "mesh": 39,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            8
+          ],
+          "min": [
+            15.15748,
+            2.3622,
+            -12.30315
+          ],
+          "max": [
+            18.11894,
+            5.51181,
+            -10.1378
+          ]
+        },
+        {
+          "node": 96,
+          "mesh": 40,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            7
+          ],
+          "min": [
+            15.3937,
+            5.51181,
+            -11.33281
+          ],
+          "max": [
+            15.60736,
+            5.62992,
+            -11.10815
+          ]
+        },
+        {
+          "node": 99,
+          "mesh": 41,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            8
+          ],
+          "min": [
+            23.8189,
+            2.3622,
+            -12.40158
+          ],
+          "max": [
+            25.3937,
+            5.70866,
+            -10.03937
+          ]
+        },
+        {
+          "node": 101,
+          "mesh": 42,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            7
+          ],
+          "min": [
+            24.95021,
+            5.70866,
+            -11.54359
+          ],
+          "max": [
+            25.37508,
+            6.1811,
+            -10.89737
+          ]
+        },
+        {
+          "node": 104,
+          "mesh": 43,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            38.58267,
+            2.36221,
+            -15.15748
+          ],
+          "max": [
+            42.12598,
+            5.31496,
+            -7.28347
+          ]
+        },
+        {
+          "node": 106,
+          "mesh": 44,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            36.61416,
+            2.3622,
+            -12.00788
+          ],
+          "max": [
+            38.58267,
+            6.29921,
+            -10.43307
+          ]
+        },
+        {
+          "node": 108,
+          "mesh": 45,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd003_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            2
+          ],
+          "min": [
+            40.15748,
+            2.3622,
+            -61.95866
+          ],
+          "max": [
+            42.12598,
+            6.29921,
+            -56.05315
+          ]
+        },
+        {
+          "node": 110,
+          "mesh": 46,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd004_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            2
+          ],
+          "min": [
+            -17.12598,
+            2.3622,
+            -62.59844
+          ],
+          "max": [
+            -15.15747,
+            6.29921,
+            -56.69293
+          ]
+        },
+        {
+          "node": 113,
+          "mesh": 47,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            -42.12599,
+            2.36221,
+            -62.59842
+          ],
+          "max": [
+            -38.58268,
+            5.31496,
+            -54.7244
+          ]
+        },
+        {
+          "node": 115,
+          "mesh": 48,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            -38.58268,
+            2.3622,
+            -59.44881
+          ],
+          "max": [
+            -36.61417,
+            6.29921,
+            -57.874
+          ]
+        },
+        {
+          "node": 117,
+          "mesh": 49,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            2
+          ],
+          "min": [
+            -26.35432,
+            2.3622,
+            -32.73228
+          ],
+          "max": [
+            -24.01574,
+            10.82834,
+            -27.11024
+          ]
+        },
+        {
+          "node": 119,
+          "mesh": 50,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            2
+          ],
+          "min": [
+            -42.12598,
+            2.3622,
+            -53.1228
+          ],
+          "max": [
+            -39.40992,
+            9.97305,
+            -40.15747
+          ]
+        },
+        {
+          "node": 121,
+          "mesh": 51,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            2
+          ],
+          "min": [
+            -42.12598,
+            2.3622,
+            -40.15747
+          ],
+          "max": [
+            -39.40992,
+            9.97305,
+            -27.19214
+          ]
+        },
+        {
+          "node": 123,
+          "mesh": 52,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd005_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            2
+          ],
+          "min": [
+            -13.77952,
+            2.3622,
+            -34.25198
+          ],
+          "max": [
+            -7.87401,
+            6.29921,
+            -32.28347
+          ]
+        },
+        {
+          "node": 126,
+          "mesh": 53,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd003_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            29.21259,
+            2.3622,
+            -37.32286
+          ],
+          "max": [
+            31.10237,
+            4.88189,
+            -35.43308
+          ]
+        },
+        {
+          "node": 128,
+          "mesh": 54,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd003_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            29.31559,
+            4.88189,
+            -37.2632
+          ],
+          "max": [
+            30.99938,
+            7.04724,
+            -35.49276
+          ]
+        },
+        {
+          "node": 130,
+          "mesh": 55,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            10
+          ],
+          "min": [
+            -10.82677,
+            2.3622,
+            -29.33072
+          ],
+          "max": [
+            10.82677,
+            2.44094,
+            -11.61418
+          ]
+        },
+        {
+          "node": 132,
+          "mesh": 56,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            10
+          ],
+          "min": [
+            -37.5,
+            2.3622,
+            -50.3937
+          ],
+          "max": [
+            -19.78346,
+            2.44094,
+            -38.58268
+          ]
+        },
+        {
+          "node": 135,
+          "mesh": 57,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd004_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            12.18961,
+            4.88189,
+            -61.94823
+          ],
+          "max": [
+            13.8734,
+            7.04724,
+            -60.17779
+          ]
+        },
+        {
+          "node": 137,
+          "mesh": 58,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd004_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            12.08661,
+            2.3622,
+            -62.0079
+          ],
+          "max": [
+            13.97639,
+            4.88189,
+            -60.11811
+          ]
+        },
+        {
+          "node": 139,
+          "mesh": 59,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            2
+          ],
+          "min": [
+            -22.00786,
+            2.3622,
+            -37.55907
+          ],
+          "max": [
+            -16.57479,
+            5.07874,
+            -34.84253
+          ]
+        },
+        {
+          "node": 142,
+          "mesh": 60,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd009_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            14.56692,
+            2.3622,
+            -62.59845
+          ],
+          "max": [
+            15.15749,
+            14.17323,
+            -34.84254
+          ]
+        },
+        {
+          "node": 144,
+          "mesh": 61,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd006_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            14.56693,
+            2.3622,
+            -34.84253
+          ],
+          "max": [
+            42.12599,
+            14.17323,
+            -34.25198
+          ]
+        },
+        {
+          "node": 146,
+          "mesh": 62,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd008_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            31.69291,
+            2.3622,
+            -55.41338
+          ],
+          "max": [
+            42.12598,
+            14.17322,
+            -54.82283
+          ]
+        },
+        {
+          "node": 148,
+          "mesh": 63,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd007_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            31.6929,
+            2.3622,
+            -54.82283
+          ],
+          "max": [
+            32.28346,
+            14.17323,
+            -34.84253
+          ]
+        },
+        {
+          "node": 150,
+          "mesh": 64,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd004_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            42.12599,
+            0.0,
+            -63.18897
+          ],
+          "max": [
+            42.71654,
+            14.17324,
+            -6.10237
+          ]
+        },
+        {
+          "node": 152,
+          "mesh": 65,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            13.77953,
+            0.0,
+            -6.69292
+          ],
+          "max": [
+            42.12599,
+            14.17323,
+            -6.10237
+          ]
+        },
+        {
+          "node": 154,
+          "mesh": 66,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd005_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            25.3937,
+            2.36221,
+            -15.74803
+          ],
+          "max": [
+            25.98426,
+            14.17324,
+            -6.69292
+          ]
+        },
+        {
+          "node": 156,
+          "mesh": 67,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd004_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            15.15747,
+            2.36221,
+            -15.74803
+          ],
+          "max": [
+            25.39371,
+            14.17324,
+            -15.15748
+          ]
+        },
+        {
+          "node": 158,
+          "mesh": 68,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            14.56691,
+            2.36221,
+            -34.25198
+          ],
+          "max": [
+            15.15748,
+            14.17324,
+            -6.69292
+          ]
+        },
+        {
+          "node": 160,
+          "mesh": 69,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            -13.77953,
+            2.3622,
+            -6.69293
+          ],
+          "max": [
+            13.77953,
+            14.17323,
+            -6.10237
+          ]
+        },
+        {
+          "node": 162,
+          "mesh": 70,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd003_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            -42.12598,
+            0.0,
+            -6.69293
+          ],
+          "max": [
+            -13.77952,
+            14.17323,
+            -6.10238
+          ]
+        },
+        {
+          "node": 164,
+          "mesh": 71,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd003_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            -15.15747,
+            2.3622,
+            -34.25198
+          ],
+          "max": [
+            -14.56692,
+            14.17323,
+            -16.53544
+          ]
+        },
+        {
+          "node": 166,
+          "mesh": 72,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            -14.56692,
+            2.3622,
+            -34.84254
+          ],
+          "max": [
+            14.56693,
+            14.17323,
+            -34.25198
+          ]
+        },
+        {
+          "node": 168,
+          "mesh": 73,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd006_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            -42.71652,
+            -0.0,
+            -63.18896
+          ],
+          "max": [
+            42.126,
+            14.17322,
+            -62.59841
+          ]
+        },
+        {
+          "node": 170,
+          "mesh": 74,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd010_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            -15.15748,
+            2.3622,
+            -62.59844
+          ],
+          "max": [
+            -14.56692,
+            14.17323,
+            -34.84254
+          ]
+        },
+        {
+          "node": 172,
+          "mesh": 75,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd011_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            -24.01574,
+            2.3622,
+            -34.84253
+          ],
+          "max": [
+            -14.56692,
+            14.17323,
+            -34.25198
+          ]
+        },
+        {
+          "node": 174,
+          "mesh": 76,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd012_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            -24.01574,
+            2.3622,
+            -34.25198
+          ],
+          "max": [
+            -23.42518,
+            14.17323,
+            -6.69292
+          ]
+        },
+        {
+          "node": 176,
+          "mesh": 77,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd013_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            -42.12599,
+            2.3622,
+            -25.59056
+          ],
+          "max": [
+            -24.01574,
+            14.17323,
+            -25.0
+          ]
+        },
+        {
+          "node": 178,
+          "mesh": 78,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd005_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            11
+          ],
+          "min": [
+            -42.71654,
+            1e-05,
+            -62.59842
+          ],
+          "max": [
+            -42.12599,
+            14.17323,
+            -6.10238
+          ]
+        },
+        {
+          "node": 180,
+          "mesh": 79,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            5
+          ],
+          "min": [
+            -42.12598,
+            0.0,
+            -6.69293
+          ],
+          "max": [
+            -24.01574,
+            14.17323,
+            -6.69293
+          ]
+        },
+        {
+          "node": 182,
+          "mesh": 80,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd004_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            5
+          ],
+          "min": [
+            -24.01574,
+            2.3622,
+            -25.0002
+          ],
+          "max": [
+            -24.01574,
+            14.17323,
+            -6.69292
+          ]
+        },
+        {
+          "node": 184,
+          "mesh": 81,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            5
+          ],
+          "min": [
+            -42.12599,
+            1e-05,
+            -25.00001
+          ],
+          "max": [
+            -42.12599,
+            14.17323,
+            -6.10238
+          ]
+        },
+        {
+          "node": 186,
+          "mesh": 82,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd003_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            5
+          ],
+          "min": [
+            -42.12599,
+            2.3622,
+            -25.0
+          ],
+          "max": [
+            -24.01574,
+            14.17323,
+            -25.0
+          ]
+        },
+        {
+          "node": 188,
+          "mesh": 83,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd008_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            5
+          ],
+          "min": [
+            15.15747,
+            2.36221,
+            -15.15748
+          ],
+          "max": [
+            15.15747,
+            14.17324,
+            -6.69292
+          ]
+        },
+        {
+          "node": 190,
+          "mesh": 84,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd007_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            5
+          ],
+          "min": [
+            15.15747,
+            2.36221,
+            -15.15748
+          ],
+          "max": [
+            25.39371,
+            14.17324,
+            -15.15748
+          ]
+        },
+        {
+          "node": 192,
+          "mesh": 85,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd006_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            5
+          ],
+          "min": [
+            25.3937,
+            2.36221,
+            -15.74803
+          ],
+          "max": [
+            25.3937,
+            14.17324,
+            -6.69292
+          ]
+        },
+        {
+          "node": 194,
+          "mesh": 86,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd005_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            5
+          ],
+          "min": [
+            15.15748,
+            0.0,
+            -6.69292
+          ],
+          "max": [
+            25.39371,
+            14.17323,
+            -6.69292
+          ]
+        },
+        {
+          "node": 196,
+          "mesh": 87,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            2
+          ],
+          "min": [
+            4.84293,
+            2.3622,
+            -34.25198
+          ],
+          "max": [
+            14.56693,
+            6.92871,
+            -31.53593
+          ]
+        },
+        {
+          "node": 198,
+          "mesh": 88,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd003_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            2
+          ],
+          "min": [
+            15.15749,
+            2.3622,
+            -62.59845
+          ],
+          "max": [
+            17.87355,
+            6.92871,
+            -52.87445
+          ]
+        },
+        {
+          "node": 200,
+          "mesh": 89,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            2
+          ],
+          "min": [
+            4.84294,
+            2.3622,
+            -37.5586
+          ],
+          "max": [
+            14.56694,
+            6.92871,
+            -34.84254
+          ]
+        },
+        {
+          "node": 202,
+          "mesh": 90,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            -13.97636,
+            2.30962,
+            -38.08876
+          ],
+          "max": [
+            -11.45067,
+            7.72301,
+            -35.43309
+          ]
+        },
+        {
+          "node": 204,
+          "mesh": 91,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            11.45067,
+            2.30962,
+            -9.93915
+          ],
+          "max": [
+            13.97637,
+            7.72301,
+            -7.28348
+          ]
+        },
+        {
+          "node": 206,
+          "mesh": 92,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            4
+          ],
+          "min": [
+            4.72441,
+            2.36221,
+            -50.98425
+          ],
+          "max": [
+            8.66142,
+            5.70867,
+            -46.65354
+          ]
+        },
+        {
+          "node": 208,
+          "mesh": 93,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            4
+          ],
+          "min": [
+            -4.3307,
+            2.36221,
+            -57.08661
+          ],
+          "max": [
+            4.33071,
+            5.70867,
+            -53.1496
+          ]
+        },
+        {
+          "node": 210,
+          "mesh": 94,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            4
+          ],
+          "min": [
+            -8.66142,
+            2.36221,
+            -50.98425
+          ],
+          "max": [
+            -4.72441,
+            5.70867,
+            -46.65354
+          ]
+        },
+        {
+          "node": 212,
+          "mesh": 95,
+          "name": "\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd_0",
+          "materials": [
+            12
+          ],
+          "min": [
+            18.30709,
+            2.36221,
+            -15.74803
+          ],
+          "max": [
+            22.24409,
+            10.23622,
+            -15.55118
+          ]
+        },
+        {
+          "node": 214,
+          "mesh": 96,
+          "name": "\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd_0",
+          "materials": [
+            12
+          ],
+          "min": [
+            -3.54331,
+            2.3622,
+            -6.69293
+          ],
+          "max": [
+            3.54331,
+            10.23622,
+            -6.49608
+          ]
+        },
+        {
+          "node": 216,
+          "mesh": 97,
+          "name": "\ufffd\ufffd\ufffd003_\ufffd\ufffd\ufffd_0",
+          "materials": [
+            12
+          ],
+          "min": [
+            -15.15748,
+            2.3622,
+            -50.689
+          ],
+          "max": [
+            -14.96063,
+            10.23622,
+            -46.75199
+          ]
+        },
+        {
+          "node": 218,
+          "mesh": 98,
+          "name": "\ufffd\ufffd\ufffd004_\ufffd\ufffd\ufffd_0",
+          "materials": [
+            12
+          ],
+          "min": [
+            -35.03937,
+            2.36221,
+            -25.59055
+          ],
+          "max": [
+            -31.10236,
+            10.23622,
+            -25.3937
+          ]
+        },
+        {
+          "node": 220,
+          "mesh": 99,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            8
+          ],
+          "min": [
+            38.87098,
+            2.3622,
+            -54.82284
+          ],
+          "max": [
+            42.12599,
+            10.1277,
+            -51.80033
+          ]
+        },
+        {
+          "node": 222,
+          "mesh": 100,
+          "name": "\ufffd\ufffd\ufffd005_\ufffd\ufffd\ufffd_0",
+          "materials": [
+            12
+          ],
+          "min": [
+            14.56692,
+            2.3622,
+            -22.44096
+          ],
+          "max": [
+            14.76377,
+            10.23622,
+            -18.50395
+          ]
+        },
+        {
+          "node": 225,
+          "mesh": 101,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            8
+          ],
+          "min": [
+            32.4311,
+            5.70866,
+            -44.58662
+          ],
+          "max": [
+            34.59646,
+            5.7874,
+            -41.24016
+          ]
+        },
+        {
+          "node": 227,
+          "mesh": 102,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            7
+          ],
+          "min": [
+            34.15642,
+            5.7874,
+            -42.73044
+          ],
+          "max": [
+            34.37008,
+            5.90551,
+            -42.50578
+          ]
+        },
+        {
+          "node": 229,
+          "mesh": 103,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            7
+          ],
+          "min": [
+            34.15642,
+            5.7874,
+            -43.32099
+          ],
+          "max": [
+            34.37008,
+            5.90551,
+            -43.09633
+          ]
+        },
+        {
+          "node": 231,
+          "mesh": 104,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            33.01524,
+            5.7874,
+            -42.59843
+          ],
+          "max": [
+            33.91388,
+            6.00394,
+            -41.65355
+          ]
+        },
+        {
+          "node": 233,
+          "mesh": 105,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            33.01524,
+            5.7874,
+            -44.17323
+          ],
+          "max": [
+            33.91388,
+            6.00394,
+            -43.22835
+          ]
+        },
+        {
+          "node": 235,
+          "mesh": 106,
+          "name": "\ufffd\ufffd\ufffd006_\ufffd\ufffd\ufffd_0",
+          "materials": [
+            12
+          ],
+          "min": [
+            -3.54331,
+            2.3622,
+            -34.64569
+          ],
+          "max": [
+            3.54331,
+            10.23622,
+            -34.44884
+          ]
+        },
+        {
+          "node": 237,
+          "mesh": 107,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            -13.51406,
+            6.29921,
+            -34.22479
+          ],
+          "max": [
+            -10.3229,
+            6.65532,
+            -32.47117
+          ]
+        },
+        {
+          "node": 239,
+          "mesh": 108,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            -41.72201,
+            2.3622,
+            -24.83583
+          ],
+          "max": [
+            -39.16659,
+            2.55905,
+            -23.00814
+          ]
+        },
+        {
+          "node": 241,
+          "mesh": 109,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            3
+          ],
+          "min": [
+            -40.6347,
+            7.06699,
+            -31.57958
+          ],
+          "max": [
+            -40.38415,
+            7.09062,
+            -31.32903
+          ]
+        },
+        {
+          "node": 243,
+          "mesh": 110,
+          "name": "\ufffd\ufffd\ufffd001_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            -41.75135,
+            7.06709,
+            -45.37522
+          ],
+          "max": [
+            -40.96395,
+            8.05134,
+            -43.40671
+          ]
+        },
+        {
+          "node": 245,
+          "mesh": 111,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd001_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            39.77702,
+            5.31496,
+            -9.55374
+          ],
+          "max": [
+            41.18023,
+            5.70866,
+            -8.34096
+          ]
+        },
+        {
+          "node": 247,
+          "mesh": 112,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdA\ufffd\ufffd\ufffd001_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            21.55512,
+            7.08661,
+            -34.25198
+          ],
+          "max": [
+            24.50787,
+            11.22047,
+            -33.85828
+          ]
+        },
+        {
+          "node": 249,
+          "mesh": 113,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdB\ufffd\ufffd\ufffd001_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            -2.36219,
+            8.36614,
+            -62.59841
+          ],
+          "max": [
+            1.77167,
+            11.3189,
+            -62.20471
+          ]
+        },
+        {
+          "node": 251,
+          "mesh": 114,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd_0",
+          "materials": [
+            3
+          ],
+          "min": [
+            26.37796,
+            2.3622,
+            -12.20473
+          ],
+          "max": [
+            28.62206,
+            4.72441,
+            -10.23622
+          ]
+        },
+        {
+          "node": 253,
+          "mesh": 115,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdA\ufffd\ufffd\ufffd002_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            -32.97244,
+            7.08661,
+            -62.59841
+          ],
+          "max": [
+            -30.01969,
+            11.22047,
+            -62.20471
+          ]
+        },
+        {
+          "node": 255,
+          "mesh": 116,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdB\ufffd\ufffd\ufffd002_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            37.1063,
+            8.36614,
+            -34.25198
+          ],
+          "max": [
+            41.24016,
+            11.3189,
+            -33.85828
+          ]
+        },
+        {
+          "node": 257,
+          "mesh": 117,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdA\ufffd\ufffd\ufffd003_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            -14.56692,
+            7.87402,
+            -26.87009
+          ],
+          "max": [
+            -14.17322,
+            12.00787,
+            -23.91733
+          ]
+        },
+        {
+          "node": 259,
+          "mesh": 118,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd002_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            5.56923,
+            6.92859,
+            -33.74319
+          ],
+          "max": [
+            6.63549,
+            7.32229,
+            -32.39854
+          ]
+        },
+        {
+          "node": 261,
+          "mesh": 119,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd003_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            -41.64649,
+            9.97305,
+            -28.95285
+          ],
+          "max": [
+            -40.24328,
+            10.36675,
+            -27.74006
+          ]
+        },
+        {
+          "node": 263,
+          "mesh": 120,
+          "name": "\ufffd\ufffd\ufffd002_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            -41.75135,
+            7.06709,
+            -36.82996
+          ],
+          "max": [
+            -40.96395,
+            8.05134,
+            -34.86145
+          ]
+        },
+        {
+          "node": 265,
+          "mesh": 121,
+          "name": "\ufffd\ufffd\ufffd003_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            -41.75135,
+            7.06709,
+            -34.86145
+          ],
+          "max": [
+            -40.96395,
+            8.05134,
+            -32.89295
+          ]
+        },
+        {
+          "node": 267,
+          "mesh": 122,
+          "name": "\ufffd\ufffd\ufffd004_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            -41.75136,
+            7.06709,
+            -38.95714
+          ],
+          "max": [
+            -40.96395,
+            8.05134,
+            -36.98863
+          ]
+        },
+        {
+          "node": 269,
+          "mesh": 123,
+          "name": "\ufffd\ufffd\ufffd005_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            -41.75135,
+            7.06709,
+            -29.28758
+          ],
+          "max": [
+            -40.96395,
+            8.05134,
+            -27.31908
+          ]
+        },
+        {
+          "node": 271,
+          "mesh": 124,
+          "name": "\ufffd\ufffd\ufffd006_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            -41.75136,
+            7.06709,
+            -51.92247
+          ],
+          "max": [
+            -40.96396,
+            8.05134,
+            -49.95397
+          ]
+        },
+        {
+          "node": 273,
+          "mesh": 125,
+          "name": "\ufffd\ufffd\ufffd007_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            -42.12598,
+            5.31497,
+            -62.59842
+          ],
+          "max": [
+            -41.33858,
+            6.29922,
+            -60.62991
+          ]
+        },
+        {
+          "node": 275,
+          "mesh": 126,
+          "name": "\ufffd\ufffd\ufffd008_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            -42.12599,
+            5.31496,
+            -60.62992
+          ],
+          "max": [
+            -41.33858,
+            6.29922,
+            -58.66142
+          ]
+        },
+        {
+          "node": 277,
+          "mesh": 127,
+          "name": "\ufffd\ufffd\ufffd009_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            15.53212,
+            5.18513,
+            -62.50325
+          ],
+          "max": [
+            16.31952,
+            6.16939,
+            -60.53474
+          ]
+        },
+        {
+          "node": 279,
+          "mesh": 128,
+          "name": "\ufffd\ufffd\ufffd010_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            15.53212,
+            5.18513,
+            -57.27989
+          ],
+          "max": [
+            16.31952,
+            6.16939,
+            -55.31139
+          ]
+        },
+        {
+          "node": 281,
+          "mesh": 129,
+          "name": "\ufffd\ufffd\ufffd011_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            15.53212,
+            5.18514,
+            -59.2484
+          ],
+          "max": [
+            16.31952,
+            6.16939,
+            -57.27989
+          ]
+        },
+        {
+          "node": 283,
+          "mesh": 130,
+          "name": "\ufffd\ufffd\ufffd012_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            -42.12599,
+            9.97305,
+            -51.02735
+          ],
+          "max": [
+            -41.33859,
+            10.9573,
+            -49.05885
+          ]
+        },
+        {
+          "node": 285,
+          "mesh": 131,
+          "name": "\ufffd\ufffd\ufffd013_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            -42.12599,
+            9.97305,
+            -52.99586
+          ],
+          "max": [
+            -41.33858,
+            10.9573,
+            -51.02735
+          ]
+        },
+        {
+          "node": 287,
+          "mesh": 132,
+          "name": "\ufffd\ufffd\ufffd014_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            -42.12598,
+            9.97305,
+            -40.15747
+          ],
+          "max": [
+            -41.33858,
+            10.9573,
+            -38.18896
+          ]
+        },
+        {
+          "node": 289,
+          "mesh": 133,
+          "name": "\ufffd\ufffd\ufffd015_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            -42.12598,
+            9.97305,
+            -38.18896
+          ],
+          "max": [
+            -41.33858,
+            10.9573,
+            -36.22046
+          ]
+        },
+        {
+          "node": 291,
+          "mesh": 134,
+          "name": "\ufffd\ufffd\ufffd016_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            -42.12598,
+            9.97305,
+            -35.82675
+          ],
+          "max": [
+            -41.33858,
+            10.9573,
+            -33.85824
+          ]
+        },
+        {
+          "node": 293,
+          "mesh": 135,
+          "name": "\ufffd\ufffd\ufffd017_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            41.33858,
+            5.31497,
+            -14.76378
+          ],
+          "max": [
+            42.12598,
+            6.29922,
+            -12.79528
+          ]
+        },
+        {
+          "node": 295,
+          "mesh": 136,
+          "name": "\ufffd\ufffd\ufffd018_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            41.33858,
+            5.31497,
+            -12.79528
+          ],
+          "max": [
+            42.12598,
+            6.29922,
+            -10.82677
+          ]
+        },
+        {
+          "node": 297,
+          "mesh": 137,
+          "name": "\ufffd\ufffd\ufffd019_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            12.59842,
+            6.9287,
+            -34.25198
+          ],
+          "max": [
+            14.56693,
+            7.91295,
+            -33.46458
+          ]
+        },
+        {
+          "node": 299,
+          "mesh": 138,
+          "name": "\ufffd\ufffd\ufffd020_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            7.27986,
+            5.18513,
+            -33.87735
+          ],
+          "max": [
+            9.24836,
+            6.16938,
+            -33.08995
+          ]
+        },
+        {
+          "node": 301,
+          "mesh": 139,
+          "name": "\ufffd\ufffd\ufffd021_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            9.24836,
+            5.18513,
+            -33.87735
+          ],
+          "max": [
+            11.21687,
+            6.16938,
+            -33.08995
+          ]
+        },
+        {
+          "node": 303,
+          "mesh": 140,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd004_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            5.20391,
+            6.92871,
+            -36.43316
+          ],
+          "max": [
+            6.60712,
+            7.32241,
+            -35.22038
+          ]
+        },
+        {
+          "node": 305,
+          "mesh": 141,
+          "name": "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd005_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            5.29912,
+            7.32241,
+            -36.52838
+          ],
+          "max": [
+            6.5119,
+            7.71611,
+            -35.12516
+          ]
+        },
+        {
+          "node": 307,
+          "mesh": 142,
+          "name": "\ufffd\ufffd\ufffd022_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            12.50322,
+            5.18513,
+            -36.00458
+          ],
+          "max": [
+            14.47173,
+            6.16938,
+            -35.21718
+          ]
+        },
+        {
+          "node": 309,
+          "mesh": 143,
+          "name": "\ufffd\ufffd\ufffd023_Material #42_0",
+          "materials": [
+            13
+          ],
+          "min": [
+            7.33857,
+            5.18513,
+            -36.00457
+          ],
+          "max": [
+            9.30708,
+            6.16938,
+            -35.21717
+          ]
+        }
+      ]
+    },
+    {
+      "file": "scary_interiorHallway.glb",
+      "sha256": "232f49ebb5843e4c85c003eef80dbaafe2c9b30d5e9622a2325b35fce2ee0730",
+      "asset": {
+        "extras": {
+          "author": "speedinfected (https://sketchfab.com/speedinfected)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/scary-interior-fa7d60e783764ecfb15039bba6c05306",
+          "title": "Scary Interior"
+        },
+        "generator": "Sketchfab-15.33.0",
+        "version": "2.0"
+      },
+      "nodes": 49,
+      "meshes": 20,
+      "triangles": 4528,
+      "animations": 0,
+      "materials": [
+        {
+          "doubleSided": true,
+          "name": "Base",
+          "normalTexture": {
+            "index": 2
+          },
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 0
+            },
+            "metallicRoughnessTexture": {
+              "index": 1
+            }
+          }
+        },
+        {
+          "doubleSided": true,
+          "name": "Material",
+          "pbrMetallicRoughness": {
+            "baseColorFactor": [
+              0.2882950000000001,
+              0.25281400000000004,
+              0.014939800000000001,
+              1.0
+            ],
+            "metallicFactor": 0.0,
+            "roughnessFactor": 0.9456226854892155
+          }
+        },
+        {
+          "doubleSided": true,
+          "name": "Vidros",
+          "pbrMetallicRoughness": {
+            "baseColorFactor": [
+              0.00035611352668893636,
+              0.010020330458335518,
+              0.03564081245896186,
+              1.0
+            ],
+            "metallicRoughnessTexture": {
+              "index": 3
+            },
+            "roughnessFactor": 0.0
+          }
+        }
+      ],
+      "images": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "geometry": [
+        {
+          "node": 4,
+          "mesh": 0,
+          "name": "Cube_Base_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            -0.82439,
+            0.0,
+            -0.08274
+          ],
+          "max": [
+            1.65178,
+            2.48216,
+            0.16548
+          ]
+        },
+        {
+          "node": 8,
+          "mesh": 1,
+          "name": "Cube.001_Base_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            -3.30655,
+            0.0,
+            -0.0331
+          ],
+          "max": [
+            -0.83038,
+            2.48216,
+            0.0
+          ]
+        },
+        {
+          "node": 10,
+          "mesh": 2,
+          "name": "Cube.002_Base_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            1.65777,
+            0.0,
+            -0.09534
+          ],
+          "max": [
+            4.13394,
+            2.48216,
+            0.04008
+          ]
+        },
+        {
+          "node": 12,
+          "mesh": 3,
+          "name": "Text_Material_0",
+          "materials": [
+            1
+          ],
+          "min": [
+            6.91913,
+            1.43515,
+            1.05911
+          ],
+          "max": [
+            7.00043,
+            1.48443,
+            1.1226
+          ]
+        },
+        {
+          "node": 13,
+          "mesh": 4,
+          "name": "Text_Base_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            6.60138,
+            0.00362,
+            0.82289
+          ],
+          "max": [
+            7.29577,
+            1.86524,
+            1.37753
+          ]
+        },
+        {
+          "node": 15,
+          "mesh": 5,
+          "name": "Plane_Base_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            -4.13693,
+            -0.08274,
+            -2.48216
+          ],
+          "max": [
+            9.10125,
+            0.0,
+            4.96432
+          ]
+        },
+        {
+          "node": 17,
+          "mesh": 6,
+          "name": "Plane.001_Base_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            -4.13693,
+            2.48216,
+            -2.48216
+          ],
+          "max": [
+            9.10125,
+            2.5649,
+            4.96432
+          ]
+        },
+        {
+          "node": 19,
+          "mesh": 7,
+          "name": "Cube.012_Vidros_0",
+          "materials": [
+            2
+          ],
+          "min": [
+            9.10125,
+            0.7159,
+            0.64668
+          ],
+          "max": [
+            9.13434,
+            1.80866,
+            1.83548
+          ]
+        },
+        {
+          "node": 20,
+          "mesh": 8,
+          "name": "Cube.012_Base_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            9.0081,
+            -0.00827,
+            0.00299
+          ],
+          "max": [
+            9.18556,
+            2.47388,
+            2.47916
+          ]
+        },
+        {
+          "node": 22,
+          "mesh": 9,
+          "name": "Cube.006_Base_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            -5.78871,
+            0.0,
+            -0.08274
+          ],
+          "max": [
+            -3.31254,
+            2.48216,
+            0.16548
+          ]
+        },
+        {
+          "node": 24,
+          "mesh": 10,
+          "name": "Cube.007_Base_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            -4.15348,
+            0.0,
+            0.00299
+          ],
+          "max": [
+            -4.12038,
+            2.48216,
+            2.47916
+          ]
+        },
+        {
+          "node": 26,
+          "mesh": 11,
+          "name": "Cube.003_Base_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            4.13993,
+            0.0,
+            -0.08274
+          ],
+          "max": [
+            6.6161,
+            2.48216,
+            0.16548
+          ]
+        },
+        {
+          "node": 28,
+          "mesh": 12,
+          "name": "Cube.004_Base_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            6.53764,
+            -0.00622,
+            0.00299
+          ],
+          "max": [
+            6.67306,
+            2.47594,
+            2.47916
+          ]
+        },
+        {
+          "node": 30,
+          "mesh": 13,
+          "name": "Cube.005_Base_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            -0.4107,
+            0.00569,
+            2.29475
+          ],
+          "max": [
+            2.06547,
+            2.48785,
+            2.54297
+          ]
+        },
+        {
+          "node": 32,
+          "mesh": 14,
+          "name": "Cube.009_Base_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            2.07146,
+            0.00569,
+            2.46023
+          ],
+          "max": [
+            4.54763,
+            2.48785,
+            2.49333
+          ]
+        },
+        {
+          "node": 34,
+          "mesh": 15,
+          "name": "Cube.011_Base_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            -2.89286,
+            0.00569,
+            2.42015
+          ],
+          "max": [
+            -0.41669,
+            2.48785,
+            2.55557
+          ]
+        },
+        {
+          "node": 36,
+          "mesh": 16,
+          "name": "Cube.013_Base_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            4.55362,
+            0.00569,
+            2.29476
+          ],
+          "max": [
+            7.02979,
+            2.48785,
+            2.54297
+          ]
+        },
+        {
+          "node": 38,
+          "mesh": 17,
+          "name": "Cube.014_Base_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            -5.37502,
+            0.00569,
+            2.29475
+          ],
+          "max": [
+            -2.89885,
+            2.48785,
+            2.54297
+          ]
+        },
+        {
+          "node": 43,
+          "mesh": 18,
+          "name": "Cube.008_Base_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            6.62208,
+            -0.00827,
+            2.46023
+          ],
+          "max": [
+            9.09825,
+            2.47388,
+            2.49333
+          ]
+        },
+        {
+          "node": 45,
+          "mesh": 19,
+          "name": "Cube.010_Base_0",
+          "materials": [
+            0
+          ],
+          "min": [
+            6.62208,
+            -0.00827,
+            -0.01655
+          ],
+          "max": [
+            9.09825,
+            2.47388,
+            0.01655
+          ]
+        }
+      ]
+    }
+  ],
+  "derivatives": {
+    "house-plaster": "House image 8; fixture islands excluded, mirrored vertical seam",
+    "house-timber": "House image 6; rotated grain, desaturated",
+    "house-panels": "House image 11; lower timber band cropped",
+    "house-tile": "House image 5",
+    "house-rug": "House image 10",
+    "hall-paper": {
+      "sourceImages": [
+        0,
+        2
+      ],
+      "cropPixels": [
+        850,
+        110,
+        1035,
+        890
+      ]
+    }
+  },
+  "runtimeBytes": 356398
+}

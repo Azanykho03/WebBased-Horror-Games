@@ -1,0 +1,19 @@
+PASS · desktop fixtures · case 18 · phase 1
+front-door: two open/close cycles, repeat-input guard, stationary frame PASS
+door:F01--F09: two open/close cycles, repeat-input guard, stationary frame, blocked swing resumed after walking clear PASS
+door:F01--F06: two open/close cycles, repeat-input guard, stationary frame PASS
+door:F08--outside-escape: sealed lock preserved
+door:F08--F05: two open/close cycles, repeat-input guard, stationary frame PASS
+door:F01--F07: two open/close cycles, repeat-input guard, stationary frame PASS
+door:F08--F04: two open/close cycles, repeat-input guard, stationary frame PASS
+door:F07--F07-CR: two open/close cycles, repeat-input guard, stationary frame PASS
+door:U02--U07: two open/close cycles, repeat-input guard, stationary frame PASS
+door:U01--U07: two open/close cycles, repeat-input guard, stationary frame PASS
+door:U00--U05: two open/close cycles, repeat-input guard, stationary frame PASS
+door:U00--U04: two open/close cycles, repeat-input guard, stationary frame PASS
+door:U00--U02: two open/close cycles, repeat-input guard, stationary frame PASS
+door:U00--U01: two open/close cycles, repeat-input guard, stationary frame PASS
+bedroom-door: two open/close cycles, repeat-input guard, stationary frame PASS
+door:U00--U03: two open/close cycles, repeat-input guard, stationary frame PASS
+door:U01--U01-CR: two open/close cycles, repeat-input guard, stationary frame PASS
+NORMAL · CLOSED · 5.05, 3.24, -1.00

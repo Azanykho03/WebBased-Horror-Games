@@ -4,18 +4,21 @@ import type { World } from './world.ts';
 import { HOTSPOTS } from './config.ts';
 import type { Position, Settings, Vec3 } from './types.ts';
 import { clearOfPlaySpace, insideFootprint, planDebris, seededRandom } from './decay-layout.ts';
-import { ATLAS_CELLS, createDecayAtlas, weatherHouse } from './decay-textures.ts';
+import { ATLAS_CELLS, createDecayAtlas, referenceFinish, weatherHouse } from './decay-textures.ts';
 import type { DecalKind } from './decay-textures.ts';
+import { planWallFinishes } from './interior-layout.ts';
+import { BROKEN_BULBS } from './interior-lighting.ts';
 
 /** One static vertex buffer per room/material. No individual litter draw calls. */
 class Batch {
   positions: number[] = []; indices: number[] = []; normals: number[] = []; uvs: number[] = []; colors: number[] = [];
-  quad(points: Vec3[], tile: DecalKind | null = null, shade = 1): void {
+  quad(points: Vec3[], tile: DecalKind | null = null, shade = 1, uv?: [number, number, number, number]): void {
     const start = this.positions.length / 3, cell = tile ? ATLAS_CELLS[tile] : 0;
     const x = cell % 4 / 4, y = Math.floor(cell / 4) / 4, a = tile ? .25 : 1, pad = tile ? .004 : 0;
     this.positions.push(...points.flat());
     this.indices.push(start, start + 1, start + 2, start, start + 2, start + 3);
-    this.uvs.push(x + pad, y + a - pad, x + a - pad, y + a - pad, x + a - pad, y + pad, x + pad, y + pad);
+    this.uvs.push(...(uv ? [uv[0], uv[3], uv[2], uv[3], uv[2], uv[1], uv[0], uv[1]]
+      : [x + pad, y + a - pad, x + a - pad, y + a - pad, x + a - pad, y + pad, x + pad, y + pad]));
     for (let i = 0; i < 4; i++) this.colors.push(shade, shade, shade, 1);
   }
   box(center: Vec3, size: Vec3, yaw = 0, tilt = 0, shade = 1): void {
@@ -38,7 +41,7 @@ class Batch {
   }
 }
 
-type Surface = 'wood' | 'plaster' | 'rust' | 'glass' | 'dirt' | 'cutout' | 'web' | 'moon';
+type Surface = 'wood' | 'plaster' | 'rust' | 'glass' | 'dirt' | 'cutout' | 'web' | 'moon' | 'panel' | 'paper' | 'rug';
 export class AbandonedInterior {
   readonly meshes: Babylon.Mesh[] = [];
   readonly debris;
@@ -52,11 +55,13 @@ export class AbandonedInterior {
     this.distressFurniture();
     weatherHouse(world.scene, world.meshes);
     const atlas = createDecayAtlas(world.scene);
-    for (const surface of ['wood', 'plaster', 'rust', 'glass', 'dirt', 'cutout', 'web', 'moon'] as Surface[]) {
+    for (const surface of ['wood', 'plaster', 'rust', 'glass', 'dirt', 'cutout', 'web', 'moon', 'panel', 'paper', 'rug'] as Surface[]) {
       let material: Babylon.StandardMaterial;
-      if (['wood', 'plaster', 'rust', 'glass'].includes(surface)) {
-        const source = world.scene.materials.find(m => m.name === `${surface === 'wood' ? 'woodlight' : surface === 'glass' ? 'damp' : surface}-game`);
+      if (surface === 'paper' || surface === 'rug') material = referenceFinish(world.scene, surface);
+      else if (['wood', 'plaster', 'rust', 'glass', 'panel'].includes(surface)) {
+        const source = world.scene.materials.find(m => m.name === `${surface === 'wood' ? 'woodlight' : surface === 'panel' ? 'wood' : surface === 'glass' ? 'damp' : surface}-game`);
         material = source instanceof B.StandardMaterial ? source : new B.StandardMaterial(`decay-${surface}`, world.scene);
+        if (surface === 'panel') { material = material.clone('reference-panels'); material.backFaceCulling = false; material.twoSidedLighting = true; }
       } else {
         material = new B.StandardMaterial(`decay-${surface}`, world.scene);
         material.diffuseTexture = atlas; material.useAlphaFromDiffuseTexture = true;
@@ -70,6 +75,7 @@ export class AbandonedInterior {
       this.materials.set(surface, material);
     }
     this.debris = planDebris(world.data, HOTSPOTS);
+    this.architecturalFinishes();
     this.walls(); this.corners(); this.windows(); this.furniture(); this.floors(); this.doorFrames();
     for (const piece of this.debris) {
       if (piece.kind === 'paper') this.floorPatch(piece.room, piece.position, piece.size[0], piece.size[2], 'paper', piece.yaw, 'cutout');
@@ -98,6 +104,71 @@ export class AbandonedInterior {
     const c = Math.cos(yaw), s = Math.sin(yaw);
     const points: Vec3[] = [[-width / 2, 0, -depth / 2], [width / 2, 0, -depth / 2], [width / 2, 0, depth / 2], [-width / 2, 0, depth / 2]];
     this.batch(room, surface).quad(points.map(([x, , z]) => [at[0] + x * c + z * s, at[1], at[2] - x * s + z * c]), kind);
+  }
+  private architecturalFinishes(): void {
+    // Keep the existing decay seed untouched so all earlier webs, grime and
+    // damaged furniture details retain their original placements.
+    const detailRandom = seededRandom(24101947);
+    const paneled = new Set(['F01', 'F02', 'F04', 'F06', 'F08', 'U00', 'U02', 'U03', 'U04', 'U06']);
+    for (const wall of planWallFinishes(this.world.data)) {
+      const { room, center, along, across, side, length, bottom, top, base } = wall;
+      const hall = ['F01', 'F08', 'U00'].includes(room);
+      const point = (u: number, y: number, depth = 0): Vec3 => {
+        const p: Vec3 = [...center]; p[along] += u; p[1] = y; p[across] += side * depth; return p;
+      };
+      const skin = (surface: Surface, low: number, high: number, repeat: number, shade: number) => {
+        if (high - low < .02) return;
+        this.batch(room, surface).quad([point(-length / 2, low), point(length / 2, low), point(length / 2, high), point(-length / 2, high)], null, shade,
+          [(center[along] - length / 2) / repeat, (base + 3.035 - high) / 3, (center[along] + length / 2) / repeat, (base + 3.035 - low) / 3]);
+      };
+      if (hall) skin('paper', bottom, top, 1.65, .92);
+      if (paneled.has(room) && bottom < base + .86) {
+        // A 4 mm skin leaves the authored wall, doorway width and collisions intact.
+        const hi = Math.min(top, base + .84), lo = Math.max(bottom, base + .13);
+        if (hi > lo) this.batch(room, 'panel').quad([point(-length / 2, lo, .002), point(length / 2, lo, .002), point(length / 2, hi, .002), point(-length / 2, hi, .002)], null, .86,
+          [0, 0, length / .85, 1]);
+        if (top > base + .89) {
+          const rail: Vec3 = along === 0 ? [length, .038, .025] : [.025, .038, length];
+          this.batch(room, 'panel').box(point(0, base + .865, .004), rail, 0, 0, .87);
+        }
+      }
+      if (hall && top - bottom > 2.5 && length > 2.1) {
+        // The reference's rhythmic piers are suggested with shallow wall strips,
+        // not its deep columns, so the chase lane keeps its original width.
+        const count = Math.floor(length / 2.6);
+        for (let i = 0; i < count; i++) {
+          const at = point(((i + .5) / count - .5) * length, base + 1.94, .008);
+          this.batch(room, 'plaster').box(at, along === 0 ? [.085, 2.13, .028] : [.028, 2.13, .085], 0, 0, .78);
+        }
+      }
+    }
+    // Lay the supplied patterned fabric on the existing rugs, below their
+    // original borders and grime. No furniture or collectible is relocated.
+    const rugs: Record<string, [number, number]> = { F02: [3.6, 3.8], F06: [3.6, 2.55], U01: [3.4, 3.4], U03: [3.2, 3.2], U06: [3.8, 4] };
+    for (const p of this.world.data.props.filter(p => p.kind === 'rug' && rugs[p.room])) {
+      const [w, d] = rugs[p.room], [x, y, z] = p.position;
+      this.batch(p.room, 'rug').quad([[x - w / 2 + .14, y + .014, z - d / 2 + .14], [x + w / 2 - .14, y + .014, z - d / 2 + .14],
+        [x + w / 2 - .14, y + .014, z + d / 2 - .14], [x - w / 2 + .14, y + .014, z + d / 2 - .14]]);
+    }
+    // Local ceiling leaks expose dark lath visually; the actual ceiling and
+    // jump collision remain whole. All strips sit above the player's headroom.
+    for (const [room, x, z] of [['F02', 8.55, -5.7], ['F06', -6.6, -10.8], ['F05', -6.55, -20.2], ['U00', -.5, -14], ['U03', 8.45, -12.7], ['U06', 8.25, -20.5]] as [string, number, number][]) {
+      const y = (room.startsWith('U') ? this.world.data.floorRise : 0) + 3.026;
+      this.floorPatch(room, [x, y, z], .78, 1.32, 'peelTall', .07, 'cutout');
+      for (let i = 0; i < 5; i++) this.batch(room, 'wood').box([x - .22 + i * .11, y - .004, z], [.032, .014, .57 + detailRandom() * .34], .05, 0, .61);
+      this.floorPatch(room, [x + .26, y - .013, z + .36], .72, .67, 'web', 0, 'web');
+    }
+    for (const light of this.world.data.lights) {
+      const [x, y, z] = light.position;
+      if (y % this.world.data.floorRise < 2) continue;
+      // Corroded fittings, soot and glass remain visual parts of the authored
+      // fixtures. They never introduce another light or a floor obstruction.
+      this.floorPatch(light.room, [x, Math.floor(y / this.world.data.floorRise) * this.world.data.floorRise + 3.024, z], .46, .51, 'grime');
+      if (BROKEN_BULBS.has(light.id)) {
+        this.batch(light.room, 'rust').box([x, y + .015, z], [.038, .06, .037], 0, .15, .48);
+        for (let i = 0; i < 3; i++) this.batch(light.room, 'glass').box([x + (i - 1) * .035, y - .065 + i * .018, z + .016], [.022, .036, .008], i * 1.1, .3, .45);
+      }
+    }
   }
   private walls(): void {
     // Follow actual wall colliders; openings, room partitions and the stair void

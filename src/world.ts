@@ -13,6 +13,7 @@ import { PlayerCollision } from './player-physics.ts';
 import { CorazonPresentation } from './corazon.ts';
 import { CABINETS, InteractiveFixtures } from './fixtures.ts';
 import { GhostNavigation } from './ghost-navigation.ts';
+import { fixtureOutput } from './interior-lighting.ts';
 
 export const B = (window as unknown as { BABYLON: typeof Babylon }).BABYLON;
 export const vector = (p: Vec3) => B.Vector3.FromArray(p);
@@ -35,6 +36,7 @@ export class World {
   fixtures3d!: InteractiveFixtures;
   ghostNavigation?: GhostNavigation;
   private fixtures: { definition: HouseManifest['lights'][number]; light: Babylon.PointLight }[] = [];
+  private fixtureGlows = new Map<string, Babylon.StandardMaterial>();
   private dynamic: Collider[] = [];
   private shadow: Babylon.ShadowGenerator;
   private shadowQuality = '';
@@ -102,6 +104,7 @@ export class World {
       if (mesh instanceof B.Mesh) mesh.setIndices(keep);
     }
     this.standardMaterials(this.meshes, true);
+    this.prepareFixtureGlows();
     for (const mesh of this.meshes) {
       mesh.freezeWorldMatrix(); mesh.receiveShadows = true;
       if (!/floor|ceiling|stain|roof/.test(mesh.name)) this.shadow.addShadowCaster(mesh);
@@ -195,6 +198,39 @@ export class World {
     light.includedOnlyMeshes = this.meshes.filter(m => m.name.startsWith(definition.room) || definition.room === 'U00' && m.name.startsWith('F03') || m.name === 'F00-ceiling__plaster');
     this.fixtures.push({ definition, light });
   }
+  private prepareFixtureGlows(): void {
+    // Bulbs were batched per room with one always-emissive material. Separate
+    // just those tiny visual islands so glass and light share the actual power
+    // state, even when an off-screen fixture is outside the active light budget.
+    const additions: Babylon.Mesh[] = [];
+    for (const source of this.meshes.filter(m => m.name.endsWith('__glow'))) {
+      if (!(source instanceof B.Mesh) || !(source.material instanceof B.StandardMaterial)) continue;
+      const positions = source.getVerticesData(B.VertexBuffer.PositionKind), indices = source.getIndices();
+      if (!positions || !indices) continue;
+      const lights = this.data.lights.filter(d => source.name.startsWith(d.room));
+      const groups = new Map<string, number[]>(), keep: number[] = [];
+      for (let i = 0; i < indices.length; i += 3) {
+        const center: Vec3 = [0, 0, 0];
+        for (let j = 0; j < 3; j++) for (let axis = 0; axis < 3; axis++) center[axis] += positions[indices[i + j] * 3 + axis] / 3;
+        const light = lights.find(d => Math.hypot(...center.map((v, a) => v - d.position[a])) < .7);
+        const group = light ? groups.get(light.id) ?? [] : keep;
+        group.push(indices[i], indices[i + 1], indices[i + 2]);
+        if (light) groups.set(light.id, group);
+      }
+      for (const [id, subset] of groups) {
+        const glow = new B.Mesh(`${source.name}-${id}`, this.scene), data = B.VertexData.ExtractFromMesh(source);
+        data.indices = subset; data.applyToMesh(glow); glow.parent = source.parent;
+        glow.position.copyFrom(source.position); glow.scaling.copyFrom(source.scaling);
+        glow.rotation.copyFrom(source.rotation); glow.rotationQuaternion = source.rotationQuaternion?.clone() ?? null;
+        const material = source.material.clone(`bulb-${id}`);
+        material.diffuseColor.set(.35, .30, .20); material.emissiveColor.setAll(0);
+        glow.material = material; glow.isPickable = false; glow.checkCollisions = false;
+        this.fixtureGlows.set(id, material); additions.push(glow);
+      }
+      source.setIndices(keep);
+    }
+    this.meshes.push(...additions);
+  }
   private normalizeItem(root: Babylon.TransformNode, length: number): void {
     const bounds = root.getHierarchyBoundingVectors(true), center = bounds.min.add(bounds.max).scale(.5);
     const size = bounds.max.subtract(bounds.min), scale = length / Math.max(size.x, size.y, size.z);
@@ -258,12 +294,16 @@ export class World {
     }
     this.sky.intensity = (.19 + (e?.lightning ?? 0) * .23) * settings.brightness;
     for (const f of this.fixtures) {
-      if (!f.light.isEnabled()) continue;
       const d = f.definition;
-      const power = d.electric && this.kitchenBlackout && d.room === 'F05' && !settings.reducedFlicker ? .06 : d.electric && !progress.power ? .3 : 1;
-      const flicker = settings.reducedFlicker || !d.electric ? 1 : .94 + .06 * Math.sin(time * Math.PI * 2 / d.period + d.phase);
+      const power = d.electric && this.kitchenBlackout && d.room === 'F05' && !settings.reducedFlicker ? .06 : 1;
+      const flicker = fixtureOutput(d, progress.power, settings.reducedFlicker, time);
       const dim = d.electric ? (1 - this.atmosphere.proximity * .18) * (1 - (e?.affectedRoom === d.room ? e.lightDip : 0)) : 1 + (e?.lightning ?? 0) * 2;
       f.light.intensity = d.intensity * power * flicker * dim * settings.brightness * (d.electric ? .82 : 1);
+      const glow = this.fixtureGlows.get(d.id);
+      if (glow) {
+        const level = power * flicker * dim * settings.brightness;
+        glow.emissiveColor.set(.32 * level, .22 * level, .105 * level);
+      }
     }
   }
   weather(p: Position): { rainExposure: number; window: Vec3 | null } {

@@ -1,0 +1,6 @@
+Guest bedroom · low · 60 FPS
+Decay: 7124 triangles / 106 room batches (44 enabled)
+237 shallow debris pieces · 12 dust motes
+Runtime 239 colliders · all decay non-colliding / non-pickable
+Bulb light / glow state: PASS (21 fixtures)
+675 × 312 · flashlight shadow 256px

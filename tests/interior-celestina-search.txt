@@ -1,0 +1,7 @@
+PASS · Both cabinets: concealment, 30-second search, early exit, capture and retry
+hide-dining: concealed after witnessed entry; 30s search, 24.8m travelled, pause frozen, then patrol
+hide-guest: concealed after witnessed entry; 30s search, 22.0m travelled, pause frozen, then patrol
+hide-dining Hard: early exit → visible → Chase → capture
+Retry: cleared search, closed cabinets, restored player
+hide-guest Hard: early exit → visible → Chase → capture
+Retry: cleared search, closed cabinets, restored player

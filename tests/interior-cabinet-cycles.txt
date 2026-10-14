@@ -1,0 +1,8 @@
+PASS · desktop fixtures · case 7 · phase 5
+hide-dining cycle 1: prompt, smooth entry/exit, fixed body, no drift, upright camera, walking, free look, jump and landing PASS
+hide-dining cycle 2: prompt, smooth entry/exit, fixed body, no drift, upright camera, walking, free look, jump and landing PASS
+hide-dining cycle 3: prompt, smooth entry/exit, fixed body, no drift, upright camera, walking, free look, jump and landing PASS
+hide-guest cycle 1: prompt, smooth entry/exit, fixed body, no drift, upright camera, walking, free look, jump and landing PASS
+hide-guest cycle 2: prompt, smooth entry/exit, fixed body, no drift, upright camera, walking, free look, jump and landing PASS
+hide-guest cycle 3: prompt, smooth entry/exit, fixed body, no drift, upright camera, walking, free look, jump and landing PASS
+NORMAL · CLOSED · 3.94, 3.24, -13.00

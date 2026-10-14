@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Interior GLB references</title>
+<style>body{margin:0;background:#1a1c20;color:#ded9c9;font:13px system-ui}canvas{width:100vw;height:100vh;display:block}aside{position:fixed;top:12px;left:12px;background:#151918de;padding:12px;max-width:700px}button{padding:8px;margin:3px}pre{white-space:pre-wrap}</style></head>
+<body><canvas id="view"></canvas><aside><button id="house">House reference</button><button id="hall">Hallway reference</button><button id="inside">Interior view</button><button id="overhead">Overhead view</button><pre id="status">Loading…</pre></aside>
+<script src="/assets/models/environments/haunted-house/vendor/babylon.js"></script><script src="/assets/models/environments/haunted-house/vendor/babylonjs.loaders.min.js"></script><script type="module">
+const B=window.BABYLON,canvas=document.querySelector('canvas'),engine=new B.Engine(canvas,true),scene=new B.Scene(engine);scene.useRightHandedSystem=true;scene.clearColor=new B.Color4(.055,.065,.07,1);
+const camera=new B.ArcRotateCamera('review',-Math.PI/2,1.0,10,B.Vector3.Zero(),scene);camera.minZ=.02;camera.attachControl(canvas,true);
+new B.HemisphericLight('inspection-fill',new B.Vector3(.3,1,.2),scene).intensity=1.1;
+const light=new B.PointLight('inspection-torch',new B.Vector3(0,3,0),scene);light.intensity=3;light.range=30;
+let asset,root,kind,bounds;
+async function load(file){if(asset)asset.dispose();kind=file;asset=await B.SceneLoader.LoadAssetContainerAsync('/assets/models/environments/haunted-house/source/interior-references/',file+'.glb',scene);asset.addAllToScene();root=new B.TransformNode('reference',scene);for(const m of asset.meshes)if(!m.parent)m.parent=root;bounds=root.getHierarchyBoundingVectors(true);const extent=bounds.max.subtract(bounds.min);camera.setTarget(bounds.min.add(bounds.max).scale(.5));camera.radius=extent.length()*.8;camera.beta=.8;camera.alpha=-Math.PI/2;light.position.copyFrom(camera.target).addInPlace(new B.Vector3(0,extent.y*.4,0));document.querySelector('#status').textContent=`${file}: ${asset.meshes.length} loaded mesh nodes / ${asset.materials.length} materials\nBounds ${bounds.min.asArray().map(n=>n.toFixed(2))} to ${bounds.max.asArray().map(n=>n.toFixed(2))}\nDrag to orbit / wheel to zoom. Inspection lighting only.`;}
+document.querySelector('#house').onclick=()=>load('haunted_house');document.querySelector('#hall').onclick=()=>load('scary_interiorHallway');
+document.querySelector('#overhead').onclick=()=>{camera.beta=.03;camera.radius=bounds.max.subtract(bounds.min).length()*.75;};
+document.querySelector('#inside').onclick=()=>{if(kind==='scary_interiorHallway'){camera.setTarget(new B.Vector3(6,1.45,1.2));camera.radius=9;camera.beta=Math.PI/2;camera.alpha=Math.PI;light.position.set(-2,1.7,1.2);light.intensity=.8;}else{camera.setTarget(new B.Vector3(0,6,-42));camera.radius=35;camera.beta=Math.PI/2;camera.alpha=Math.PI/2;}};
+await load('haunted_house');engine.runRenderLoop(()=>scene.render());window.addEventListener('resize',()=>engine.resize());
+</script></body></html>

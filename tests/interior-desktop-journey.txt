@@ -1,0 +1,5 @@
+PASS · Full desktop escape with live ghost
+flashlight → note → fuse → tsinelas → battery-kitchen → breaker → master-key → bedroom-door → letter → locket → music-box → checkpoint restored → cabinet → exit-key → front-door
+79.8s · 203.6m · 1 captures
+Ghost: Dormant, Patrol, Investigate, Chase, Search, Catch
+FPS avg 57 · min 21

@@ -2,10 +2,13 @@ import { defineConfig } from 'vite';
 import { cp, mkdir } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { AMBIENCE_AUDIO, ASSETS, CORAZON_AUDIO, GHOST_PROFILE, MUSIC_AUDIO, VOICE_AUDIO } from './src/config.ts';
+import { INTERIOR_TEXTURES } from './src/interior-assets.ts';
 
 // Ship only runtime assets; generation sources, references and model weights stay local.
 const runtimeAssets = new Set([
   ASSETS.house, ASSETS.manifest,
+  ...Object.values(INTERIOR_TEXTURES),
+  'models/environments/haunted-house/textures/reference/ATTRIBUTION.md',
   'models/environments/haunted-house/vendor/babylon.js',
   'models/environments/haunted-house/vendor/babylonjs.loaders.min.js',
   'models/environments/haunted-house/vendor/BABYLON-LICENSE.md',

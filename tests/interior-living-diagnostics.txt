@@ -1,0 +1,6 @@
+Living room · standard · 60 FPS
+Decay: 7124 triangles / 106 room batches (49 enabled)
+237 shallow debris pieces · 48 dust motes
+Runtime 239 colliders · all decay non-colliding / non-pickable
+Bulb light / glow state: PASS (21 fixtures)
+1280 × 720 · flashlight shadow 512px

@@ -1,10 +1,35 @@
 import type * as Babylon from 'babylonjs';
 import { B } from './world.ts';
 import { seededRandom } from './decay-layout.ts';
+import { assetUrl } from './config.ts';
+import { INTERIOR_TEXTURES } from './interior-assets.ts';
 
 type Context = CanvasRenderingContext2D;
 export const ATLAS_CELLS = { damp: 0, peel: 1, dust: 2, web: 3, tear: 4, paper: 5, crack: 6, moon: 7, rot: 8, cloth: 9, grime: 10, contact: 11, peelTall: 12, peelSmall: 13 } as const;
 export type DecalKind = keyof typeof ATLAS_CELLS;
+
+export function referenceTexture(scene: Babylon.Scene, path: string): Babylon.Texture {
+  const map = new B.Texture(assetUrl(path), scene, false, true, B.Texture.TRILINEAR_SAMPLINGMODE);
+  map.wrapU = map.wrapV = B.Texture.WRAP_ADDRESSMODE;
+  map.anisotropicFilteringLevel = 4;
+  return map;
+}
+
+export function referenceFinish(scene: Babylon.Scene, kind: 'paper' | 'rug'): Babylon.StandardMaterial {
+  const material = new B.StandardMaterial(`reference-${kind}`, scene);
+  material.diffuseTexture = referenceTexture(scene, INTERIOR_TEXTURES[kind]);
+  material.specularColor.setAll(.012); material.specularPower = 8; material.maxSimultaneousLights = 8;
+  material.backFaceCulling = false; material.twoSidedLighting = true;
+  if (kind === 'paper') {
+    material.bumpTexture = referenceTexture(scene, INTERIOR_TEXTURES.paperNormal);
+    material.bumpTexture.level = .32;
+    material.diffuseColor.set(.93, .94, .92);
+  } else {
+    material.diffuseColor.set(.83, .81, .76);
+    material.diffuseTexture.wrapU = material.diffuseTexture.wrapV = B.Texture.CLAMP_ADDRESSMODE;
+  }
+  return material;
+}
 
 function texture(scene: Babylon.Scene, name: string, size: number, paint: (ctx: Context) => void): Babylon.DynamicTexture {
   const t = new B.DynamicTexture(name, { width: size, height: size }, scene, true, B.Texture.TRILINEAR_SAMPLINGMODE);
@@ -31,7 +56,9 @@ export function weatherHouse(scene: Babylon.Scene, meshes: Babylon.AbstractMesh[
   for (const [kind, base] of Object.entries(palettes)) {
     const material = scene.materials.find(m => m.name === `${kind}-game`);
     if (!(material instanceof B.StandardMaterial)) continue;
-    const map = texture(scene, `aged-${kind}`, 512, ctx => {
+    const reference = ({ plaster: INTERIOR_TEXTURES.plaster, wood: INTERIOR_TEXTURES.panels,
+      woodlight: INTERIOR_TEXTURES.timber, tile: INTERIOR_TEXTURES.tile } as Record<string, string>)[kind];
+    const map = reference ? referenceTexture(scene, reference) : texture(scene, `aged-${kind}`, 512, ctx => {
       const random = seededRandom(311 + kind.length * 43), pixels = ctx.createImageData(512, 512);
       const field = Array.from({ length: 256 }, () => random());
       const noise = (x: number, y: number, step: number) => {
@@ -79,6 +106,11 @@ export function weatherHouse(scene: Babylon.Scene, meshes: Babylon.AbstractMesh[
     if (kind === 'plaster') map.uScale = map.vScale = .36;
     const previous = material.diffuseTexture;
     material.diffuseTexture = map; material.diffuseColor.set(1, 1, 1);
+    const normal = kind === 'plaster' ? INTERIOR_TEXTURES.plasterNormal : kind === 'woodlight' ? INTERIOR_TEXTURES.timberNormal : null;
+    if (normal) {
+      const bump = referenceTexture(scene, normal); bump.uScale = map.uScale; bump.vScale = map.vScale;
+      bump.level = kind === 'woodlight' ? .4 : .22; material.bumpTexture = bump;
+    }
     if (previous && !scene.materials.some(m => m instanceof B.StandardMaterial && m.diffuseTexture === previous)) previous.dispose();
     material.specularColor.setAll(kind === 'tile' ? .035 : .012); material.specularPower = 8;
   }
