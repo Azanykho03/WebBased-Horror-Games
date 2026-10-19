@@ -261,10 +261,16 @@ test('both actual cabinets complete witnessed entry, protect a full search, and 
           assert(hiding.exit()); assert(!player.hidden); let rediscovered = false, caught = false;
           for (let frame = 0; frame < 480; frame++) {
             caught = tick(); rediscovered ||= ghost.state === 'Chase';
-            if (ghost.sees(player, world)) assert(ghost.state === 'Chase' || ghost.state === 'Catch', 'Visible exit did not immediately cancel search');
+            if (ghost.sees(player, world)) assert(ghost.state === 'Chase' || ghost.state === 'GrabStart', 'Visible exit did not immediately cancel search');
             if (caught) break;
           }
-          assert(rediscovered && caught, `${cabinet.id}: early exit never resumed chase/capture`);
+          assert(rediscovered, `${cabinet.id}: early exit never resumed chase`);
+          // Ground captures reserve a full fall/drag envelope. A cabinet recess
+          // may safely delay the grab, but must not grant hiding or cancel chase.
+          if (!caught) {
+            assert(!world.canGrab(player, ghost.position), `${cabinet.id}: valid-space capture stalled ${JSON.stringify({player:player.position,ghost:ghost.position})}`);
+            assert.equal(ghost.state, 'Chase'); assert(!player.hidden);
+          }
           assert.equal(ghost.searchRemaining, 0); assert.equal(ghost.doorAction, null);
         }
       }

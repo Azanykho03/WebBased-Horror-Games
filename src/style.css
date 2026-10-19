@@ -57,3 +57,20 @@ html,body{padding:0;min-height:0}body{height:100dvh}#game{position:fixed;inset:0
 /* Keep the cabinet viewing slit clear while the player is concealed. */
 #ui #hud[data-hiding='true'] .interact{top:70%}
 #ui #hud[data-hiding='true'] .crosshair{display:none}
+
+/* Grab controls cover the look surface and respect safe areas in fullscreen. */
+#struggle{position:absolute;inset:0;z-index:3;pointer-events:auto;touch-action:none;display:grid;place-items:center;background:radial-gradient(ellipse,transparent 30%,#290b0e80);padding:max(16px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))}
+.struggle-card{width:min(320px,85vw);text-align:center;justify-self:start;align-self:start;margin-top:18px;text-shadow:0 2px 8px #000}
+.struggle-card h2{font:bold clamp(16px,2.4vw,23px)/1.4 Arial,sans-serif;letter-spacing:.04em;color:#fff2d8;margin:8px 0 14px}
+.struggle-status{display:flex;justify-content:space-between;font:bold 17px monospace;color:#ffe9bd;margin-bottom:9px}
+.struggle-track{height:12px;background:#100f12df;border:1px solid #c6ae7d88;overflow:hidden}
+.struggle-track i{display:block;height:100%;background:#e6c586;transform-origin:left;transition:transform .09s ease-out}
+.struggle-card p{font-size:12px;color:#e2d7c1;margin:9px 0}.struggle-mobile,.struggle-tap{display:none}
+.struggle-pause{position:absolute;right:max(16px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));width:48px;height:48px;border:1px solid #bcae8b80;background:#151914da;color:#fff0ce}
+#ui[data-input='touch'] .struggle-desktop{display:none}#ui[data-input='touch'] .struggle-mobile{display:inline}
+#ui[data-input='touch'] .struggle-tap{display:block;width:100%;min-height:68px;margin-top:15px;border:2px solid #eed4a1;background:#522c20ed;color:#fff4d7;font-weight:bold;letter-spacing:.06em;touch-action:none;-webkit-tap-highlight-color:transparent}
+.struggle-tap:active{background:#7b4a30!important;transform:scale(.98)}#struggle[data-urgent='true'] .struggle-timer{color:#ffb8a0}
+#ui[data-grab='true'] #hud,#ui[data-grab='true'] #toast,#ui[data-grab='true'] #subtitle{visibility:hidden}
+#ui[data-reduced-motion='true'] .struggle-track i{transition:none}
+@media(max-height:500px){.struggle-card{margin-top:0;align-self:center;width:min(260px,33vw)}.struggle-card h2{font-size:16px;margin:5px 0 7px}.struggle-card p{margin:5px 0}#ui[data-input='touch'] .struggle-tap{min-height:56px;margin-top:10px}}
+@media(max-width:500px) and (min-height:501px){.struggle-card{justify-self:center;width:min(320px,85vw)}}

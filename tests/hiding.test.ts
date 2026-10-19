@@ -30,6 +30,9 @@ test('hinges reject spam, hold blocked sweeps, and repeat without drift', () => 
     assert(hinge.request(false)); assert(!hinge.request(true)); hinge.update(.7); assert.equal(hinge.state, 'CLOSED'); assert.equal(hinge.angle, 0);
   }
   hinge.reset(true); assert.equal(hinge.state, 'OPEN'); assert(hinge.request(false));
+  hinge.update(.3); const angle = hinge.angle; hinge.reopen();
+  assert.equal(hinge.angle, angle); assert.equal(hinge.state, 'OPENING');
+  hinge.update(.01); assert(hinge.angle > angle); hinge.update(1); assert.equal(hinge.state, 'OPEN');
 });
 
 test('both cabinet configurations repeat entry/exit, suspend gravity, clamp look and restore controls', () => {
@@ -64,7 +67,19 @@ test('both cabinet configurations repeat entry/exit, suspend gravity, clamp look
         assert(player.grounded); assert.equal(world.camera.rotation.z, 0); assert.equal(world.camera.parent, null); assert.equal(player.pitch, 0);
         keys.add('KeyW'); for (let i = 0; i < 20; i++) tick(); assert(Math.hypot(player.position.x - before.x, player.position.z - before.z) > .4); keys.clear();
       }
-      player.reset(anchorPosition(cabinet.exit, level)); player.halt(world); hiding.enter(cabinet, ghost);
+      for (const state of ['OPENING_CABINET', 'ENTERING', 'CLOSING_CABINET']) {
+        cabinet.hinge.reset(); player.reset(anchorPosition(cabinet.exit, level)); player.halt(world); player.flashlight = true;
+        assert(hiding.enter(cabinet, ghost));
+        for (let i = 0; i < 160 && hiding.state !== state; i++) tick();
+        assert.equal(hiding.state, state);
+        const body = { ...player.position }, pitch = player.pitch;
+        hiding.interruptGrab();
+        assert.deepEqual(player.position, body); assert.equal(player.pitch, pitch); assert(player.flashlight);
+        assert.equal(hiding.state, 'NORMAL'); assert(!player.hidden && !player.hidingAt && !hiding.cabinet);
+        cabinet.hinge.update(1); assert.equal(cabinet.hinge.state, 'OPEN');
+        player.grabbed = true; assert(!hiding.enter(cabinet, ghost)); player.grabbed = false;
+      }
+      cabinet.hinge.reset(); player.reset(anchorPosition(cabinet.exit, level)); player.halt(world); hiding.enter(cabinet, ghost);
       for (let i = 0; i < 50; i++) tick(); hiding.reset();
       assert.equal(hiding.state, 'NORMAL'); assert.equal(cabinet.hinge.state, 'CLOSED'); assert(player.grounded);
     }

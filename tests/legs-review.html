@@ -1,0 +1,9 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body,canvas{margin:0;width:100%;height:100%;display:block;background:#242a30}#label{position:absolute;left:24px;top:18px;color:white;font:18px sans-serif}</style></head><body><canvas id="view"></canvas><div id="label">Source lower body — front / side / back</div><script src="/assets/models/environments/haunted-house/vendor/babylon.js"></script><script src="/assets/models/environments/haunted-house/vendor/babylonjs.loaders.min.js"></script><script>
+const B=BABYLON, engine=new B.Engine(document.querySelector('canvas'),true),scene=new B.Scene(engine);scene.useRightHandedSystem=true;scene.clearColor=new B.Color4(.13,.16,.19,1);
+const camera=new B.ArcRotateCamera('camera',-Math.PI/2,Math.PI/2,3,new B.Vector3(0,.7,0),scene);camera.attachControl(document.querySelector('canvas'),true);
+new B.HemisphericLight('sky',new B.Vector3(.1,1,-.7),scene).intensity=.8;
+const light=new B.DirectionalLight('key',new B.Vector3(-.3,-.5,.8),scene);light.intensity=2;
+const file=new URL(location.href).searchParams.get('file')||'source/female_skinny_bottom_part.glb';
+B.SceneLoader.ImportMeshAsync(null,'/assets/models/player/legs/',file,scene).then(r=>{window.loaded=true;window.rig=r;window.scene=scene;window.camera=camera;const top=r.meshes[0];if(file.includes('student-uniform'))top.position.y=.92;window.model=top;engine.runRenderLoop(()=>scene.render());});
+window.addEventListener('resize',()=>engine.resize());
+</script></body></html>

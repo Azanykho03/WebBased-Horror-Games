@@ -31,7 +31,7 @@ export type Screen = 'loading' | 'menu' | 'difficulty' | 'ready' | 'intro' | 'pl
 export type Mission = 'M01' | 'M02' | 'M03' | 'M04' | 'M05';
 export type ItemId = 'flashlight' | 'note' | 'fuse' | 'locket' | 'letter' | 'music-box' | 'exit-key' | 'master-key' | 'battery-kitchen' | 'battery-study' | 'battery-guest' | 'tsinelas';
 export type InteractionId = ItemId | 'breaker' | 'cabinet' | 'exit' | 'front-door' | 'bedroom-door' | 'hide-guest' | 'hide-dining' | `door:${string}`;
-export type GhostState = 'Dormant' | 'Patrol' | 'Investigate' | 'Chase' | 'Search' | 'Stunned' | 'Catch';
+export type GhostState = 'Dormant' | 'Patrol' | 'Investigate' | 'Chase' | 'Search' | 'Stunned' | 'GrabStart' | 'Falling' | 'Dragging' | 'Struggling' | 'EscapeKick' | 'Releasing' | 'Recovering' | 'Killing' | 'Catch';
 export type Checkpoint = 'entrance' | 'breaker' | 'cabinet';
 export interface Progress {
   difficulty: Difficulty;

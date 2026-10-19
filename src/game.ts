@@ -21,12 +21,18 @@ import { MobileDisplay } from './mobile-display.ts';
 import { CORAZON_SCARE, scareFrame } from './corazon-motion.ts';
 import type { ScareKind } from './corazon-motion.ts';
 import { HidingSystem } from './hiding.ts';
+import { GrabSequence } from './grab.ts';
+import { GrabPresentation } from './grab-presentation.ts';
+import { StruggleUI } from './struggle-ui.ts';
 
 export class Game {
   private engine!: Babylon.Engine;
   private world!: World;
   private interactions!: InteractionSystem;
   private hiding!: HidingSystem;
+  private grab = new GrabSequence();
+  private grabPresentation!: GrabPresentation;
+  private struggleUI: StruggleUI;
   private player = new Player();
   private ghost = new GhostStateMachine();
   private storage = new SaveSystem();
@@ -68,6 +74,8 @@ export class Game {
     this.canvas = canvas; this.ui = new UI(root); this.settings = this.storage.settings();
     this.audio = new AudioSystem(this.settings); this.input = new InputSystem(canvas, () => this.pause());
     this.touch = new TouchControls(root, this.input, () => this.pause());
+    this.struggleUI = new StruggleUI(root, () => this.strugglePress(), () => this.pause());
+    this.input.onStruggle = () => this.strugglePress();
     this.display = new MobileDisplay(() => {
       this.input.clear(); this.performanceProfile.resetSamples(); this.applyResolution();
       this.engine?.resize(); this.world?.camera.getProjectionMatrix(true);
@@ -117,6 +125,7 @@ export class Game {
       await this.world.load((label, percent) => this.ui.loading(label, percent));
       this.interactions = new InteractionSystem(this.world);
       this.hiding = new HidingSystem(this.player, this.input, this.world);
+      this.grabPresentation = new GrabPresentation(this.world, this.player, this.ghost);
       this.horror = new HorrorDirector(this.world.data);
       this.loaded = true;
       this.world.syncProgress(this.progress);
@@ -130,6 +139,7 @@ export class Game {
         const { attachJourney } = await import('../tests/browser-journey.ts');
         this.validationStep = attachJourney({
           world: this.world, player: this.player, ghost: this.ghost, input: this.input, interactions: this.interactions, hiding: this.hiding,
+          grab: this.grab, grabPresentation: this.grabPresentation,
           progress: () => this.progress, screen: () => this.screen, revealing: () => this.revealTime >= 0,
           audioState: () => this.audio.state,
           audioDiagnostics: () => this.audio.diagnostics,
@@ -153,6 +163,7 @@ export class Game {
     this.syncAudio();
     this.ui.screen(screen, this.progress, this.settings, this.storage.load() !== null, detail, this.selectedDifficulty);
     this.syncTouch();
+    this.struggleUI.update(this.grab, screen === 'playing');
   }
   private syncAudio(): void {
     const menu = ['loading', 'menu', 'difficulty', 'ready'].includes(this.screen)
@@ -186,6 +197,7 @@ export class Game {
     if (action === 'menu') {
       if (!['menu', 'difficulty', 'won', 'caught'].includes(this.screen)) this.save();
       this.world.corazon.finish(); this.ui.scareFade(0); this.ui.cinematic(false);
+      this.resetGrab();
       this.hiding.reset();
       this.show('menu');
     }
@@ -201,6 +213,8 @@ export class Game {
     this.sprintVoiceCooldown = 0; this.world.kitchenBlackout = false;
     this.lastGhostLines.clear();
     this.world.corazon.reset(); this.ui.scareFade(0); this.ui.cinematic(false);
+    this.resetGrab();
+    this.grab.resetRun(); this.world.legs.reset();
     this.introPlayed = progress.collected.length > 0; this.introTime = 0; this.soundSightTick = this.weatherTick = 0;
     this.horror.reset(); this.world.environment.reset(); this.world.atmosphere = calmAtmosphere();
     this.progress.battery = Math.max(this.progress.battery, difficultySettings[progress.difficulty].restoredBattery);
@@ -299,6 +313,7 @@ export class Game {
     return stage < 3;
   }
   private startScare(kind: ScareKind): void {
+    if (this.grab.active && (kind !== 'capture' || this.grab.phase !== 'killing')) return;
     if (kind === 'capture' && this.player.hidden) return;
     if (!this.world.corazon.start(kind, this.settings)) return;
     this.input.clear(); this.player.halt(this.world);
@@ -318,12 +333,55 @@ export class Game {
     if (!event.finished) return;
     presentation.finish(); this.ui.face(false, this.settings.gentleScares); this.ui.cinematic(false);
     this.audio.finishJumpscare(); this.input.clear(); this.player.halt(this.world);
-    if (kind === 'capture') this.show('caught');
+    if (kind === 'capture') { this.resetGrab(); this.ghost.state = 'Catch'; this.show('caught'); }
     else {
       this.player.camera(this.world, this.settings);
       this.world.arms.setEnabled(this.world.viewmodel.visible);
       this.horror.recover(); this.syncTouch();
     }
+  }
+  private startGrab(): void {
+    if (this.player.hidden || this.world.corazon.active || !this.grab.start(this.progress.difficulty)) return;
+    this.hiding.interruptGrab();
+    this.player.grabbed = true; this.input.restrict(true); this.ghostMoving = false;
+    this.grabPresentation.start(); this.ui.grab(true); this.syncTouch();
+    this.audio.effect('grab');
+  }
+  private strugglePress(): void {
+    if (this.screen !== 'playing' || this.presentationPaused || document.hidden || !this.input.active) return;
+    // Do not accept an input delivered after the deadline between two renders.
+    if (this.grab.remaining <= Math.max(0, (performance.now() - this.last) / 1000)) return;
+    if (!this.grab.press()) return;
+    this.grabPresentation.press(); this.audio.effect('struggle');
+    if (this.grab.phase === 'escape-kick') { this.ghost.escapeKick(); this.audio.effect('escape'); }
+    this.struggleUI.update(this.grab, true);
+  }
+  private updateGrab(realDt: number): void {
+    const event = this.grab.update(realDt, this.player.grounded);
+    this.grabPresentation.update(Math.min(.05, realDt), this.grab, this.settings);
+    if (event === 'interactive') this.ghost.struggle();
+    if (event === 'falling') this.ghost.falling();
+    if (event === 'dragging') { this.ghost.dragging(); this.audio.effect('drag'); }
+    if (event === 'release') this.ghost.release();
+    if (event === 'recovery') this.ghost.recover();
+    if (event === 'failed') this.ghost.kill();
+    this.struggleUI.update(this.grab, true);
+    if (event === 'kill') {
+      this.grabPresentation.finish(false);
+      this.startScare('capture');
+      // The finishing presentation now owns the lock and its single reveal event.
+      this.grab.reset(); this.ui.grab(false);
+    } else if (event === 'released') {
+      this.grabPresentation.finish(); this.player.grabbed = false;
+      this.input.restrict(false); this.player.camera(this.world, this.settings);
+      this.ghost.resumeAfterEscape(); this.ui.grab(false); this.horror.recover(); this.syncTouch();
+      this.ui.notice('You broke free. Move!', 2);
+    }
+  }
+  private resetGrab(): void {
+    this.grabPresentation?.finish(); this.grab.reset(); this.player.grabbed = false;
+    this.player.grabView = null; this.world?.legs?.reset();
+    this.input.restrict(false); this.struggleUI.update(this.grab, false); this.ui.grab(false);
   }
   private tick(): void {
     const now = performance.now(), realDt = Math.max(0, (now - this.last) / 1000), dt = Math.min(.05, realDt); this.last = now;
@@ -338,6 +396,13 @@ export class Game {
     if (['won', 'caught'].includes(this.screen) && !document.hidden && !this.presentationPaused) this.updateAtmosphere(dt, this.screen === 'won' ? 'ENDING' : 'GAME_OVER');
     if (this.screen === 'playing' && !document.hidden && !this.presentationPaused) {
       if (this.performanceProfile.update(realDt, this.settings, this.input.touchMode)) this.applyResolution();
+      if (this.grab.active) {
+        this.progress.elapsed += realDt; this.ui.tick(realDt, this.settings.subtitles);
+        this.subtitleCooldown = Math.max(0, this.subtitleCooldown - realDt);
+        this.world.fixtures3d.update(dt, [this.player.position, this.ghost.position]);
+        this.updateGrab(realDt); this.updateAtmosphere(Math.min(realDt, .1));
+        this.world.scene.render(); return;
+      }
       if (this.world.corazon.active) {
         // Presentation follows elapsed time even below 20 FPS, matching the
         // audio clock. Only movement physics uses the capped simulation step.
@@ -385,9 +450,7 @@ export class Game {
         if (this.ghost.openedDoor) this.audio.effect('latch', this.ghost.openedDoor);
         this.ghostMoving = Math.hypot(this.ghost.position.x - before.x, this.ghost.position.z - before.z) > .001;
         this.world.corazon.updateLocomotion(dt, this.ghost, this.settings);
-        if (caught) {
-          this.startScare('capture');
-        }
+        if (caught) { this.startGrab(); this.world.scene.render(); return; }
       } else { this.input.consume('KeyE'); this.input.consume('Throw'); this.input.consume('Hide'); }
       this.interactions.updateProjectile(dt, this.ghost, (p, r) => { this.ghost.hear(p, r); this.audio.effect('land', [p.x, p.y + .1, p.z]); }, () => {
         this.audio.effect('hit'); this.speakGhost('hit');
@@ -433,7 +496,7 @@ export class Game {
       room, player: p, eye: this.player.eye, direction: this.player.direction.asArray() as Vec3,
       ghost, ghostState: this.ghost.state, ghostGrace: this.ghost.grace, ghostOccluded: this.ghostOccluded,
       hidden: this.player.hidden, sprinting: this.player.sprinting && this.player.moving, stamina: this.player.stamina,
-      suppressed: this.revealTime >= 0 || this.subtitleCooldown > 8 || this.world.corazon.active,
+      suppressed: this.revealTime >= 0 || this.subtitleCooldown > 8 || this.world.corazon.active || this.grab.active,
     });
     this.world.atmosphere = result.atmosphere;
     this.audio.update(dt, { atmosphere: result.atmosphere, eye: this.player.eye, direction: this.player.direction.asArray() as Vec3,
@@ -451,7 +514,7 @@ export class Game {
   private applyResolution(): void { this.engine?.setHardwareScalingLevel(this.performanceProfile.scale(this.settings, this.input.touchMode, devicePixelRatio)); }
   private syncTouch(): void {
     const locked = this.player.movementLocked;
-    this.touch.sync(this.screen === 'playing' && !this.world?.corazon?.active, !locked && this.interactions?.target?.kind === 'hide' && this.player.grounded, this.player.hidden, !locked && (this.interactions?.slipperInHand ?? false), !locked && has(this.progress, 'flashlight') && this.world.viewmodel.ready, !locked && this.player.grounded, locked);
+    this.touch.sync(this.screen === 'playing' && !this.world?.corazon?.active && !this.grab.active, !locked && this.interactions?.target?.kind === 'hide' && this.player.grounded, this.player.hidden, !locked && (this.interactions?.slipperInHand ?? false), !locked && has(this.progress, 'flashlight') && this.world.viewmodel.ready, !locked && this.player.grounded, locked);
   }
-  dispose(): void { this.abort.abort(); this.display.dispose(); this.ui.dispose(); this.input.dispose(); this.touch.dispose(); this.audio.dispose(); this.engine?.stopRenderLoop(); this.world?.dispose(); this.engine?.dispose(); }
+  dispose(): void { this.abort.abort(); this.grabPresentation?.dispose(); this.struggleUI.dispose(); this.display.dispose(); this.ui.dispose(); this.input.dispose(); this.touch.dispose(); this.audio.dispose(); this.engine?.stopRenderLoop(); this.world?.dispose(); this.engine?.dispose(); }
 }

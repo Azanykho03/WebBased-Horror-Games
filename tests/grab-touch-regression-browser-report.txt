@@ -1,0 +1,17 @@
+PASS · Full touch escape with live ghost
+multitouch diagonal / look / sprint / cancel → touch pause / resume → touch journal / resume → touch flashlight off / on → flashlight → note → fuse → touch throw → tsinelas → battery-kitchen → breaker → master-key → bedroom-door → letter → locket → hide-guest → music-box → cabinet → exit-key → front-door
+91.2s · 222.8m · 0 captures
+Ghost: Dormant, Patrol, Investigate, Chase, Search
+FPS avg 59 · min 27
+
+PASS · Six capture directions
+Capture 1: yaw 0.00, pitch 0.00 · real attack → upright camera, centered face + one sound → caught
+Capture 2: yaw 1.57, pitch 0.70 · real attack → upright camera, centered face + one sound → caught
+Capture 3: yaw 3.14, pitch 0.00 · real attack → upright camera, centered face + one sound → caught
+Capture 4: yaw -1.57, pitch -0.70 · real attack → upright camera, centered face + one sound → caught
+Capture 5: yaw 3.14, pitch 1.35 · real attack → upright camera, centered face + one sound → caught
+Capture 6: yaw 3.14, pitch -1.35 · real attack → upright camera, centered face + one sound → caught
+Pause/resume: frozen camera/sequence, single audio source. Retry: restored camera/model and checkpoint UI.
+
+
+PASS no browser runtime errors

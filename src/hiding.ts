@@ -24,7 +24,7 @@ export class HidingSystem {
   get state(): HidingState { return this.player.hidingState; }
   private stateTo(state: HidingState): void { this.player.hidingState = state; this.time = 0; }
   enter(cabinet: HidingCabinet, ghost: GhostStateMachine): boolean {
-    if (this.state !== 'NORMAL' || !this.player.grounded || cabinet.hinge.busy) return false;
+    if (this.player.movementLocked || !this.player.grounded || cabinet.hinge.busy) return false;
     const exit = anchorPosition(cabinet.exit, cabinet.floor);
     if (this.world.collision.blocked(exit)) return false;
     const entrance = anchorPosition(cabinet.entrance, cabinet.floor);
@@ -85,5 +85,12 @@ export class HidingSystem {
       this.cabinet.hinge.reset(); this.cabinet.pivots.forEach(p => p.rotation.y = 0);
     }
     this.finish();
+  }
+  interruptGrab(): void {
+    // A witnessed entry can be intercepted before concealment. Keep the current
+    // body position and open the leaf; never teleport to a cabinet exit mid-grab.
+    if (!this.cabinet || this.player.hidden) return;
+    const pitch = this.player.pitch;
+    this.cabinet.hinge.reopen(); this.finish(); this.player.pitch = pitch;
   }
 }

@@ -1,0 +1,7 @@
+PASS unowned flashlight: visible arms, original lamp attachment, inventory and equip recovery
+PASS equipping flashlight: visible arms, original lamp attachment, inventory and equip recovery
+PASS pre-held E, Escape pause, window blur/focus and dropped-frame deadline
+PASS repeated live catches: protection window, renewed chase, stable rig, upright view and recovery
+PASS QTE fullscreen: browser granted fullscreen; canvas 844×390; camera aspect 2.163; 0 resize events. Mobile capability simulated.
+PASS touch pause/resume and blocked camera gestures during the struggle
+PASS no browser runtime errors

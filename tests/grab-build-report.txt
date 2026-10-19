@@ -1,0 +1,10 @@
+PASS deployed asset matches source: models/enemies/ghost/ghost.glb SHA256 6909796ed3f3973e290b35fb4f61411b65714b06ac344b93de8bc22f1a1f86f1
+PASS original asset unchanged from HEAD: models/enemies/ghost/ghost.glb
+PASS deployed asset matches source: models/player/arms/free_gameready_fps_female_arms.glb SHA256 1e410ec6ac5133c70bd42a691fda73d88d28744ec7fa1b0b51ab4a151e179a1d
+PASS original asset unchanged from HEAD: models/player/arms/free_gameready_fps_female_arms.glb
+PASS deployed asset matches source: models/items/flashlight/flashlight.glb SHA256 d5ab686ee9f6a83740432c1c71c7b3a78042e390f20adf3f531aba7135cb098c
+PASS original asset unchanged from HEAD: models/items/flashlight/flashlight.glb
+PASS deployed asset matches source: audio/peircing.wavJumpscare.mp3 SHA256 c9efa8678b8ec58b841c15531711ca372008966b82457ca3913c7fc2fe74677e
+PASS original asset unchanged from HEAD: audio/peircing.wavJumpscare.mp3
+PASS deployed asset matches source: models/player/legs/student-uniform-legs.glb SHA256 09396c846ac43f0f3fd0e292289cea1cf406034f8fdddac19932f4669c82067c
+PASS production excludes validation fixtures and source/reference leg models

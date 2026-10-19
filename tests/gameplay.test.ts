@@ -118,5 +118,5 @@ test('enemy capture, reveal grace, two-second stun and immunity are deterministi
   ghost.update(1, env, player, p, () => {}); assert.equal(ghost.state, 'Stunned');
   ghost.update(1, env, player, p, () => {}); assert.equal(ghost.state, 'Search'); assert.equal(ghost.stun(), false);
   ghost.grace = 0; assert.equal(ghost.update(.016, env, player, p, () => {}), false);
-  assert.equal(ghost.update(.6, env, player, p, () => {}), true); assert.equal(ghost.state, 'Catch');
+  assert.equal(ghost.update(.6, env, player, p, () => {}), true); assert.equal(ghost.state, 'GrabStart');
 });

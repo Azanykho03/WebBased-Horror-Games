@@ -8,7 +8,7 @@ type Joint = { node: Babylon.TransformNode; rest: Transform; hold: Transform };
 export interface ArmMotion { owned: boolean; hidden: boolean; distance: number; moving: boolean; sprinting: boolean; reducedMotion: boolean }
 const smooth = (x: number) => x * x * (3 - 2 * x);
 
-/** Uses the uploaded GLB unchanged: one visible mesh, its original skin and rig. */
+/** Uses the uploaded GLB unchanged, including both original skins and their rig. */
 export class FlashlightViewmodel {
   readonly root: Babylon.TransformNode;
   readonly pickupRoot: Babylon.TransformNode;
@@ -32,6 +32,7 @@ export class FlashlightViewmodel {
   private lampStartRotation = B.Quaternion.Identity();
   private lampStartPosition = B.Vector3.Zero();
   private lampStartScale = B.Vector3.One();
+  private grabSaved?: { root: Transform; enabled: boolean; left: boolean; lamp: boolean; lampPose: Transform; heldLamp: boolean; joints: Map<string, Transform> };
 
   constructor(scene: Babylon.Scene, camera: Babylon.Camera, rig: Babylon.ISceneLoaderAsyncResult, flashlight: Babylon.TransformNode) {
     this.camera = camera;
@@ -71,7 +72,7 @@ export class FlashlightViewmodel {
     // only that display scale, preserving every authored node/bind transform.
     metres.scaling.setAll(1 / 2.3424489498138428);
     for (const mesh of rig.meshes) if (!mesh.parent) mesh.parent = metres;
-    for (const b of this.skeleton.bones.filter(b => /\.R_/.test(b.name))) {
+    for (const b of this.skeleton.bones.filter(b => /\.[LR]_/.test(b.name))) {
       const node = b.getTransformNode(); if (!node) continue;
       const rest = this.capture(node);
       this.joints.set(node.name, { node, rest, hold: this.copy(rest) });
@@ -104,7 +105,8 @@ export class FlashlightViewmodel {
     this.pickupRoot.rotation.set(...FLASHLIGHT_PICKUP.rotation);
     this.lens = new B.TransformNode('Flashlight_beam_socket', scene);
     this.lens.parent = flashlight; this.lens.position.set(0, 0, -.171);
-    this.meshes = [this.rightArm, ...this.lampMeshes];
+    this.meshes = [this.rightArm, this.leftArm, ...this.lampMeshes];
+    this.leftArm.alwaysSelectAsActiveMesh = true;
     for (const mesh of rig.meshes) { mesh.isPickable = false; mesh.renderingGroupId = 1; mesh.applyFog = false; }
     for (const mesh of this.meshes) if (mesh.material instanceof B.PBRMaterial) mesh.material.maxSimultaneousLights = 4;
     this.reset(false);
@@ -125,6 +127,7 @@ export class FlashlightViewmodel {
     this.lampMeshes.forEach(mesh => { mesh.renderingGroupId = 1; mesh.applyFog = false; mesh.isPickable = false; });
   }
   reset(owned: boolean): void {
+    this.endGrab();
     this.state.reset(owned); this.time = this.stride = this.movement = this.toggleTime = 0;
     this.anchor(); this.applyPose(1, 0, 0, false);
     this.pickupRoot.setEnabled(!owned); this.root.setEnabled(owned); this.leftArm.setEnabled(false);
@@ -150,6 +153,59 @@ export class FlashlightViewmodel {
     this.pickupRoot.setEnabled(false);
   }
   toggle(): void { this.toggleTime = .18; }
+  beginGrab(): void {
+    if (this.grabSaved) return;
+    this.grabSaved = { root: this.capture(this.root), enabled: this.root.isEnabled(), left: this.leftArm.isEnabled(), lamp: this.lamp.isEnabled(),
+      lampPose: this.capture(this.lamp), heldLamp: this.lamp.parent === this.socket,
+      joints: new Map([...this.joints].map(([name, joint]) => [name, this.capture(joint.node)])) };
+    this.root.setEnabled(true); this.leftArm.setEnabled(true);
+    // An uncollected lamp stays on its table. The player's bare arms still react.
+  }
+  poseGrab(amount: number, effort: number, time: number, reduced: boolean): void {
+    const saved = this.grabSaved!;
+    const motion = reduced ? .15 : 1, tug = Math.sin(time * 8) * .015 * motion + effort * .035;
+    this.anchor(); this.root.position.x -= .13; this.root.position.y += -.025 + tug; this.root.position.z -= .025;
+    // Preserve an interrupted equip/breathing pose at both ends of the grab.
+    // Previously invisible arms rise from below the camera instead of popping in.
+    const from = saved.root.position.clone(); if (!saved.enabled) from.y -= .5;
+    B.Vector3.LerpToRef(from, this.root.position, amount, this.root.position);
+    B.Quaternion.SlerpToRef(saved.root.rotation, B.Quaternion.Identity(), amount, this.root.rotationQuaternion!);
+    B.Vector3.LerpToRef(saved.root.scale, B.Vector3.One(), amount, this.root.scaling);
+    for (const [name, joint] of this.joints) {
+      const start = saved.joints.get(name)!;
+      joint.node.position.copyFrom(start.position);
+      joint.node.rotationQuaternion ??= B.Quaternion.Identity();
+      let pose = joint.hold.rotation;
+      if (name.startsWith('Forearm.')) pose = pose.multiply(B.Quaternion.FromEulerAngles(-.12 - tug, 0, 0));
+      if (name.startsWith('Hand.')) pose = pose.multiply(B.Quaternion.FromEulerAngles(effort * -.10, 0, 0));
+      B.Quaternion.SlerpToRef(start.rotation, pose, amount, joint.node.rotationQuaternion);
+    }
+    this.root.computeWorldMatrix(true);
+    for (const [name, x] of [['Shoulder.L_00', -.12], ['Shoulder.R_024', .08]] as const) {
+      const node = this.joints.get(name)!.node, parent = node.parent as Babylon.TransformNode;
+      parent.computeWorldMatrix(true);
+      const lower = name === 'Shoulder.L_00' && !saved.left ? -.65 * (1 - amount) : 0;
+      const offset = B.Vector3.TransformNormal(new B.Vector3(x * amount, lower, 0), this.camera.getWorldMatrix());
+      node.position.addInPlace(B.Vector3.TransformNormal(offset, B.Matrix.Invert(parent.getWorldMatrix())));
+    }
+    if (saved.heldLamp) {
+      B.Vector3.LerpToRef(saved.lampPose.position, B.Vector3.Zero(), amount, this.lamp.position);
+      B.Quaternion.SlerpToRef(saved.lampPose.rotation, B.Quaternion.Identity(), amount, this.lamp.rotationQuaternion!);
+      B.Vector3.LerpToRef(saved.lampPose.scale, B.Vector3.One(), amount, this.lamp.scaling);
+    }
+    this.lens.computeWorldMatrix(true);
+  }
+  endGrab(): void {
+    const saved = this.grabSaved; if (!saved) return;
+    this.root.position.copyFrom(saved.root.position); this.root.rotationQuaternion = saved.root.rotation.clone(); this.root.scaling.copyFrom(saved.root.scale);
+    this.root.setEnabled(saved.enabled); this.leftArm.setEnabled(saved.left); this.lamp.setEnabled(saved.lamp);
+    this.lamp.position.copyFrom(saved.lampPose.position); this.lamp.rotationQuaternion = saved.lampPose.rotation.clone(); this.lamp.scaling.copyFrom(saved.lampPose.scale);
+    for (const [name, pose] of saved.joints) {
+      const node = this.joints.get(name)!.node;
+      node.position.copyFrom(pose.position); node.rotationQuaternion = pose.rotation.clone(); node.scaling.copyFrom(pose.scale);
+    }
+    this.grabSaved = undefined;
+  }
   private lowerForEquip(equipped: number): void {
     this.root.position.y -= .44 * (1 - equipped);
     this.root.position.z -= .06 * (1 - equipped);
@@ -204,5 +260,5 @@ export class FlashlightViewmodel {
     rotate('Hand.R_027', sway * .25 + toggle + equip * .08, sway * .3, breathing * .3);
   }
   get ready(): boolean { return this.state.ready; }
-  get visible(): boolean { return this.state.visible; }
+  get visible(): boolean { return !!this.grabSaved || this.state.visible; }
 }

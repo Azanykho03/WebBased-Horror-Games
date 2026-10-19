@@ -15,6 +15,12 @@ export class Hinge {
     if (this.busy || open === (this.state === 'OPEN')) return false;
     this.state = open ? 'OPENING' : 'CLOSING'; this.elapsed = 0; return true;
   }
+  reopen(): void {
+    // Reserved for an interrupted cabinet exit/entry, not interaction spam.
+    // smooth(1 - t) = 1 - smooth(t), so reversing preserves the current angle.
+    if (this.state === 'CLOSING') { this.elapsed = this.duration - this.elapsed; this.state = 'OPENING'; }
+    else this.request(true);
+  }
   update(dt: number, clear: (angle: number) => boolean = () => true): boolean {
     if (!this.busy) return false;
     const elapsed = Math.min(this.duration, this.elapsed + Math.max(0, dt));

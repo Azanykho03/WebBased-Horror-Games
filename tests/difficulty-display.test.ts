@@ -48,7 +48,7 @@ test('elevated player stays visible and ghost can approach furniture through the
   const elevated = { ...player, position: { x: 6.15, y: .5, z: -3.3, level: 0 as const } };
   ghost.reset(true, elevated.position); ghost.position = { x: 6.15, y: 0, z: -1.9, level: 0 }; ghost.grace = 0;
   for (let i = 0; i < 120; i++) ghost.update(1 / 60, env, elevated, p, () => {});
-  assert(ghost.position.z < -2.2); assert.equal(ghost.state, 'Catch');
+  assert(ghost.position.z < -2.2); assert.equal(ghost.state, 'GrabStart');
 });
 test('difficulty changes encounter scheduling without disabling suppression', () => {
   const counts = modes.map(difficulty => {

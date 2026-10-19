@@ -27,10 +27,14 @@ import { worldHit } from '../src/geometry.ts';
 import { attachHidingPerceptionAudit } from './hiding-perception-audit.ts';
 import { attachGhostDoorAudit } from './ghost-door-audit.ts';
 import { anchorPosition } from '../src/fixtures.ts';
+import type { GrabSequence } from '../src/grab.ts';
+import type { GrabPresentation } from '../src/grab-presentation.ts';
 
 interface JourneyHost {
   world: World; player: Player; input: InputSystem; ghost: GhostStateMachine; interactions: InteractionSystem;
   hiding: HidingSystem;
+  grab: GrabSequence;
+  grabPresentation: GrabPresentation;
   progress(): Progress; screen(): Screen; revealing(): boolean; action(action: string): void;
   audioState(): string;
   audioDiagnostics(): AudioSystem['diagnostics'];
@@ -41,6 +45,10 @@ interface JourneyHost {
   startScare(kind: ScareKind): void;
 }
 export function attachJourney(host: JourneyHost): (dt: number) => void {
+  // Explicit fixture host for the local browser regression script. This module
+  // is dynamically imported only in validation builds and never in production.
+  Object.assign(window, { grabValidation: host });
+  host.world.scene.onDisposeObservable.add(() => { delete (window as Window & { grabValidation?: JourneyHost }).grabValidation; });
   const panel = document.createElement('aside');
   panel.setAttribute('aria-label', 'Development validation');
   panel.style.cssText = 'position:fixed;right:12px;top:72px;z-index:20;max-width:min(360px,75vw);max-height:75vh;overflow:auto;padding:8px;background:#08100fed;color:#fff;font:11px/1.4 monospace;border:1px solid #647566';
@@ -118,6 +126,10 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
     host.action('retry');
     if (JSON.stringify(host.progress().collected) !== JSON.stringify(items)) { stop('FAIL · Collected items lost after retry'); return; }
     if (host.ghost.grace <= 0 || host.player.position.level === host.ghost.position.level) { stop('FAIL · Unsafe checkpoint restore'); return; }
+    // Retry restores physical doors to their initial positions. Revisit any
+    // closed mission door through normal interaction before resuming item routes.
+    index = steps.findIndex(id => !done(id)); if (index < 0) index = steps.length;
+    extraStep = 0;
     completed.push('checkpoint restored'); route = prior = null; settle = 0; retry.hidden = true;
     host.action('resume'); running = true; button.disabled = true;
   });
@@ -211,7 +223,10 @@ export function attachJourney(host: JourneyHost): (dt: number) => void {
       if (checkStage === 5) { controlsChecked = true; touch.release(); }
       else return;
     }
-    if (host.revealing()) return;
+    // Lift both fingers during the kitchen dialogue as the desktop driver
+    // releases its keys above. Otherwise a held stick walks past the queued
+    // waypoint while this driver is suspended, leaving a route through furniture.
+    if (host.revealing()) { touch.release(); return; }
     if (host.player.movementLocked && !host.player.hidden) { touch.release(); return; }
     const id = steps[index];
     if (id && done(id)) {

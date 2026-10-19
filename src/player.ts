@@ -7,6 +7,7 @@ import { difficultySettings } from './difficulty.ts';
 import { haltPlayerCamera, orientPlayerCamera } from './player-camera.ts';
 import type { HidingState } from './hiding.ts';
 import { angleDifference } from './corazon-motion.ts';
+import { StruggleInput } from './grab.ts';
 
 export class InputSystem {
   readonly keys = new Set<string>();
@@ -24,27 +25,42 @@ export class InputSystem {
   moveForward = 0;
   onModeChange: (touch: boolean) => void = () => {};
   onClear: () => void = () => {};
+  onStruggle: () => void = () => {};
+  private escapeKey = new StruggleInput();
+  restricted = false;
 
   constructor(canvas: HTMLCanvasElement, onPause: () => void) {
     const signal = this.controller.signal;
     window.addEventListener('keydown', e => {
       if (!this.active) return;
+      const escapePress = e.code === 'KeyE' && this.escapeKey.keyDown(e.repeat);
+      if (this.restricted) {
+        e.preventDefault();
+        if (escapePress) { this.setTouchMode(false); this.onStruggle(); }
+        if (e.code === 'Escape' && !e.repeat) onPause();
+        return;
+      }
       if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space', 'ArrowLeft', 'ArrowRight'].includes(e.code)) this.setTouchMode(false);
       if (['Tab', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
       if (!e.repeat) this.pressed.add(e.code);
       this.keys.add(e.code);
       if (e.code === 'Escape') onPause();
     }, { signal });
-    window.addEventListener('keyup', e => this.keys.delete(e.code), { signal });
+    window.addEventListener('keyup', e => { this.keys.delete(e.code); if (e.code === 'KeyE') this.escapeKey.keyUp(); }, { signal });
     window.addEventListener('blur', onPause, { signal });
     document.addEventListener('visibilitychange', () => { if (document.hidden) onPause(); }, { signal });
     document.addEventListener('pointerlockchange', () => {
+      const wasLocked = this.pointerLocked;
       this.pointerLocked = document.pointerLockElement === canvas;
-      if (!this.pointerLocked && this.active && !this.lockFailed && !this.touchMode) onPause();
+      if (this.pointerLocked && (!this.active || this.touchMode)) {
+        // A request can resolve after touch input or a menu has taken over.
+        this.pointerLocked = false; document.exitPointerLock(); return;
+      }
+      if (wasLocked && !this.pointerLocked && this.active && !this.lockFailed && !this.touchMode) onPause();
     }, { signal });
     document.addEventListener('pointerlockerror', () => { this.lockFailed = true; }, { signal });
     canvas.addEventListener('pointerdown', e => {
-      if (!this.active) return;
+      if (!this.active || this.restricted) return;
       if (e.pointerType === 'touch') { this.setTouchMode(true); return; }
       this.setTouchMode(false);
       if (e.button === 0) this.pressed.add('Throw');
@@ -66,7 +82,14 @@ export class InputSystem {
       if (request) void request.catch(() => { this.lockFailed = true; });
     } catch { this.lockFailed = true; }
   }
-  stop(): void { this.active = false; this.clear(); if (document.pointerLockElement) document.exitPointerLock(); }
+  stop(): void {
+    this.active = false; this.clear(); this.escapeKey.keyUp();
+    // exitPointerLock dispatches asynchronously. A stale release from a stopped
+    // session must not pause a new run that has already called start().
+    this.pointerLocked = false;
+    if (document.pointerLockElement) document.exitPointerLock();
+  }
+  restrict(value: boolean): void { this.restricted = value; this.clear(); }
   clear(): void { this.keys.clear(); this.pressed.clear(); this.lookX = this.lookY = this.moveX = this.moveForward = 0; this.dragging = this.touchSprint = false; this.onClear(); }
   setTouchMode(touch: boolean): void {
     if (this.touchMode === touch) return;
@@ -74,10 +97,10 @@ export class InputSystem {
     if (touch && document.pointerLockElement) document.exitPointerLock();
     this.onModeChange(touch);
   }
-  setMove(x: number, forward: number): void { this.moveX = x; this.moveForward = forward; }
-  addLook(x: number, y: number): void { this.lookX += x; this.lookY += y; }
+  setMove(x: number, forward: number): void { if (!this.restricted) { this.moveX = x; this.moveForward = forward; } }
+  addLook(x: number, y: number): void { if (!this.restricted) { this.lookX += x; this.lookY += y; } }
   consume(key: string): boolean { const value = this.pressed.has(key); this.pressed.delete(key); return value; }
-  queue(key: string): void { this.pressed.add(key); }
+  queue(key: string): void { if (!this.restricted) this.pressed.add(key); }
   look(): [number, number] { const value: [number, number] = [this.lookX, this.lookY]; this.lookX = this.lookY = 0; return value; }
   dispose(): void { this.stop(); this.controller.abort(); }
 }
@@ -96,7 +119,9 @@ export class Player {
   hidingAt: Position | null = null;
   hideYaw = 0;
   hidingEye: Vec3 | null = null;
-  get movementLocked(): boolean { return this.hidingState !== 'NORMAL'; }
+  grabbed = false;
+  grabView: { height: number; back: number } | null = null;
+  get movementLocked(): boolean { return this.grabbed || this.hidingState !== 'NORMAL'; }
   hideExposed = false;
   moving = false;
   sprinting = false;
@@ -108,7 +133,8 @@ export class Player {
   reset(position: Position): void {
     this.position = { ...position }; this.yaw = 0; this.pitch = 0;
     this.stamina = 6; this.recovery = 0; this.exhausted = false;
-    this.hidden = this.hideExposed = this.moving = this.sprinting = false;
+    this.hidden = this.hideExposed = this.moving = this.sprinting = this.grabbed = false;
+    this.grabView = null;
     this.hidingState = 'NORMAL'; this.hidingAt = null; this.hidingEye = null;
     this.flashlight = false; this.step = 0; this.bob = 0;
     this.physics.reset();
@@ -124,6 +150,7 @@ export class Player {
       }
       input.consume('Space'); input.consume('KeyF'); this.halt(world); this.camera(world, settings);
       world.viewmodel.update(dt, { owned: progress.collected.includes('flashlight'), hidden: true, distance: 0, moving: false, sprinting: false, reducedMotion: settings.reducedMotion });
+      world.legs?.root.setEnabled(false);
       return;
     }
     const [dx, dy] = input.look();
@@ -166,6 +193,7 @@ export class Player {
     if (this.step > (this.sprinting ? 1.1 : .95)) { this.step = 0; footstep(); noise(this.position, this.sprinting ? 11 : 3); }
     this.bob += this.grounded ? distance * 7 : 0;
     this.camera(world, settings);
+    world.legs?.update(dt, this, distance, settings);
     const equipped = world.viewmodel.update(dt, { owned: progress.collected.includes('flashlight'), hidden: this.hidden,
       distance: this.grounded ? distance : 0, moving: this.moving && this.grounded, sprinting: this.sprinting, reducedMotion: settings.reducedMotion });
     if (equipped) this.flashlight = true;
@@ -173,11 +201,20 @@ export class Player {
   }
   camera(world: World, settings: Settings): void {
     this.direction.set(Math.sin(this.yaw) * Math.cos(this.pitch), Math.sin(this.pitch), -Math.cos(this.yaw) * Math.cos(this.pitch));
-    world.camera.position.set(this.position.x, this.position.y + world.data.eyeHeight + (settings.reducedMotion || !this.moving || !this.grounded ? 0 : Math.sin(this.bob) * .012), this.position.z);
+    world.camera.position.copyFromFloats(...this.eye);
+    world.camera.position.y += settings.reducedMotion || !this.moving || !this.grounded ? 0 : Math.sin(this.bob) * .012;
     if (this.hidden && this.hidingEye) world.camera.position.copyFromFloats(...this.hidingEye);
     orientPlayerCamera(world.camera, this.yaw, this.pitch);
   }
-  get eye(): Vec3 { return this.hidden && this.hidingEye ? [...this.hidingEye] : [this.position.x, this.position.y + 1.65, this.position.z]; }
+  get eye(): Vec3 {
+    if (this.hidden && this.hidingEye) return [...this.hidingEye];
+    return [this.position.x - Math.sin(this.yaw) * (this.grabView?.back ?? 0), this.position.y + (this.grabView?.height ?? 1.65), this.position.z + Math.cos(this.yaw) * (this.grabView?.back ?? 0)];
+  }
+  moveHeld(dt: number, dx: number, dz: number, world: World): void {
+    if (dt <= 0) return;
+    // The ordinary swept cylinder and gravity also own pulls, recoil and stair landings.
+    this.position = this.physics.update(this.position, dt, dx / dt, dz / dt, false, world.collision);
+  }
   halt(world: World): void {
     // A presentation never translates the body or advances gravity. Discard
     // stale jump velocity; an airborne player resumes ordinary gravity afterward.

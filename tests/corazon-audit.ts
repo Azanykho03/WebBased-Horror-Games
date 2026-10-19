@@ -20,16 +20,16 @@ export function attachCorazonAudit(parent: Element, host: Host): (dt: number) =>
   parent.append(button, preview, output);
   const cases = [[0, 0], [Math.PI / 2, .7], [Math.PI, 0], [-Math.PI / 2, -.7], [Math.PI, 1.35], [Math.PI, -1.35]];
   let index = -1, elapsed = 0, starts = 0, checkedReveal = false, pausedAt = -1, pauseTime = 0, didPause = false;
-  let firstPosition = '', firstLook = '', failures: string[] = [], report: string[] = [], pending = false;
+  let firstPosition = '', firstLook = '', failures: string[] = [], report: string[] = [], pending = false, captureStarted = false;
   const error = (message: string) => { if (!failures.includes(message)) failures.push(message); };
   function prepare(): void {
     host.action('new'); host.action('start-game'); host.action('resume'); host.action('skip-intro');
     host.player.yaw = cases[index][0]; host.player.pitch = cases[index][1]; host.player.camera(host.world, host.settings());
     const p = host.player.position;
-    host.ghost.state = 'Chase'; host.ghost.grace = 0; host.ghost.position = { ...p, z: p.z - .64 }; host.ghost.yaw = Math.PI;
+    host.ghost.state = 'Chase'; host.ghost.grace = 0; host.ghost.position = { ...p, z: p.z - .98 }; host.ghost.yaw = Math.PI;
     host.world.ghost.setEnabled(true); host.world.corazon.updateLocomotion(0, host.ghost, host.settings());
     elapsed = 0; starts = host.audioDiagnostics().recordings?.jumpscare.starts ?? 0; checkedReveal = false;
-    firstPosition = JSON.stringify(p); firstLook = JSON.stringify([host.player.yaw, host.player.pitch]);
+    captureStarted = false;
   }
   button.addEventListener('click', () => { index = 0; failures = []; report = []; didPause = false; button.disabled = true; prepare(); });
   preview.addEventListener('click', () => {
@@ -52,6 +52,13 @@ export function attachCorazonAudit(parent: Element, host: Host): (dt: number) =>
     }
     elapsed += dt;
     if (p.active) {
+      // A recoverable grab now precedes the finishing presentation. The grab
+      // intentionally pulls and turns the player; only the finishing clip locks
+      // that resulting body pose while it frames the face.
+      if (!captureStarted) {
+        captureStarted = true;
+        firstPosition = JSON.stringify(host.player.position); firstLook = JSON.stringify([host.player.yaw, host.player.pitch]);
+      }
       const camera = host.world.camera, basis = camera.getViewMatrix(true).clone().invert();
       if (Math.abs(basis.m[1]) > .000001 || basis.m[5] <= 0 || camera.rotation.z !== 0 || camera.rotationQuaternion !== null || camera.parent !== null) error('Capture rolled the camera');
       if (JSON.stringify(host.player.position) !== firstPosition || JSON.stringify([host.player.yaw, host.player.pitch]) !== firstLook) error('Player moved during capture');
@@ -84,7 +91,7 @@ export function attachCorazonAudit(parent: Element, host: Host): (dt: number) =>
       }
       pending = true;
     }
-    if (elapsed > 9) { error('Capture fixture timed out'); output.textContent = `FAIL · ${failures.join('\n')}`; index = -1; button.disabled = false; return; }
+    if (elapsed > 14) { error('Capture fixture timed out'); output.textContent = `FAIL · ${failures.join('\n')}`; index = -1; button.disabled = false; return; }
     output.textContent = `Running capture ${index + 1}/${cases.length} · ${host.screen()} · ${p.timeline.time.toFixed(2)}s\n${failures.join('\n')}`;
   };
 }

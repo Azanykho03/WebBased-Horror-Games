@@ -1,0 +1,11 @@
+PASS easy desktop: guarded catch, individual presses, pause, escape, inventory, upright camera, jump and movement recovery
+PASS easy touch: guarded catch, individual presses, pause, escape, inventory, upright camera, jump and movement recovery
+PASS medium desktop: guarded catch, individual presses, pause, escape, inventory, upright camera, jump and movement recovery
+PASS medium touch: guarded catch, individual presses, pause, escape, inventory, upright camera, jump and movement recovery
+PASS hard desktop: guarded catch, individual presses, pause, escape, inventory, upright camera, jump and movement recovery
+PASS hard touch: guarded catch, individual presses, pause, escape, inventory, upright camera, jump and movement recovery
+PASS easy: timeout → one finishing sound / animation → Game Over → clean retry
+PASS medium: timeout → one finishing sound / animation → Game Over → clean retry
+PASS hard: timeout → one finishing sound / animation → Game Over → clean retry
+PASS portrait layout and exiting an active struggle to the main menu
+PASS no browser runtime errors

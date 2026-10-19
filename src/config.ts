@@ -6,6 +6,7 @@ export const ASSETS = {
   manifest: 'models/environments/haunted-house/house-manifest.json',
   ghost: 'models/enemies/ghost/ghost.glb',
   arms: 'models/player/arms/free_gameready_fps_female_arms.glb',
+  legs: 'models/player/legs/student-uniform-legs.glb',
   flashlight: 'models/items/flashlight/flashlight.glb',
   key: 'models/interactive/Lastkey.glb',
   masterKey: 'models/interactive/masterbedroomKey.glb',

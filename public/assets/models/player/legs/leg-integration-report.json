@@ -1,0 +1,51 @@
+{
+  "source": "public\\assets\\models\\player\\legs\\source\\female_skinny_bottom_part.glb",
+  "sourceSHA256": "8323a5b688f9d9dd7aec1b64c100ddda1cad4090c51ec2e7f664fb0e6729c36d",
+  "sourceVertices": 887991,
+  "sourceTriangles": 1432320,
+  "sourceSkins": 0,
+  "sourceAnimations": 0,
+  "runtimeBytes": 1732072,
+  "runtimeVertices": 24061,
+  "runtimeTriangles": 47677,
+  "scale": 0.7879244281268833,
+  "hipHeight": 0.92,
+  "joints": {
+    "Pelvis": [
+      0.0,
+      0.92,
+      0.0
+    ],
+    "Thigh.L": [
+      -0.0786742201568005,
+      0.9,
+      -0.02910060062987762
+    ],
+    "Shin.L": [
+      -0.07444004925133,
+      0.55,
+      0.0013709535437060856
+    ],
+    "Foot.L": [
+      -0.07259108112508203,
+      0.105,
+      0.06947444662554511
+    ],
+    "Thigh.R": [
+      0.0786742201568005,
+      0.9,
+      -0.02910060062987762
+    ],
+    "Shin.R": [
+      0.07444004925133,
+      0.55,
+      0.0013709535437060856
+    ],
+    "Foot.R": [
+      0.07259108112508203,
+      0.105,
+      0.06947444662554511
+    ]
+  },
+  "technique": "Offline fitted trouser shell, geometry folds, connected 7-bone normalized skin, original-foot shoe lofts"
+}

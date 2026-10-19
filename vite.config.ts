@@ -14,6 +14,7 @@ const runtimeAssets = new Set([
   'models/environments/haunted-house/vendor/BABYLON-LICENSE.md',
   GHOST_PROFILE.model, GHOST_PROFILE.face, ASSETS.key, ASSETS.masterKey, ASSETS.door, ASSETS.hidingCabinet, ASSETS.arms, ASSETS.flashlight,
   'models/player/arms/ATTRIBUTION.md',
+  ASSETS.legs, 'models/player/legs/ATTRIBUTION.md',
   ...Object.values(MUSIC_AUDIO),
   ...Object.values(CORAZON_AUDIO).map(clip => clip.path),
   AMBIENCE_AUDIO,

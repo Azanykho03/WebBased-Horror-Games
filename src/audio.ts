@@ -9,7 +9,7 @@ import type { Atmosphere, HauntEvent, Soundscape, Surface } from './horror.ts';
 import { RecordedAudio, proximityLevel } from './recorded-audio.ts';
 
 type Bus = 'music' | 'ambience' | 'effects' | 'voice';
-type Effect = 'pickup' | 'latch' | 'sting' | 'hit' | 'flashlight' | 'detect' | 'objective' | 'throw' | 'land' | 'ui';
+type Effect = 'pickup' | 'latch' | 'sting' | 'hit' | 'flashlight' | 'detect' | 'objective' | 'throw' | 'land' | 'ui' | 'grab' | 'struggle' | 'escape' | 'drag';
 type Playing = { stop: () => void };
 export interface AudioFrame {
   atmosphere: Atmosphere; eye: Vec3; direction: Vec3; room: string;
@@ -370,6 +370,13 @@ export class AudioSystem {
     if (type === 'objective') { tone(196, 1.5, .045); tone(207.6, 1.2, .025, .22); return; }
     if (type === 'pickup') { tone(740, .22, .05); tone(1113, .16, .02, .06); return; }
     if (type === 'ui') { tone(220, .09, .026); return; }
+    if (type === 'grab' || type === 'struggle' || type === 'escape' || type === 'drag') {
+      const release = type === 'escape', gain = this.settings.gentleScares ? .55 : 1;
+      this.note({ noise: true, filter: release ? 1200 : type === 'grab' ? 380 : 650, q: .7,
+        duration: type === 'drag' ? .65 : release ? .32 : .16, volume: (type === 'struggle' ? .065 : .13) * gain, attack: .025, bus: 'effects', at });
+      if (type !== 'struggle') tone(release ? 110 : 62, .24, .07 * gain);
+      return;
+    }
     const filter = { latch: 350, hit: 160, flashlight: 2100, throw: 900, land: 180 }[type];
     this.note({ noise: true, filter, duration: type === 'throw' ? .23 : type === 'flashlight' ? .045 : .22, volume: type === 'flashlight' ? .12 : .2, bus: 'effects', at });
     if (type !== 'flashlight' && type !== 'throw') tone(85, .15, .08);

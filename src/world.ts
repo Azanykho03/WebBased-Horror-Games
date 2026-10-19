@@ -4,6 +4,8 @@ import type { Navigation } from '../scripts/3d-generation/house-navigation.mjs';
 import type { Collider, HouseManifest, Position, Progress, Settings, Vec3 } from './types.ts';
 import { assetUrl, ASSETS, GHOST_PROFILE } from './config.ts';
 import { FlashlightViewmodel } from './flashlight-viewmodel.ts';
+import { PlayerLegs } from './player-legs.ts';
+import { hasGrabSpace } from './grab-space.ts';
 import { worldHit } from './geometry.ts';
 import { HauntedEnvironment } from './haunting.ts';
 import { calmAtmosphere } from './horror.ts';
@@ -31,6 +33,7 @@ export class World {
   corazon!: CorazonPresentation;
   arms!: Babylon.TransformNode;
   viewmodel!: FlashlightViewmodel;
+  legs!: PlayerLegs;
   key!: Babylon.TransformNode;
   masterKey!: Babylon.TransformNode;
   fixtures3d!: InteractiveFixtures;
@@ -121,14 +124,16 @@ export class World {
     this.meshes.push(...interactiveMeshes);
     for (const f of this.fixtures) f.light.includedOnlyMeshes.push(...interactiveMeshes.filter(m => m.name.startsWith(f.definition.room)));
     report(`Loading ${GHOST_PROFILE.name}, your flashlight, and the keys`, 65);
-    const [ghost, rig, flashlight, key, masterKey] = await Promise.all([
+    const [ghost, rig, flashlight, key, masterKey, legs] = await Promise.all([
       this.model(GHOST_PROFILE.model, 'ghost'), this.import(ASSETS.arms),
       this.model(ASSETS.flashlight, 'held-flashlight', true), this.model(ASSETS.key, 'exit-key'),
       this.model(ASSETS.masterKey, 'master-key'),
+      this.import(ASSETS.legs),
     ]);
     this.ghost = ghost; this.key = key; this.masterKey = masterKey;
     this.corazon = new CorazonPresentation(this.scene, this.camera, ghost);
     this.viewmodel = new FlashlightViewmodel(this.scene, this.camera, rig, flashlight);
+    this.legs = new PlayerLegs(this.scene, legs);
     this.arms = this.viewmodel.root;
     this.ghost.setEnabled(false);
     for (const mesh of this.ghost.getChildMeshes()) this.shadow.addShadowCaster(mesh);
@@ -252,6 +257,9 @@ export class World {
   }
   get colliders(): Collider[] { return this.data.colliders.concat(this.dynamic); }
   clearSight(a: Vec3, b: Vec3): boolean { const hit = worldHit(a, b, this.colliders); return hit === null || hit > .985; }
+  canGrab(player: { position: Position; grounded?: boolean }, ghost: Position): boolean {
+    return player.grounded !== false && hasGrabSpace(player.position, ghost, this.collision);
+  }
   room(p: Position): { id: string; name: string } {
     const [x0, x1, z0, z1] = this.data.stair.rect;
     if (p.x >= x0 && p.x <= x1 && p.z >= z0 && p.z <= z1) return { id: 'F03', name: 'Hardwood staircase' };

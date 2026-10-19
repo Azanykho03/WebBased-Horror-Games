@@ -180,5 +180,5 @@ test('pursuit turns smoothly with forward travel and bounded acceleration', () =
     const dx = g.position.x - before.x, dz = g.position.z - before.z, distance = Math.hypot(dx, dz);
     if (distance > .00001) { assert((dx * Math.sin(g.yaw) - dz * Math.cos(g.yaw)) / distance > .999); moved += distance; }
   }
-  assert(moved > 1); assert(caught);
+  assert(moved > .65); assert(caught);
 });

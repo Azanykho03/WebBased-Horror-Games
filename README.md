@@ -1,6 +1,6 @@
 # Escape the Haunting
 
-A desktop and Android browser survival horror game built around the project's existing
+A desktop, Android and iOS browser survival horror game built around the project's existing
 two-storey house, ghost, flashlight arm and supplied keys. TypeScript, Babylon.js and
 Vite; no account, backend, API key or remote runtime assets are required.
 
@@ -57,6 +57,21 @@ longer reaction/escape windows, fewer incidental encounters and more battery lif
 Hard increases detection, pursuit and hearing, shortens attack/stun windows, and
 makes batteries less generous. Essential items and objective order stay the same.
 All tuning lives in `src/difficulty.ts`.
+
+When Celestina catches you on a clear floor, she grips your ankles, pulls you
+backward to the ground and drags you. **Press E repeatedly** or use the large
+**TAP TO ESCAPE!** button. Each press kicks; holding a key or finger earns only
+one press. The countdown starts after the fall and drag. Later grabs in the same
+run require more kicks and shorten the window, with caps for each difficulty.
+A final kick breaks her grip, followed by recovery and three seconds of protection.
+Timeout uses the existing killing/jumpscare and Game Over sequence. Retry starts
+the grab count over. Pause freezes the entire encounter.
+
+The visible lower body wears navy school trousers and uses a connected hip,
+knee and ankle skin for walking, running, jumping, landing and kicking. The
+existing arms, flashlight, inventory and camera controls remain in use. See
+[the implementation and validation report](tests/grab-validation.md) for the
+progressive requirements, asset provenance, file map and browser checks.
 
 Jumping raises the actual player body with a 5.4 m/s impulse and 15 m/s² gravity
 (about 0.97 m at the apex). It requires ground contact and a fresh press. Furniture
@@ -131,6 +146,12 @@ items and put the enemy away from the player with a recovery window.
   be applied to Celestina's unrigged body without changing that assembly.
 - Player: `public/assets/models/player/arms/flashlight-arms/`; existing combined
   arm and flashlight model.
+- Lower body: `public/assets/models/player/legs/student-uniform-legs.glb`; an
+  optimized skinned uniform derived from the supplied `female_skinny_bottom_part.glb`.
+  The original scan and optional body reference are preserved under `source/`;
+  only the 1.73 MB runtime derivative and attribution ship in the build. The
+  original static ghost uses constrained procedural spine/arm deformation to
+  follow the ankle bones; its source model, textures and face remain unchanged.
 - Interactive props: `public/assets/models/interactive/`; supplied wooden door,
   hiding cabinet, master bedroom key and final entrance key. The earlier red key
   remains preserved in `public/assets/models/items/keys/`.

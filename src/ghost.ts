@@ -5,11 +5,13 @@ import type { Difficulty } from './difficulty.ts';
 import { angleDifference } from './corazon-motion.ts';
 import type { GhostNavigation } from './ghost-navigation.ts';
 import type { HouseDoor } from './fixtures.ts';
+import { GRAB } from './grab.ts';
 
 export interface GhostEnvironment {
   nav: Navigation;
   ghostNavigation?: GhostNavigation;
   clearSight(a: Vec3, b: Vec3): boolean;
+  canGrab?(player: GhostPlayer, ghost: Position): boolean;
 }
 export interface GhostPlayer { position: Position; hidden: boolean; hideExposed: boolean; hidingAt?: Position | null }
 const distance = (a: Position, b: Position) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
@@ -31,7 +33,9 @@ export class GhostStateMachine {
   yaw = 0;
   speed = 0;
   distanceMoved = 0;
-  get attacking(): boolean { return this.attackTime > 0 || this.state === 'Catch'; }
+  get holding(): boolean { return ['GrabStart', 'Falling', 'Dragging', 'Struggling', 'EscapeKick', 'Releasing', 'Recovering', 'Killing', 'Catch'].includes(this.state); }
+  get attacking(): boolean { return this.attackTime > 0 || this.holding; }
+  grabProtection = 0;
   grace = 0;
   immunity = 0;
   stateTime = 0;
@@ -63,6 +67,7 @@ export class GhostStateMachine {
     this.route = []; this.target = this.lastSeen = null;
     this.grace = this.tuning.checkpointGrace; this.immunity = 0; this.stateTime = this.lostSight = this.repath = 0; this.patrolIndex = 0; this.voiceCooldown = 0;
     this.noticeTime = this.attackTime = 0;
+    this.grabProtection = 0;
     this.clearDoor(); this.searchOrigin = null; this.searchPoints = []; this.searchIndex = this.searchPause = 0; this.openedDoor = null;
     this.speed = this.distanceMoved = 0;
     this.yaw = Math.atan2(player.x - this.position.x, this.position.z - player.z);
@@ -86,7 +91,7 @@ export class GhostStateMachine {
     return env.clearSight([this.position.x, this.position.y + 1.45, this.position.z], [player.position.x, player.position.y + 1.45, player.position.z]);
   }
   hear(point: Position, radius: number): void {
-    if (this.state === 'Dormant' || this.state === 'Catch' || this.state === 'Stunned' || this.state === 'Chase' || this.grace > 0) return;
+    if (this.state === 'Dormant' || this.holding || this.state === 'Stunned' || this.state === 'Chase' || this.grace > 0) return;
     if (distance(this.position, point) > radius * this.tuning.hearingMultiplier) return;
     if (this.state === 'Search') {
       // A real sound can redirect the current search, but never renew its timer
@@ -99,13 +104,25 @@ export class GhostStateMachine {
     this.transition('Investigate'); this.target = { ...point }; if (changed) this.repath = 0;
   }
   stun(): boolean {
-    if (this.state === 'Dormant' || this.state === 'Catch' || this.state === 'Stunned' || this.immunity > 0) return false;
+    if (this.state === 'Dormant' || this.holding || this.state === 'Stunned' || this.immunity > 0) return false;
     this.transition('Stunned'); this.route = []; this.immunity = this.tuning.stunImmunity;
     this.speed = this.distanceMoved = 0;
     this.noticeTime = this.attackTime = 0;
     return true;
   }
   private clearDoor(): void { this.doorTask = null; this.doorAction = null; }
+  falling(): void { if (this.state === 'GrabStart') this.transition('Falling'); }
+  dragging(): void { if (this.state === 'Falling') this.transition('Dragging'); }
+  struggle(): void { if (this.state === 'Dragging') this.transition('Struggling'); }
+  escapeKick(): void { if (this.state === 'Struggling') this.transition('EscapeKick'); }
+  release(): void { if (this.state === 'EscapeKick') this.transition('Releasing'); }
+  recover(): void { if (this.state === 'Releasing') this.transition('Recovering'); }
+  kill(): void { if (this.holding) this.transition('Killing'); }
+  resumeAfterEscape(): void {
+    this.transition('Chase'); this.target = this.lastSeen ? { ...this.lastSeen } : null;
+    this.attackTime = this.noticeTime = this.lostSight = 0;
+    this.grabProtection = GRAB.protectionSeconds; this.speed = this.distanceMoved = 0;
+  }
   private transition(state: GhostState): void {
     if (this.state === state) return;
     this.state = state; this.stateTime = 0; this.route = []; this.repath = 0; this.clearDoor();
@@ -139,8 +156,9 @@ export class GhostStateMachine {
     this.difficulty = progress.difficulty;
     const tuning = this.tuning;
     this.grace = Math.max(0, this.grace - dt); this.immunity = Math.max(0, this.immunity - dt);
+    this.grabProtection = Math.max(0, this.grabProtection - dt);
     this.stateTime += dt; this.repath -= dt; this.voiceCooldown -= dt;
-    if (this.state === 'Dormant' || this.state === 'Catch') { this.speed = 0; return false; }
+    if (this.state === 'Dormant' || this.holding) { this.speed = 0; return false; }
     if (this.state === 'Stunned') {
       this.speed = 0;
       if (this.stateTime >= tuning.stunTime) this.beginSearch(env);
@@ -156,11 +174,23 @@ export class GhostStateMachine {
       if (this.state !== 'Chase' && this.state !== 'Search' && this.noticeTime < tuning.reactionTime) { this.speed = 0; return false; }
       if (this.state !== 'Chase' && this.voiceCooldown <= 0) { say('spotted'); this.voiceCooldown = 10; }
       this.transition('Chase'); this.target = { ...this.lastSeen }; this.lostSight = 0;
+      const gap = Math.hypot(this.position.x - player.position.x, this.position.z - player.position.z);
+      if (env.canGrab && gap < GRAB.minimumDistance && Math.abs(this.position.y - player.position.y) < .1) {
+        // A player can run into her between frames. Regain arm-length spacing
+        // through navigation before winding up, instead of intersecting bodies.
+        const ux = gap > .001 ? (this.position.x - player.position.x) / gap : Math.sin(this.yaw),
+          uz = gap > .001 ? (this.position.z - player.position.z) / gap : -Math.cos(this.yaw);
+        const step = Math.min(GRAB.minimumDistance - gap + .005, dt * 1.4), before = this.position;
+        this.position = env.nav.move(before, ux * step, uz * step, false);
+        this.distanceMoved = distance(before,this.position); this.speed = dt > 0 ? this.distanceMoved / dt : 0;
+        this.attackTime = 0; this.face(player.position,dt); return false;
+      }
       // Low furniture never makes the player invisible or immune to a nearby ghost.
       const inReach = Math.hypot(this.position.x - player.position.x, this.position.z - player.position.z) < tuning.attackRange
-        && Math.abs(this.position.y - player.position.y) < 1.78;
-      this.attackTime = inReach ? this.attackTime + dt : 0;
-      if (this.attackTime >= tuning.attackWindup) { this.speed = 0; this.transition('Catch'); return true; }
+        && Math.abs(this.position.y - player.position.y) < 1.78 && (env.canGrab?.(player, this.position) ?? true);
+      this.attackTime = inReach && this.grabProtection === 0 ? this.attackTime + dt : 0;
+      if (this.attackTime >= tuning.attackWindup) { this.speed = 0; this.distanceMoved = 0; this.transition('GrabStart'); return true; }
+      if (this.attackTime > 0) { this.speed = 0; this.distanceMoved = 0; this.face(player.position, dt); return false; }
     } else {
       this.noticeTime = this.attackTime = 0;
       if (this.state === 'Chase') {
@@ -240,7 +270,8 @@ export class GhostStateMachine {
       const turn = error * (1 - Math.exp(-12 * dt)), maxTurn = 5.5 * dt;
       this.yaw += Math.max(-maxTurn, Math.min(maxTurn, turn));
       const aligned = Math.abs(angleDifference(targetYaw, this.yaw)) < .22;
-      const desiredSpeed = aligned && !this.attacking ? Math.min(speed, d / Math.max(dt, .001)) : 0;
+      const protectedNearby = this.state === 'Chase' && this.grabProtection > 0 && this.target && distance(this.position, this.target) < 1.15;
+      const desiredSpeed = aligned && !this.attacking && !protectedNearby ? Math.min(speed, d / Math.max(dt, .001)) : 0;
       this.speed += Math.max(-10 * dt, Math.min(6 * dt, desiredSpeed - this.speed));
       const step = aligned ? Math.min(d, this.speed * dt) : 0;
       if (step > 0) {

@@ -120,7 +120,16 @@ export class PlayerCollision {
       // A rising stair surface is solid even during a jump.
       const stair = this.nav.height(x, z, 0);
       if (stair !== null && stair > 0 && next.y < stair - EPSILON) return false;
-      if (this.blocked(next)) return false;
+      if (this.local(x, z).some(c => {
+        if (next.y >= c.center[1] + c.size[1] / 2 - EPSILON || next.y + this.data.bodyHeight <= c.center[1] - c.size[1] / 2 + EPSILON) return false;
+        // Controlled hiding moves inside a synthetic navigation reservation.
+        // If a grab interrupts that move, permit gradual outward recovery from
+        // the existing overlap. Entry stays blocked; real panels/walls always win.
+        const leavingReservation = c.id.endsWith('-reserved') && this.overlaps(current.x, current.z, c)
+          && current.y < c.center[1] + c.size[1] / 2 - EPSILON && current.y + this.data.bodyHeight > c.center[1] - c.size[1] / 2 + EPSILON
+          && (x - c.center[0]) ** 2 + (z - c.center[2]) ** 2 > (current.x - c.center[0]) ** 2 + (current.z - c.center[2]) ** 2 + 1e-9;
+        return !leavingReservation;
+      })) return false;
       current = next; return true;
     };
     if (!tryStep(p.x + dx, p.z + dz)) { tryStep(current.x + dx, current.z); tryStep(current.x, current.z + dz); }

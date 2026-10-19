@@ -96,6 +96,7 @@ export class UI {
     this.overlay.hidden = !visible; this.overlay.classList.toggle('gentle', gentle);
   }
   cinematic(active: boolean): void { this.root.dataset.cinematic = String(active); this.overlay.classList.add('spatial'); }
+  grab(active: boolean): void { this.root.dataset.grab = String(active); }
   scareFade(amount: number): void {
     let fade = this.root.querySelector<HTMLElement>('#capture-fade');
     if (!fade) { fade = document.createElement('div'); fade.id = 'capture-fade'; fade.setAttribute('aria-hidden', 'true'); this.root.prepend(fade); }

@@ -89,11 +89,12 @@ export class HorrorDirector {
     a.proximity = smooth(a.proximity, ghostProximity(input.player, input.ghost, input.ghostOccluded), dt, 1.7);
     a.exertion = smooth(a.exertion, Math.max(input.sprinting ? .7 : 0, 1 - input.stamina / 6), dt, 2.5);
     const pressure = a.proximity > .6 ? .65 : a.proximity > .2 ? .32 : 0;
-    const threat = input.ghostState === 'Chase' || input.ghostState === 'Catch' ? 1 : pressure;
+    const held = ['GrabStart', 'Falling', 'Dragging', 'Struggling', 'EscapeKick', 'Releasing', 'Recovering', 'Killing', 'Catch'].includes(input.ghostState);
+    const threat = input.ghostState === 'Chase' || held ? 1 : pressure;
     a.fear = smooth(a.fear, Math.max(threat, this.recovery > 0 ? .55 : 0, input.hidden && a.proximity > .1 ? .5 : 0), dt, threat > a.fear ? 1.2 : 7);
     a.silence = smooth(a.silence, this.quiet > 0 ? 1 : 0, dt, this.quiet > 0 ? .7 : 2.7);
     a.state = this.scareTime > 0 ? 'JUMPSCARE' : input.hidden ? 'HIDING' : this.detection > 0 ? 'CELESTINA_DETECTED_PLAYER' : input.ghostState === 'Chase' ? 'CHASE' : this.recovery > 0 ? 'POST_JUMPSCARE' : a.proximity > .28 ? 'CELESTINA_NEARBY' : unsettling.has(input.room) || a.fear > .25 ? 'UNEASY' : 'CALM_EXPLORATION';
-    if (input.suppressed || this.scareTime > 0 || input.ghostState === 'Catch') return { atmosphere: { ...a }, events };
+    if (input.suppressed || this.scareTime > 0 || held) return { atmosphere: { ...a }, events };
     if (this.quietWhisper > 0) {
       this.quietWhisper -= dt;
       if (this.quietWhisper <= 0 && input.ghostState !== 'Chase') events.push(this.whisper(input, true));
