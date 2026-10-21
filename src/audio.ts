@@ -29,6 +29,7 @@ export class AudioSystem {
   private gameplay = false;
   private nearby = false;
   private jumpscareLatched = false;
+  private grabLatched = false;
   private master!: GainNode;
   private buses!: Record<Bus, GainNode>;
   private musicDuck!: GainNode;
@@ -80,7 +81,8 @@ export class AudioSystem {
       gain: this.horrorAmbience?.gain.value ?? 0, duration: this.ambienceSource?.buffer?.duration ?? 0,
       time: this.ambienceSource && this.ambienceStarted !== null ? (this.context!.currentTime - this.ambienceStarted) % this.ambienceSource.buffer!.duration : 0 },
     recordings: this.recordings ? { menu: this.recordings.menu.diagnostics, gameplay: this.recordings.gameplay.diagnostics,
-      proximity: this.recordings.proximity.diagnostics, jumpscare: this.recordings.jumpscare.diagnostics, nearby: this.nearby, jumpscareLatched: this.jumpscareLatched } : null,
+      proximity: this.recordings.proximity.diagnostics, jumpscare: this.recordings.jumpscare.diagnostics, grab: this.recordings.grab.diagnostics,
+      nearby: this.nearby, jumpscareLatched: this.jumpscareLatched, grabLatched: this.grabLatched } : null,
     ducking: { music: this.musicDuck?.gain.value ?? 1, ambience: this.ambientDuck?.gain.value ?? 1 } }; }
   setMusic(track: MusicTrack | null): void {
     if (track !== this.musicTrack) this.gameplay = track === 'game';
@@ -107,7 +109,7 @@ export class AudioSystem {
   }
   reset(): void {
     this.nearby = false; this.recordings?.proximity.stop();
-    this.finishJumpscare();
+    this.finishJumpscare(); this.finishGrab();
     this.voiceToken++; this.voicePlaying = null;
     for (const sound of [...this.playing]) sound.stop();
     this.lastEffect.clear(); this.variants.clear();
@@ -149,6 +151,7 @@ export class AudioSystem {
       // A nearby warning remains audible while chase music/ambience are ducked.
       proximity: new RecordedAudio(c, this.buses.effects, CORAZON_AUDIO.proximity.loop),
       jumpscare: new RecordedAudio(c, this.buses.effects, CORAZON_AUDIO.jumpscare.loop),
+      grab: new RecordedAudio(c, this.buses.effects, CORAZON_AUDIO.grab.loop),
     };
     for (const name of Object.keys(CORAZON_AUDIO) as (keyof typeof CORAZON_AUDIO)[]) {
       const clip = this.recordings[name], path = CORAZON_AUDIO[name].path;
@@ -237,8 +240,18 @@ export class AudioSystem {
     this.duckBackground();
   }
   finishJumpscare(): void { this.recordings?.jumpscare.stop(); this.jumpscareLatched = false; }
+  grab(): void {
+    if (this.grabLatched) return;
+    // Latch even when audio is unavailable: a late load/resume cannot replay contact.
+    this.grabLatched = true;
+    if (!this.gameplay || !this.active || this.context?.state !== 'running') return;
+    this.nearby = false; this.recordings?.proximity.setLevel(0, .04); this.voice();
+    this.recordings?.grab.setLevel(CORAZON_AUDIO.grab.volume * (this.settings.gentleScares ? .4 : 1), CORAZON_AUDIO.grab.fade);
+    this.duckBackground();
+  }
+  finishGrab(): void { this.recordings?.grab.stop(); this.grabLatched = false; }
   private updateProximity(frame: AudioFrame): void {
-    const eligible = this.gameplay && !this.jumpscareLatched && !['ENDING', 'GAME_OVER'].includes(frame.atmosphere.state);
+    const eligible = this.gameplay && !this.jumpscareLatched && !this.grabLatched && !['ENDING', 'GAME_OVER'].includes(frame.atmosphere.state);
     const distance = eligible && frame.ghost ? Math.hypot(frame.ghost.x - frame.eye[0], frame.ghost.y + 1.4 - frame.eye[1], frame.ghost.z - frame.eye[2]) : Infinity;
     const result = proximityLevel(distance, this.nearby, CORAZON_AUDIO.proximity);
     this.nearby = result.nearby;
@@ -261,7 +274,7 @@ export class AudioSystem {
   private duckBackground(): void {
     const c = this.context;
     if (!c) return;
-    const scare = this.stateName === 'JUMPSCARE' || c.currentTime < this.scareUntil || Boolean(this.recordings?.jumpscare.diagnostics.playing);
+    const scare = this.stateName === 'JUMPSCARE' || c.currentTime < this.scareUntil || Boolean(this.recordings?.jumpscare.diagnostics.playing) || Boolean(this.recordings?.grab.diagnostics.playing);
     const chase = this.stateName === 'CHASE', voice = this.dialogue > 0;
     const targets = {
       music: (scare ? .08 : Math.min(voice ? .42 : 1, chase ? .7 : 1)) * (1 - this.silence * .92),

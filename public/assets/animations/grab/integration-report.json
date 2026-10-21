@@ -1,0 +1,56 @@
+{
+  "converter": "three 0.180.0 FBXLoader, 30 Hz",
+  "coordinateSystem": "FBX Y-up centimetres. World joint bind deltas converted to player -Z basis; translations stay in collision controller.",
+  "kickSide": "Left",
+  "grabbedSide": "Right",
+  "clips": {
+    "run": {
+      "source": "Running Crawl.fbx",
+      "sha256": "f68c33b7b4e43e77fb692048a7f2a526d009721c58de18e528bff264933d026b",
+      "bytes": 1811376,
+      "clip": "mixamo.com",
+      "duration": 0.6666666865348816,
+      "frames": 21,
+      "tracks": 53,
+      "skeleton": "Beta_Surface",
+      "bones": 65,
+      "rootDistance": 1.5054
+    },
+    "stumble": {
+      "source": "Stumble Backwards.fbx",
+      "sha256": "2c867ea08c449a28e20b7946f3de62f25fa21e3cffdfaa17c3adfc1169c23c13",
+      "bytes": 2077776,
+      "clip": "mixamo.com",
+      "duration": 3.3333332538604736,
+      "frames": 101,
+      "tracks": 53,
+      "skeleton": "Beta_Surface",
+      "bones": 65,
+      "rootDistance": 1.9129
+    },
+    "crawl": {
+      "source": "Crawl Backwards.fbx",
+      "sha256": "b484f89128b93ce2c974f5fa17abca56c86467f8db383ec64786b8c6a3db3988",
+      "bytes": 2142608,
+      "clip": "mixamo.com",
+      "duration": 3.9666666984558105,
+      "frames": 120,
+      "tracks": 53,
+      "skeleton": "Beta_Surface",
+      "bones": 65,
+      "rootDistance": 3.1296
+    },
+    "kick": {
+      "source": "Kicking Out.fbx",
+      "sha256": "996f8872720c62f1c3f57308c877656cecfd4a1afb63aedec5db1a7f95c75fa7",
+      "bytes": 1891296,
+      "clip": "mixamo.com",
+      "duration": 1.600000023841858,
+      "frames": 49,
+      "tracks": 53,
+      "skeleton": "Beta_Surface",
+      "bones": 65,
+      "rootDistance": 0
+    }
+  }
+}

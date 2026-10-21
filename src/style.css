@@ -73,4 +73,4 @@ html,body{padding:0;min-height:0}body{height:100dvh}#game{position:fixed;inset:0
 #ui[data-grab='true'] #hud,#ui[data-grab='true'] #toast,#ui[data-grab='true'] #subtitle{visibility:hidden}
 #ui[data-reduced-motion='true'] .struggle-track i{transition:none}
 @media(max-height:500px){.struggle-card{margin-top:0;align-self:center;width:min(260px,33vw)}.struggle-card h2{font-size:16px;margin:5px 0 7px}.struggle-card p{margin:5px 0}#ui[data-input='touch'] .struggle-tap{min-height:56px;margin-top:10px}}
-@media(max-width:500px) and (min-height:501px){.struggle-card{justify-self:center;width:min(320px,85vw)}}
+@media(max-width:500px) and (min-height:501px){.struggle-card{justify-self:center;align-self:end;width:min(320px,85vw);margin-top:0}}

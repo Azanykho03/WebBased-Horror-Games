@@ -1,0 +1,144 @@
+
+> escape-the-haunting@0.1.0 test
+> node --test tests/*.test.ts
+
+✔ supplied ambience retains stereo and has no silent windows or clipped samples across the loop (299.0555ms)
+✔ preparing the loop does not alter the supplied recording or its quiet outro (390.7909ms)
+✔ invalid short ambience cannot create a zero-length or broken loop (2.0523ms)
+BJS - [18:34:21]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:23]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:25]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:26]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:26]: Babylon.js v9.28.0 - Null engine
+✔ preserved GLB is unrigged; all headings map its +Z face to gameplay forward (43.3804ms)
+✔ reference durations, duplicate suppression and one reveal survive dropped frames and reset (21.1163ms)
+✔ camera-relative face stays centered and clear of clipping at every heading and extreme pitch (2307.9375ms)
+✔ accessibility retains timing, increases distance and reduces head/camera motion (1.4797ms)
+✔ repeated regular scares preserve the rendered horizon during subsequent mouse-look turns (1928.6019ms)
+✔ capture turns interpolate yaw and pitch without banking at any intermediate frame (674.0661ms)
+✔ the face is fully visible and close on the single audio reveal beat (0.8388ms)
+✔ portrait and landscape keep the whole head within the camera frustum (241.8415ms)
+✔ pursuit turns smoothly with forward travel and bounded acceleration (36.2734ms)
+✔ abandonment preserves the manifest and reserves stairs, doors, hiding and objective approaches (41.847ms)
+✔ difficulty persists and old checkpoints become Medium; invalid modes are rejected (5.4485ms)
+✔ each mode changes real movement, perception, reaction, capture, stun and resources (82.4726ms)
+✔ elevated player stays visible and ghost can approach furniture through the normal pathfinder (32.4355ms)
+✔ difficulty changes encounter scheduling without disabling suppression (15.4498ms)
+✔ fullscreen rejection retries once on interaction and never spams resize/taps (18.018ms)
+✔ unsupported fullscreen and repeated denials leave gameplay usable (13.2572ms)
+✔ flashlight is unavailable before pickup and only usable after the equip finishes (4.3179ms)
+✔ hide, checkpoint restore and new game cannot leave an extra held flashlight (0.767ms)
+✔ equip interrupted by hiding never switches the beam on inside a hiding place (0.5787ms)
+✔ five missions complete in order; duplicate pickups cannot advance progress (4.5446ms)
+✔ exit remains locked at every incomplete stage and the crossing rechecks prerequisites (1.3577ms)
+✔ saves reject corruption, non-finite values, duplicate IDs, and impossible progression (4.0313ms)
+✔ settings constrain corrupted values and battery pickups are never wasted at full charge (0.9124ms)
+✔ ray geometry rejects through-wall interactions and swept projectiles do not tunnel (1.1185ms)
+✔ existing house navigation traverses both floors and the terrace; gates invalidate paths (9039.2182ms)
+✔ every authored interaction has a reachable position and a clear use ray (2926.2181ms)
+✔ ghost vision respects walls, its cone, floors, and witnessed hiding (1.1617ms)
+✔ enemy capture, reveal grace, two-second stun and immunity are deterministic (2.8617ms)
+BJS - [18:34:21]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:22]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:24]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:24]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:24]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:24]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:24]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:24]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:24]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:25]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:25]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:25]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:45]: Babylon.js v9.28.0 - Null engine
+✔ Celestina opens multiple closed doors with the shared hinges, waits safely, and resumes pursuit (1353.0623ms)
+✔ a 30-second search opens successive doors and never reads hidden coordinates or witness metadata (1369.5989ms)
+✔ rediscovery cancels search immediately, repeated losses get one fresh timer, and resets clear door work (37.8428ms)
+✔ closed, closing, opening and open doors keep a single safe traversal; mission locks cannot be requested (1159.5931ms)
+✔ all search candidates are clear indoor positions and visible entering/exiting players remain vulnerable (14.0731ms)
+✔ every usable authored house doorway can be searched through from both sides without collision (20283.2493ms)
+✔ both actual cabinets complete witnessed entry, protect a full search, and expose early exits on Medium and Hard (3919.4706ms)
+BJS - [18:34:22]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:22]: Babylon.js v9.28.0 - Null engine
+✔ all four runtime clips come from the exact supplied FBX files, with finite unit rotations (708.8834ms)
+✔ Perlin shake is continuous, bounded, deterministic and clears without rotational drift (208.1109ms)
+✔ real leg bind hierarchy hides during movement and masks every kick off the held right chain (282.2561ms)
+BJS - [18:34:23]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:24]: Babylon.js v9.28.0 - Null engine
+✔ easy: full response window, exact press requirement, one success and clean reset (9.8852ms)
+✔ easy: deadline rejects final press and killing cannot fire twice (2.9111ms)
+✔ medium: full response window, exact press requirement, one success and clean reset (144.7073ms)
+✔ medium: deadline rejects final press and killing cannot fire twice (0.618ms)
+✔ hard: full response window, exact press requirement, one success and clean reset (1.7926ms)
+✔ hard: deadline rejects final press and killing cannot fire twice (2.5994ms)
+✔ pause does not advance state; invalid deltas and pre-QTE inputs do not shorten the window (41.5403ms)
+✔ holding E, repeated keydown and rapid input between renders have distinct semantics (1.95ms)
+✔ successive grabs scale by difficulty, cap and reset only on a fresh run (2.9744ms)
+✔ floor encounter rejects walls, uneven support, overlapping bodies and stairs (76.3876ms)
+✔ an interrupted cabinet overlap permits only outward recovery, preserving entry and solid-wall collision (91.7711ms)
+✔ grab owns AI; sound, projectiles, navigation and overlapping catches cannot interrupt it (53.4501ms)
+✔ procedural reach keeps link lengths, preserves the original face/dress and restores exact vertices (943.7049ms)
+✔ pull and release use collision/gravity; repeated recoveries restore the camera and movement basis (8575.9181ms)
+BJS - [18:34:22]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:24]: Babylon.js v9.28.0 - Null engine
+✔ hinges reject spam, hold blocked sweeps, and repeat without drift (9.0455ms)
+✔ both cabinet configurations repeat entry/exit, suspend gravity, clamp look and restore controls (1180.2988ms)
+✔ completed hiding suppresses capture even after witnessed entry; searching stays active (52.4409ms)
+✔ new locks require the supplied keys; old powered checkpoints migrate without losing progress (8.8584ms)
+✔ a closing door stalls before hitting the player, resumes after clearance and keeps navigation in sync (573.9707ms)
+✔ proximity uses walls and floors; direction captions follow camera orientation (17.5771ms)
+✔ soundtrack detects once, enters chase, quiets while hiding, and recovers gradually (9.9371ms)
+✔ haunts are bounded, non-repeating, room-aware and suppressed during chases or checkpoint grace (17.1398ms)
+✔ silence schedules one delayed whisper and reset removes pending activity (27.7914ms)
+✔ surface palette matches house floors and settings migrate without discarding saved preferences (1.1157ms)
+✔ joystick deadzone and diagonal strength are bounded; auto resolution adapts with hysteresis (4.9338ms)
+✔ automatic touch controls use pointer capability rather than a user-agent string (2.3431ms)
+✔ reference wall skins stay on solid walls without bridging doors or windows (114.1946ms)
+✔ electricity and burned-out bulbs govern both illumination and visible glow (3.6841ms)
+✔ reference surfaces are local and remain within a small download budget (68.0566ms)
+✔ a scare halt clears velocity without moving the body and preserves supported/airborne recovery (36.0897ms)
+✔ physical jump has bounded height, gravity, no second jump, and stable rearming after landing (66.6754ms)
+✔ jumping hits ceilings and thin walls, including at low frame rates (30.2151ms)
+✔ landing on boxes is stable, walking off falls, and an airborne reset cannot jump (9.2419ms)
+✔ rotated furniture provides support and its side remains solid (9.1194ms)
+✔ the real house supports tables, chair seats, beds and boxes at their authored heights (77.655ms)
+✔ actual house stair ascent, jump, landing and descent preserve floor transitions (27.8021ms)
+✔ locked gates and window panes remain solid while jumping (52.1356ms)
+✔ the controller can physically jump onto real dining tables, chairs, boxes, beds and counters (36.4895ms)
+✔ music fades the old recording to silence before switching a single looping player (10.5293ms)
+✔ repeated gestures and unchanged selections preserve playback and pending fades (2.9215ms)
+✔ returning to menu during fade-out cancels the obsolete game switch smoothly (3.7684ms)
+✔ pause keeps position, cancels delayed switches and only resumes the latest selection (1.9143ms)
+✔ an interrupted audio clock cannot finish a fade just because wall time passed (3.6939ms)
+✔ a rejected autoplay request can retry on the next gesture without new players (4.3266ms)
+✔ late play promises after pause or disposal cannot restart a song or restore gain (1.9995ms)
+✔ uniform preserves its source and fits a small runtime asset budget (287.0194ms)
+✔ pants, waistband and shoes use a connected normalized hip/knee/ankle skin (172.4794ms)
+✔ one loop survives repeated updates and a reversed fade without overlapping sources (16.7449ms)
+✔ a suspended audio clock cannot finish a fade or advance a clip (3.7793ms)
+✔ late or unavailable buffers cannot start a previously requested sound (2.4537ms)
+✔ a one-shot never loops, stacks, or retains its source after ending (6.2088ms)
+✔ proximity has separate entry and exit thresholds and monotonic intensity (0.8253ms)
+✔ the scare starts at the measured impact and stops with no live tail (1.9646ms)
+BJS - [18:34:27]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:27]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:27]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:27]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:28]: Babylon.js v9.28.0 - Null engine
+BJS - [18:34:28]: Babylon.js v9.28.0 - Null engine
+✔ player sprint exhausts, recovers, collides, and hiding stops movement and battery drain (287.606ms)
+✔ actual tsinelas projectile hits the enemy once and resets cleanly on retry (134.6888ms)
+✔ touch analog input shares collisions, has no diagonal speed boost, and clamps camera pitch (70.3256ms)
+✔ scare handoff clears camera inertia and keeps WASD aligned with an upright view (115.1524ms)
+✔ a wall blocks a thrown tsinelas and its miss remains reachable (316.3136ms)
+✔ kitchen reveal chooses a reachable spawn away from every kitchen approach (4.822ms)
+✔ opening the cabinet exposes the key without the cabinet stealing interaction focus (50.9334ms)
+✔ enemy follows an actual stair route between floors and cannot cross a shut gate (3687.8353ms)
+ℹ tests 102
+ℹ suites 0
+ℹ pass 102
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 33417.836

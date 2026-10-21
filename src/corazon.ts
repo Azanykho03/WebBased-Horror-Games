@@ -5,13 +5,23 @@ import type { Settings } from './types.ts';
 import { angleDifference, corazonModelYaw, CORAZON_SCARE, mix, scareFrame, ScareTimeline, smoothStep } from './corazon-motion.ts';
 import type { ScareKind } from './corazon-motion.ts';
 import { haltPlayerCamera, orientPlayerCamera } from './player-camera.ts';
+import { GhostArms } from './ghost-arms.ts';
+import type { GrabMotion } from './grab-motion.ts';
 
-// Transform-only animation for the supplied static assembly. Vertices, UVs,
-// textures and mesh scale stay untouched; no replacement model or face plane.
+// Preserved static assembly: transform-based scares plus the shared bounded
+// body/arm deformation for crawl and grabs. UVs, materials and scale stay intact.
 export class CorazonPresentation {
   readonly timeline = new ScareTimeline();
   readonly torso: Babylon.TransformNode;
   readonly head: Babylon.Mesh;
+  readonly arms: GhostArms;
+  private spine: Babylon.TransformNode;
+  private headRestPosition: Babylon.Vector3;
+  private headRestScale: Babylon.Vector3;
+  private motion?: GrabMotion;
+  private crawlAmount = 0;
+  private crawlTime = 0;
+  private bodyPosed = false;
   private root: Babylon.TransformNode;
   private camera: Babylon.FreeCamera;
   private meshes: Babylon.AbstractMesh[];
@@ -28,7 +38,8 @@ export class CorazonPresentation {
     targetRotation: Babylon.Quaternion;
     meshes: { group: number; visibility: number; fog: boolean }[];
   };
-  constructor(scene: Babylon.Scene, camera: Babylon.FreeCamera, root: Babylon.TransformNode) {
+  constructor(scene: Babylon.Scene, camera: Babylon.FreeCamera, root: Babylon.TransformNode, motion?: GrabMotion) {
+    this.motion = motion;
     this.root = root; this.camera = camera; this.meshes = root.getChildMeshes();
     const head = this.meshes.find(m => m.name === 'Ghost_head');
     if (!(head instanceof B.Mesh)) throw new Error('Celestina’s existing head mesh is missing.');
@@ -41,6 +52,10 @@ export class CorazonPresentation {
     this.root.rotationQuaternion = B.Quaternion.Identity();
     this.torso.rotationQuaternion = B.Quaternion.Identity();
     this.head.rotationQuaternion = B.Quaternion.Identity();
+    this.arms = new GhostArms(root);
+    this.spine = new B.TransformNode('celestina-grab-spine', scene);
+    this.spine.parent = this.torso; this.spine.position.y = .63; this.spine.rotationQuaternion = B.Quaternion.Identity();
+    this.headRestPosition = head.position.clone(); this.headRestScale = head.scaling.clone();
     // The visible facial surface is forward of the head's volume center.
     const bounds = head.getBoundingInfo().boundingBox;
     this.faceAnchor = bounds.center.clone(); this.faceAnchor.z = bounds.maximum.z - .035;
@@ -72,9 +87,53 @@ export class CorazonPresentation {
     const head = B.Quaternion.RotationYawPitchRoll(0, attack * .4, -sway * .6);
     B.Quaternion.SlerpToRef(this.torso.rotationQuaternion!, torso, 1 - Math.exp(-10 * dt), this.torso.rotationQuaternion!);
     B.Quaternion.SlerpToRef(this.head.rotationQuaternion!, head, 1 - Math.exp(-12 * dt), this.head.rotationQuaternion!);
+    if (this.motion) {
+      const crawling = ghost.state === 'Chase' || ghost.state === 'GrabStart';
+      this.crawlAmount = mix(this.crawlAmount, crawling ? 1 : 0, 1 - Math.exp(-12 * dt));
+      // Running Crawl travels 1.5054 m in .6667 s in the supplied FBX. Advance
+      // by real navigated distance, including slow corners and stopped doors.
+      this.crawlTime += ghost.distanceMoved / 2.2581;
+      if (this.crawlAmount > .002) {
+        const pose = this.motion.sample('run', this.crawlTime, true);
+        const targets = pose.hands.map(hand => {
+          const local = new B.Vector3(hand.x, Math.max(.045, .63 + hand.y), hand.z);
+          return B.Vector3.TransformCoordinates(local, this.root.computeWorldMatrix(true));
+        });
+        this.poseBody(targets[0], targets[1], this.crawlAmount, Math.max(1.2, Math.min(1.6, pose.bend)) * this.crawlAmount, 0, this.crawlAmount);
+      } else this.resetBody();
+    }
+  }
+  /** Shared deformation of the original static mesh for crawl and single-hand grip. */
+  poseBody(left: Babylon.Vector3, right: Babylon.Vector3, amount: number, bend: number, hit = 0, tracking = 1): void {
+    if (!this.bodyPosed) {
+      // Both mesh vertices and neck pivot are authored in model coordinates.
+      // setParent() preserves a cached world pose here (including locomotion),
+      // baking world travel into the local neck. Use the inspected local offset.
+      this.head.parent = this.spine; this.head.position.copyFrom(this.headRestPosition);
+      this.head.position.y -= .63; this.head.scaling.copyFrom(this.headRestScale);
+      this.bodyPosed = true;
+    }
+    this.torso.rotationQuaternion!.copyFromFloats(0, 0, 0, 1);
+    B.Quaternion.FromEulerAnglesToRef(bend, 0, 0, this.spine.rotationQuaternion!);
+    this.arms.pose(left, right, amount, bend);
+    const face = this.facePosition(), target = this.camera.position.subtract(face);
+    const local = B.Vector3.TransformNormal(target, B.Matrix.Invert(this.root.computeWorldMatrix(true)));
+    const yaw = Math.max(-.65, Math.min(.65, Math.atan2(local.x, local.z))) * tracking;
+    const pitch = Math.max(-.55, Math.min(.35, -Math.atan2(local.y, Math.hypot(local.x, local.z)))) * tracking;
+    // Cancel the crawl spine's downward bend before applying bounded look-at.
+    // The neck pivot stays attached; the face can never inherit the full floor-facing pose.
+    this.head.rotationQuaternion!.copyFrom(B.Quaternion.FromEulerAngles(-bend + pitch - hit * .10, yaw, hit * .035));
+  }
+  resetBody(): void {
+    this.arms.reset();
+    if (!this.bodyPosed) return;
+    this.head.parent = this.torso; this.head.position.copyFrom(this.headRestPosition); this.head.scaling.copyFrom(this.headRestScale);
+    this.spine.rotationQuaternion!.copyFromFloats(0, 0, 0, 1); this.head.rotationQuaternion!.copyFromFloats(0, 0, 0, 1);
+    this.bodyPosed = false;
   }
   start(kind: ScareKind, settings: Settings): boolean {
     if (!this.timeline.start(kind)) return false;
+    this.resetBody();
     const rotation = this.camera.rotationQuaternion?.toEulerAngles() ?? this.camera.rotation;
     const cameraYaw = -rotation.y, cameraPitch = rotation.x;
     const cameraPosition = this.camera.position.clone();
@@ -161,7 +220,7 @@ export class CorazonPresentation {
     this.fill.setEnabled(false); this.saved = undefined; this.timeline.reset();
   }
   reset(): void {
-    this.finish(); this.phase = this.movement = this.clock = 0;
+    this.finish(); this.resetBody(); this.phase = this.movement = this.clock = this.crawlAmount = this.crawlTime = 0;
     this.torso.rotationQuaternion!.copyFrom(B.Quaternion.Identity()); this.head.rotationQuaternion!.copyFrom(B.Quaternion.Identity());
   }
 }

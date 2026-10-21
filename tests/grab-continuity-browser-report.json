@@ -1,0 +1,112 @@
+{
+  "errors": [],
+  "boundaries": [
+    {
+      "from": "grab-start",
+      "to": "falling",
+      "dt": 0.016,
+      "angle": 0.051440353228810416,
+      "ankle": 0.011317986040514353,
+      "camera": 0.009634735138745727
+    },
+    {
+      "from": "falling",
+      "to": "dragging",
+      "dt": 0.01939999997615814,
+      "angle": 0.00017441513257739443,
+      "ankle": 0.000019041613077369998,
+      "camera": 5.418473306373282e-7
+    },
+    {
+      "from": "dragging",
+      "to": "struggling",
+      "dt": 0.017699999928474427,
+      "angle": 0.1465972159250442,
+      "ankle": 0.016369480267121646,
+      "camera": 0.011461342707562494
+    },
+    {
+      "from": "struggling",
+      "to": "escape-kick",
+      "dt": 0.017700000047683715,
+      "angle": 0.12748297969127925,
+      "ankle": 0.018236864791707393,
+      "camera": 0.007721985247233221
+    },
+    {
+      "from": "escape-kick",
+      "to": "release",
+      "dt": 0.014,
+      "angle": 0.040503202424010724,
+      "ankle": 0.009268790483474731,
+      "camera": 0
+    },
+    {
+      "from": "release",
+      "to": "recovery",
+      "dt": 0.017099999904632568,
+      "angle": 0.07583252295730546,
+      "ankle": 0,
+      "camera": 0
+    }
+  ],
+  "worst": {
+    "grab-start": {
+      "from": "grab-start",
+      "to": "grab-start",
+      "dt": 0.011800000071525573,
+      "angle": 0.27829658456638645,
+      "ankle": 0.07805779131738595,
+      "camera": 0.027795186059853573
+    },
+    "falling": {
+      "from": "falling",
+      "to": "falling",
+      "dt": 0.0165,
+      "angle": 0.8787267395841699,
+      "ankle": 0.16709333032721124,
+      "camera": 0.07480636274075449
+    },
+    "dragging": {
+      "from": "dragging",
+      "to": "dragging",
+      "dt": 0.016700000047683714,
+      "angle": 0.1572977115114295,
+      "ankle": 0.011148989326342422,
+      "camera": 0.0013688210640054876
+    },
+    "struggling": {
+      "from": "struggling",
+      "to": "struggling",
+      "dt": 0.017799999952316285,
+      "angle": 1.0062365749143758,
+      "ankle": 0.0006246566772460938,
+      "camera": 0.0006252319887352087
+    },
+    "escape-kick": {
+      "from": "escape-kick",
+      "to": "escape-kick",
+      "dt": 0.014299999952316284,
+      "angle": 0.8566489634656098,
+      "ankle": 0,
+      "camera": 0
+    },
+    "release": {
+      "from": "release",
+      "to": "release",
+      "dt": 0.015399999976158141,
+      "angle": 0.09256792100816869,
+      "ankle": 0,
+      "camera": 0
+    },
+    "recovery": {
+      "from": "recovery",
+      "to": "recovery",
+      "dt": 0.0175,
+      "angle": 0.09266175697965243,
+      "ankle": 0.002704541191634305,
+      "camera": 0.018214547654584388
+    }
+  },
+  "maxGroundedHipHeight": 0.3271106618574423
+}

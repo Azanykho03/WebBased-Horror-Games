@@ -7,6 +7,7 @@ export const ASSETS = {
   ghost: 'models/enemies/ghost/ghost.glb',
   arms: 'models/player/arms/free_gameready_fps_female_arms.glb',
   legs: 'models/player/legs/student-uniform-legs.glb',
+  grabMotion: 'animations/grab/grab-motion.json',
   flashlight: 'models/items/flashlight/flashlight.glb',
   key: 'models/interactive/Lastkey.glb',
   masterKey: 'models/interactive/masterbedroomKey.glb',
@@ -35,6 +36,7 @@ export const CORAZON_AUDIO = {
   // The supplied recording's strongest 20 ms burst starts at .20 s. Skip its
   // quiet lead-in at playback, without altering the original MP3.
   jumpscare: { path: 'audio/peircing.wavJumpscare.mp3', volume: .85, loop: false, fade: .003, offset: .20 },
+  grab: { path: 'audio/scaryjumpscaregrabbinglegs.mp3', volume: .70, loop: false, fade: .003 },
 };
 export type VoiceCue = 'kitchen-player' | 'kitchen-ghost' | 'recognition' | 'spotted' | 'sprint' | 'lost' | 'exit' | 'hit' | `whisper-${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8}` | 'cry' | 'hum' | 'laugh' | 'scream';
 // Optional asset paths under public/assets. Captions and synthesized cues work

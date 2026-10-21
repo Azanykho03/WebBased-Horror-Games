@@ -115,6 +115,10 @@ def band(y, radius_x, radius_z, center_z, height, name):
     for i in range(64):
         j=(i+1)%64
         faces += [[i,j,64+j],[i,64+j,64+i]]
+    # The supplied scan ends at the waist. Close that cut beneath the virtual
+    # torso so the grounded camera sees cloth, not the hollow leg interior.
+    center=len(vertices);vertices.append([0,y+height/2,center_z])
+    for i in range(64):faces.append([center,64+(i+1)%64,64+i])
     return trimesh.Trimesh(vertices=vertices,faces=faces,process=False)
 waist = pants.vertices[pants.vertices[:,1] > 1.012]
 lo, hi = waist.min(axis=0), waist.max(axis=0)
@@ -229,6 +233,6 @@ report={'source':str(SOURCE.relative_to(ROOT)),'sourceSHA256':hashlib.sha256(SOU
         'sourceVertices':raw_counts[0],'sourceTriangles':raw_counts[1],'sourceSkins':0,'sourceAnimations':0,
         'runtimeBytes':len(out),'runtimeVertices':sum(len(m.vertices) for m in [pants,waistband,shoes]),
         'runtimeTriangles':sum(len(m.faces) for m in [pants,waistband,shoes]),'scale':scale,'hipHeight':HIP,
-        'joints':{name:p.tolist() for name,p in zip(names,joint_positions)},'technique':'Offline fitted trouser shell, geometry folds, connected 7-bone normalized skin, original-foot shoe lofts'}
+        'joints':{name:p.tolist() for name,p in zip(names,joint_positions)},'technique':'Offline fitted trouser shell, closed waist, geometry folds, connected 7-bone normalized skin, original-foot shoe lofts'}
 (OUT/'leg-integration-report.json').write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps(report,indent=2))

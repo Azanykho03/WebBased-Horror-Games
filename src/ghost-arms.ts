@@ -71,7 +71,8 @@ export class GhostArms {
     if (amount <= 0 && bend === 0) { this.reset(); return; }
     this.dirty = true; this.mesh.computeWorldMatrix(true);
     const inverse = B.Matrix.Invert(this.mesh.getWorldMatrix());
-    const targets = [left, right].map(target => B.Vector3.TransformCoordinates(target, inverse)).sort((a, b) => a.x - b.x);
+    // Fixed hand identities. Sorting moving targets can silently swap the held ankle.
+    const targets = [left, right].map(target => B.Vector3.TransformCoordinates(target, inverse));
     const pivot = new B.Vector3(0, .63, 0), spine = B.Matrix.RotationX(bend);
     const original = B.Vector3.Zero(), a = B.Vector3.Zero(), b = B.Vector3.Zero(), normal = B.Vector3.Zero(), relative = B.Vector3.Zero();
     // Bend the connected upper dress/body around the same spine pivot as the

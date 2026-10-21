@@ -1,14 +1,14 @@
 PASS · Full desktop escape with live ghost
 flashlight → note → fuse → tsinelas → battery-kitchen → breaker → master-key → bedroom-door → letter → locket → music-box → cabinet → exit-key → front-door
-84.5s · 218.4m · 0 captures
+85.0s · 219.4m · 0 captures
 Ghost: Dormant, Patrol, Investigate, Chase, Search
-FPS avg 59 · min 23
+FPS avg 39 · min 16
 
 PASS · Full touch escape with live ghost
 multitouch diagonal / look / sprint / cancel → touch pause / resume → touch journal / resume → touch flashlight off / on → flashlight → note → fuse → touch throw → tsinelas → battery-kitchen → breaker → master-key → bedroom-door → letter → locket → hide-guest → music-box → cabinet → exit-key → front-door
-91.1s · 223.1m · 0 captures
+91.4s · 224.0m · 0 captures
 Ghost: Dormant, Patrol, Investigate, Chase, Search
-FPS avg 59 · min 16
+FPS avg 48 · min 6
 
 PASS · Six capture directions
 Capture 1: yaw 0.00, pitch 0.00 · real attack → upright camera, centered face + one sound → caught

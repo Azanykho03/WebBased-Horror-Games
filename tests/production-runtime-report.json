@@ -1,0 +1,9 @@
+{
+  "errors": [],
+  "missing": [],
+  "report": [
+    "PASS production assets, new game, difficulty, intro, movement, jump and hidden legs; validation tools absent",
+    "PASS pause, journal, resume, save-to-menu, reload and continue from checkpoint",
+    "PASS no JavaScript/console errors or missing HTTP assets"
+  ]
+}

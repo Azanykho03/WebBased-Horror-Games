@@ -10,6 +10,7 @@ License: CC BY 4.0. Reference only; not shipped in the game bundle.
 
 The supplied files are preserved in `source/`. `student-uniform-legs.glb` is a
 derived, optimized asset produced by `scripts/3d-generation/prepare_player_legs.py`:
-geometry fitted into navy trousers, waistband and school shoes, with a connected
+geometry fitted into navy trousers, a closed waistband and school shoes, with a connected
 pelvis/thigh/shin/foot skeleton and normalized skin weights. Runtime animations
-are procedural joint poses. No third-party animation clips were supplied.
+include procedural joint poses and the user's four supplied FBX clips, baked and
+retargeted as documented in `assets/animations/grab/integration-report.json`.

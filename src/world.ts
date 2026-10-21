@@ -5,6 +5,7 @@ import type { Collider, HouseManifest, Position, Progress, Settings, Vec3 } from
 import { assetUrl, ASSETS, GHOST_PROFILE } from './config.ts';
 import { FlashlightViewmodel } from './flashlight-viewmodel.ts';
 import { PlayerLegs } from './player-legs.ts';
+import { GrabMotion } from './grab-motion.ts';
 import { hasGrabSpace } from './grab-space.ts';
 import { worldHit } from './geometry.ts';
 import { HauntedEnvironment } from './haunting.ts';
@@ -124,16 +125,20 @@ export class World {
     this.meshes.push(...interactiveMeshes);
     for (const f of this.fixtures) f.light.includedOnlyMeshes.push(...interactiveMeshes.filter(m => m.name.startsWith(f.definition.room)));
     report(`Loading ${GHOST_PROFILE.name}, your flashlight, and the keys`, 65);
-    const [ghost, rig, flashlight, key, masterKey, legs] = await Promise.all([
+    const [ghost, rig, flashlight, key, masterKey, legs, motion] = await Promise.all([
       this.model(GHOST_PROFILE.model, 'ghost'), this.import(ASSETS.arms),
       this.model(ASSETS.flashlight, 'held-flashlight', true), this.model(ASSETS.key, 'exit-key'),
       this.model(ASSETS.masterKey, 'master-key'),
       this.import(ASSETS.legs),
+      fetch(assetUrl(ASSETS.grabMotion)).then(async response => {
+        if (!response.ok) throw new Error(`Grab animations could not load (${response.status}).`);
+        return new GrabMotion(await response.json());
+      }),
     ]);
     this.ghost = ghost; this.key = key; this.masterKey = masterKey;
-    this.corazon = new CorazonPresentation(this.scene, this.camera, ghost);
+    this.corazon = new CorazonPresentation(this.scene, this.camera, ghost, motion);
     this.viewmodel = new FlashlightViewmodel(this.scene, this.camera, rig, flashlight);
-    this.legs = new PlayerLegs(this.scene, legs);
+    this.legs = new PlayerLegs(this.scene, legs, motion);
     this.arms = this.viewmodel.root;
     this.ghost.setEnabled(false);
     for (const mesh of this.ghost.getChildMeshes()) this.shadow.addShadowCaster(mesh);

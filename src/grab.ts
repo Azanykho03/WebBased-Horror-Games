@@ -7,7 +7,7 @@ export const GRAB = {
   kickSeconds: .32, releaseSeconds: .36, recoverySeconds: 1.2,
   finishLeadSeconds: .24, protectionSeconds: 3,
   pullDistance: .24, minimumDistance: .94, groundDistance: 1.38, separationDistance: .35,
-  eyeHeight: .47, eyeBack: .47, hipHeight: .11,
+  eyeHeight: .52, eyeBack: .22, hipHeight: .11,
 } as const;
 export type GrabPhase = 'idle' | 'grab-start' | 'falling' | 'dragging' | 'struggling' | 'escape-kick' | 'release' | 'recovery' | 'killing';
 export function escapeRequirement(difficulty: Difficulty, attempt: number) {

@@ -345,26 +345,27 @@ export class Game {
     this.hiding.interruptGrab();
     this.player.grabbed = true; this.input.restrict(true); this.ghostMoving = false;
     this.grabPresentation.start(); this.ui.grab(true); this.syncTouch();
-    this.audio.effect('grab');
+    this.grabPresentation.update(0, this.grab, this.settings);
+    this.audio.grab();
   }
   private strugglePress(): void {
     if (this.screen !== 'playing' || this.presentationPaused || document.hidden || !this.input.active) return;
     // Do not accept an input delivered after the deadline between two renders.
     if (this.grab.remaining <= Math.max(0, (performance.now() - this.last) / 1000)) return;
     if (!this.grab.press()) return;
-    this.grabPresentation.press(); this.audio.effect('struggle');
+    this.grabPresentation.press(this.grab.phase === 'escape-kick'); this.audio.effect('struggle');
     if (this.grab.phase === 'escape-kick') { this.ghost.escapeKick(); this.audio.effect('escape'); }
     this.struggleUI.update(this.grab, true);
   }
   private updateGrab(realDt: number): void {
     const event = this.grab.update(realDt, this.player.grounded);
-    this.grabPresentation.update(Math.min(.05, realDt), this.grab, this.settings);
+    this.grabPresentation.update(realDt, this.grab, this.settings);
     if (event === 'interactive') this.ghost.struggle();
     if (event === 'falling') this.ghost.falling();
     if (event === 'dragging') { this.ghost.dragging(); this.audio.effect('drag'); }
-    if (event === 'release') this.ghost.release();
+    if (event === 'release') { this.ghost.release(); this.audio.finishGrab(); }
     if (event === 'recovery') this.ghost.recover();
-    if (event === 'failed') this.ghost.kill();
+    if (event === 'failed') { this.ghost.kill(); this.audio.finishGrab(); }
     this.struggleUI.update(this.grab, true);
     if (event === 'kill') {
       this.grabPresentation.finish(false);
@@ -379,6 +380,7 @@ export class Game {
     }
   }
   private resetGrab(): void {
+    this.audio.finishGrab();
     this.grabPresentation?.finish(); this.grab.reset(); this.player.grabbed = false;
     this.player.grabView = null; this.world?.legs?.reset();
     this.input.restrict(false); this.struggleUI.update(this.grab, false); this.ui.grab(false);

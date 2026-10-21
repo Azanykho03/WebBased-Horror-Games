@@ -7,7 +7,7 @@ const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_PATH || 'playwright');
 const browser = await chromium.launch({ headless: true,
   ...(process.env.BROWSER_PATH ? { executablePath: process.env.BROWSER_PATH } : {}),
-  args: ['--autoplay-policy=no-user-gesture-required'],
+  args: ['--autoplay-policy=no-user-gesture-required', '--no-proxy-server'],
 });
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, hasTouch: true });
 const errors = [], reports = [];
@@ -24,17 +24,16 @@ const progress = setInterval(() => {
   }).then(value => console.log(`Progress: ${JSON.stringify(value)}`)).catch(() => {});
 }, 30000);
 try {
-  await page.goto(process.env.GAME_URL || 'http://127.0.0.1:5175');
+  await page.goto(process.env.GAME_URL || 'http://127.0.0.1:4174', { waitUntil: 'domcontentloaded', timeout: 60000 });
   await page.waitForFunction(() => window.grabValidation, null, { timeout: 60000 });
   for (const touch of (process.argv.includes('--touch-only') ? [true] : [false, true])) {
     await page.setViewportSize(touch ? { width: 844, height: 390 } : { width: 1280, height: 720 });
     await page.getByRole('button', { name: touch ? 'Run touch journey' : 'Run full journey', exact: true }).click();
-    let attempts = 0;
-    while (true) {
+    for (let recovery = 0; recovery <= 8; recovery++) {
       await page.waitForFunction(() => /^(PASS · Full|Capture verified|FAIL)/.test(document.querySelector('aside pre[role="status"]').textContent), null, { timeout: 480000 });
       const status = await page.locator('aside pre[role="status"]').innerText();
       if (status.startsWith('Capture verified')) {
-        report(status); assert(++attempts <= 8, 'Journey repeatedly fails after checkpoint recovery');
+        report(status); assert(recovery < 8, 'Journey repeatedly fails after checkpoint recovery');
         await page.getByRole('button', { name: 'Continue journey from checkpoint' }).click();
       } else { report(status); assert(status.startsWith('PASS')); break; }
     }

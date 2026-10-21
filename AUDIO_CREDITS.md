@@ -21,7 +21,7 @@ playback. Pause/backgrounding freezes the track and resumes at its position.
 
 ## Supplied Celestina layers and cues
 
-The following four MP3s were supplied by the user from Downloads and copied
+The following five MP3s were supplied by the user from Downloads and copied
 byte-for-byte into `public/assets/audio/`. `CORAZON_AUDIO` in `src/config.ts`
 registers their paths, loop behavior, volumes, fades and proximity thresholds.
 They use the existing Web Audio context and mixer; source files are unchanged.
@@ -32,6 +32,7 @@ They use the existing Web Audio context and mixer; source files are unchanged.
 | `CreepyLittleGirl.mp3` | Loops with the existing ILI ILI / Mixkit gameplay bed | Ambience |
 | `CreepyCurseSound.mp3` | Single proximity loop, 8 m entry / 11 m exit | Effects |
 | `peircing.wavJumpscare.mp3` | One-shot from the 0.20 s impact on Celestina's close face reveal; stops with the sequence | Effects |
+| `scaryjumpscaregrabbinglegs.mp3` | One-shot on initial leg contact, alongside the stumble and camera impact; stops on release, failure or interruption | Effects |
 
 Creator, source URL and license metadata were not supplied for these files;
 none is inferred from their names.

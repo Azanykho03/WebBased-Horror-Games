@@ -5,9 +5,9 @@
   "sourceTriangles": 1432320,
   "sourceSkins": 0,
   "sourceAnimations": 0,
-  "runtimeBytes": 1732072,
-  "runtimeVertices": 24061,
-  "runtimeTriangles": 47677,
+  "runtimeBytes": 1732888,
+  "runtimeVertices": 24062,
+  "runtimeTriangles": 47741,
   "scale": 0.7879244281268833,
   "hipHeight": 0.92,
   "joints": {
@@ -47,5 +47,5 @@
       0.06947444662554511
     ]
   },
-  "technique": "Offline fitted trouser shell, geometry folds, connected 7-bone normalized skin, original-foot shoe lofts"
+  "technique": "Offline fitted trouser shell, closed waist, geometry folds, connected 7-bone normalized skin, original-foot shoe lofts"
 }

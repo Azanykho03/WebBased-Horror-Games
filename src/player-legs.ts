@@ -3,7 +3,9 @@ import { B } from './world.ts';
 import type { Player } from './player.ts';
 import type { Settings } from './types.ts';
 import { GRAB } from './grab.ts';
+import type { GrabSequence } from './grab.ts';
 import { mix, smoothStep } from './corazon-motion.ts';
+import type { GrabMotion, MotionPose } from './grab-motion.ts';
 
 /** Connected skinned derivative of female_skinny_bottom_part.glb; see asset report. */
 export class PlayerLegs {
@@ -11,6 +13,11 @@ export class PlayerLegs {
   readonly meshes: Babylon.AbstractMesh[];
   readonly skeleton: Babylon.Skeleton;
   readonly ankles: [Babylon.TransformNode, Babylon.TransformNode];
+  // The supplied Kicking Out clip uses the left leg. This selection never changes mid-grab.
+  readonly grabbedSide = 1;
+  readonly freeSide = 0;
+  fallAmount = 0;
+  private motion?: GrabMotion;
   private joints: Babylon.TransformNode[];
   private phase = 0;
   private movement = 0;
@@ -21,7 +28,8 @@ export class PlayerLegs {
   private rotation = B.Quaternion.Identity();
   private floorPoint = B.Vector3.Zero();
   private soleCorners = [-.06,.06].flatMap(x => [-.10,.025].flatMap(y => [-.20,.055].map(z=>new B.Vector3(x,y,z))));
-  constructor(scene: Babylon.Scene, imported: Babylon.ISceneLoaderAsyncResult) {
+  constructor(scene: Babylon.Scene, imported: Babylon.ISceneLoaderAsyncResult, motion?: GrabMotion) {
+    this.motion = motion;
     if (imported.skeletons.length !== 1) throw new Error('Expected the inspected connected lower-body rig.');
     this.skeleton = imported.skeletons[0];
     const names = ['Thigh.L', 'Shin.L', 'Foot.L', 'Thigh.R', 'Shin.R', 'Foot.R'];
@@ -64,12 +72,13 @@ export class PlayerLegs {
     }
   }
   reset(): void {
-    this.phase = this.movement = this.landing = 0; this.grounded = true;
+    this.phase = this.movement = this.landing = this.fallAmount = 0; this.grounded = true;
     for (let i = 0; i < 6; i++) this.joint(i, 0);
     this.root.setEnabled(false);
   }
   update(dt: number, player: Player, distance: number, settings: Settings): void {
-    this.root.setEnabled(!player.hidden && player.hidingState === 'NORMAL');
+    // Keep locomotion/rig state warm, but only the grab presentation may reveal it.
+    this.root.setEnabled(false);
     this.phase += distance * (player.sprinting ? 7.8 : 9);
     this.movement += ((player.moving && player.grounded ? 1 : 0) - this.movement) * (1 - Math.exp(-12 * dt));
     if (player.grounded && !this.grounded) this.landing = 1;
@@ -84,18 +93,21 @@ export class PlayerLegs {
     this.place(player, .92 - .045 * this.landing + (settings.reducedMotion ? 0 : .008 * Math.sin(this.phase * 2) * this.movement), 0);
     if (player.grounded) this.clearFloor(player.position.y);
   }
-  poseGrab(player: Player, yaw: number, fall: number, recovery: number, kicks: readonly [number, number], final: number): [Babylon.Vector3, Babylon.Vector3] {
+  poseGrab(player: Player, yaw: number, fall: number, recovery: number, kickAge: number, sequence: GrabSequence, motionTime = sequence.time): [Babylon.Vector3, Babylon.Vector3] {
     this.root.setEnabled(true);
     const prone = fall * (1 - recovery), settle = smoothStep(recovery);
+    this.fallAmount = prone;
     // Ankles remain above the floor. Hips and knees flex together while the
     // seven-bone skin deforms the cloth; no detached leg-object animation.
+    const kick = Math.sin(Math.PI * Math.min(1, kickAge / GRAB.kickSeconds));
     for (let side = 0; side < 2; side++) {
-      const i = side * 3, kick = kicks[side], finalKick = side === 1 ? final : final * .4;
-      this.joint(i, (.38 - .14 * kick - .25 * finalKick) * prone + .45 * Math.sin(settle * Math.PI), 0, (side ? .22 : -.22) * prone);
-      this.joint(i + 1, (-.55 + .20 * kick + .35 * finalKick) * prone - .75 * Math.sin(settle * Math.PI));
-      this.joint(i + 2, (.15 - .12 * kick - .18 * finalKick) * prone);
+      const i = side * 3, finalKick = side === this.freeSide ? kick : 0;
+      this.joint(i, (.38 - .25 * finalKick) * prone + .45 * Math.sin(settle * Math.PI), 0, (side ? .22 : -.22) * prone);
+      this.joint(i + 1, (-.55 + .35 * finalKick) * prone - .75 * Math.sin(settle * Math.PI));
+      this.joint(i + 2, (.15 - .18 * finalKick) * prone);
     }
     this.place(player, mix(.92, GRAB.hipHeight, prone) - .07 * Math.sin(settle * Math.PI), Math.PI / 2 * prone, yaw);
+    if (this.motion) this.animateGrab(player, yaw, recovery, kickAge, sequence, motionTime);
     // A small conservative sole envelope keeps the posed shoes above support
     // during the fall/get-up arc, without simulating cloth or scanning vertices.
     this.clearFloor(player.position.y);
@@ -105,5 +117,52 @@ export class PlayerLegs {
       B.Vector3.TransformCoordinatesToRef(this.contactOffsets[i], this.ankles[i].getWorldMatrix(), this.contacts[i]);
     }
     return this.contacts;
+  }
+  private animateGrab(player: Player, yaw: number, recovery: number, kickAge: number, sequence: GrabSequence, motionTime: number): void {
+    const motion = this.motion!, phase = sequence.phase;
+    const stumbling = phase === 'grab-start' || phase === 'falling';
+    // The source stays upright through .65 s, then collapses. Fit those two
+    // sections to the existing reach/fall phases instead of lowering the body early.
+    const stumbleTime = phase === 'grab-start' ? sequence.time / GRAB.reachSeconds * .65
+      : .65 + sequence.time / GRAB.fallSeconds * (motion.duration('stumble') - .65);
+    const base = motion.sample('crawl', 0);
+    // Use the presentation's continuous encounter clock. Resetting phase time at
+    // struggle/release/recovery must not restart the player's crawl underneath it.
+    const crawlTime = Math.max(0, motionTime - GRAB.reachSeconds - GRAB.fallSeconds);
+    let pose: MotionPose = stumbling ? motion.sample('stumble', stumbleTime) : motion.sample('crawl', crawlTime, true);
+    let held = base, pelvis = stumbling ? pose.pelvis : base.pelvis, height = stumbling ? pose.height : base.height;
+    if (phase === 'dragging') {
+      const end = motion.sample('stumble', motion.duration('stumble')), t = smoothStep(sequence.time / .2);
+      pose = { ...pose, legs: pose.legs.map((q, i) => B.Quaternion.Slerp(end.legs[i], q, t)),
+        pelvis: B.Quaternion.Slerp(end.pelvis, pose.pelvis, t), height: mix(end.height, pose.height, t) };
+      // Settle the held chain AND its pelvis from the final fall pose into one
+      // stable anchor. Do not switch from an animated pelvis at the QTE boundary.
+      held = { ...base, legs: base.legs.map((q, i) => B.Quaternion.Slerp(end.legs[i], q, t)) };
+      pelvis = B.Quaternion.Slerp(end.pelvis, base.pelvis, t); height = mix(end.height, base.height, t);
+    }
+    const kickActive = kickAge < GRAB.kickSeconds && (phase === 'struggling' || phase === 'escape-kick');
+    const kicking = kickActive ? motion.sample('kick', kickAge / GRAB.kickSeconds * motion.duration('kick')) : null;
+    for (let i = 0; i < 6; i++) {
+      // Lock only the right chain to a stable pulled pose after falling. The left
+      // leg retains the crawl motion and is the sole recipient of the kick clip.
+      let rotation = !stumbling && i >= 3 ? held.legs[i] : pose.legs[i];
+      // The source shifts its pelvis while crawling. Express the free thigh in
+      // our constrained pelvis frame, otherwise it folds underneath the floor
+      // and the floor correction lifts the entire body into the camera.
+      if (i === 0) rotation = pelvis.conjugate().multiply(pose.pelvis).multiply(rotation);
+      if (kicking && i < 3) {
+        const target = i === 0 ? pelvis.conjugate().multiply(kicking.pelvis).multiply(kicking.legs[i]) : kicking.legs[i];
+        rotation = B.Quaternion.Slerp(rotation, target, Math.sin(Math.PI * kickAge / GRAB.kickSeconds));
+      }
+      B.Quaternion.SlerpToRef(rotation, B.Quaternion.Identity(), recovery, this.joints[i].rotationQuaternion!);
+    }
+    // Root motion belongs to the collision controller. Preserve only the authored
+    // fall height/tilt; keep a stable pelvis while crawling so the held chain cannot skate.
+    height = Math.max(GRAB.hipHeight, height * .8823);
+    this.fallAmount = Math.max(0, Math.min(1, (.8623 - height) / (.8623 - base.height * .8823))) * (1 - recovery);
+    this.root.position.set(player.position.x, player.position.y + mix(height, .92, recovery), player.position.z);
+    this.root.rotationQuaternion!.copyFrom(B.Quaternion.RotationYawPitchRoll(-yaw, 0, 0)
+      .multiply(B.Quaternion.Slerp(pelvis, B.Quaternion.Identity(), recovery)));
+    this.root.computeWorldMatrix(true);
   }
 }

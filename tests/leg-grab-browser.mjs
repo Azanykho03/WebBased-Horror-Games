@@ -1,86 +1,161 @@
-// Real imported skins / IK and camera validation in an isolated local browser.
+// Real imported models, source-derived clips and audio in an isolated validation build.
 import { createRequire } from 'node:module';
 import { writeFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 const { chromium } = createRequire(import.meta.url)(process.env.PLAYWRIGHT_PATH || 'playwright');
-const browser = await chromium.launch({ headless:true, ...(process.env.BROWSER_PATH ? {executablePath:process.env.BROWSER_PATH} : {}), args:['--autoplay-policy=no-user-gesture-required'] });
-const page = await browser.newPage({viewport:{width:1280,height:720},hasTouch:true});
-const report=[], errors=[];
-page.on('pageerror', e=>errors.push(String(e)));
-async function sample(name, screenshot=true) {
-  const value=await page.evaluate(() => {
-    const h=window.grabValidation, B=window.BABYLON, legs=h.world.legs;
-    const contacts=legs.contacts.map(p=>p.asArray()), grips=h.grabPresentation.gripTargets.map(p=>p.asArray());
-    const dist=(a,b)=>Math.hypot(...a.map((v,i)=>v-b[i]));
-    const error=Math.min(Math.max(dist(contacts[0],grips[0]),dist(contacts[1],grips[1])),Math.max(dist(contacts[0],grips[1]),dist(contacts[1],grips[0])));
-    let minY=Infinity, maxY=-Infinity, finite=true;
-    legs.skeleton.prepare();
-    for(const mesh of legs.meshes) {
-      const v=mesh.getPositionData(true,true), m=mesh.computeWorldMatrix(true);
-      for(let i=0;i<v.length;i+=3) {
-        const p=B.Vector3.TransformCoordinates(B.Vector3.FromArray(v,i),m);
-        minY=Math.min(minY,p.y); maxY=Math.max(maxY,p.y); finite&&=Number.isFinite(p.x+p.y+p.z);
+const browser = await chromium.launch({ headless: true,
+  ...(process.env.BROWSER_PATH ? { executablePath: process.env.BROWSER_PATH } : {}),
+  args: ['--autoplay-policy=no-user-gesture-required', '--no-proxy-server'],
+});
+const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, hasTouch: true });
+const errors = [], missing = [], report = [];
+page.on('pageerror', e => errors.push(String(e)));
+page.on('response', r => { if (r.status() >= 400) missing.push(`${r.status()} ${r.url()}`); });
+const log = message => { console.log(message); report.push({ message }); };
+const read = () => page.evaluate(() => {
+  const h = window.grabValidation, w = h.world, legs = w.legs, grip = h.grabPresentation.gripTargets[0], B = window.BABYLON;
+  return { phase: h.grab.phase, time: h.grab.time, screen: h.screen(), remaining: h.grab.remaining,
+    attempts: h.grab.attempts, presses: h.grab.presses, required: h.grab.required,
+    position: { ...h.player.position }, ghost: { ...h.ghost.position }, ghostState: h.ghost.state,
+    yaw: h.player.yaw, pitch: h.player.pitch, view: w.camera.position.asArray(), roll: w.camera.rotation.z, touch: h.input.touchMode,
+    legs: legs.root.isEnabled(), side: h.grabPresentation.grabbedSide, grips: h.grabPresentation.gripTargets.length,
+    gripError: grip ? B.Vector3.Distance(legs.contacts[1], grip) : 0,
+    contacts: legs.contacts.map(v => v.asArray()), joints: legs.joints.map(n => n.rotationQuaternion.asArray()),
+    head: w.corazon.facePosition().asArray(), locked: h.player.grabbed || h.input.restricted,
+    audio: h.audioDiagnostics().recordings?.grab, capture: h.audioDiagnostics().recordings?.jumpscare,
+    monitor: { ...window.singleLegMonitor },
+  };
+});
+async function sample(name, screenshot = true) {
+  const data = await read();
+  const skin = await page.evaluate(() => {
+    const legs = window.grabValidation.world.legs, B = window.BABYLON;
+    legs.skeleton.prepare(); let minY = Infinity, finite = true;
+    for (const mesh of legs.meshes) {
+      const vertices = mesh.getPositionData(true, true), matrix = mesh.computeWorldMatrix(true);
+      for (let i = 0; i < vertices.length; i += 3) {
+        const v = B.Vector3.TransformCoordinates(B.Vector3.FromArray(vertices, i), matrix);
+        minY = Math.min(minY, v.y); finite &&= Number.isFinite(v.x + v.y + v.z);
       }
     }
-    return {phase:h.grab.phase,time:h.grab.time,remaining:h.grab.remaining,attempts:h.grab.attempts,required:h.grab.required,
-      body:{...h.player.position},eye:h.player.eye,view:h.world.camera.position.asArray(),pitch:h.player.pitch,
-      ghost:{...h.ghost.position},contacts,grips,error,minY,maxY,finite,
-      bones:legs.skeleton.bones.length,vertices:legs.meshes.reduce((n,m)=>n+m.getTotalVertices(),0),
-      joints:legs.skeleton.bones.map(b=>({name:b.name,q:b.getTransformNode()?.rotationQuaternion?.asArray()}))};
+    return { minY, finite, bones: legs.skeleton.bones.length };
   });
-  report.push({name,...value});
-  if(screenshot) await page.screenshot({path:`tests/leg-${name}.png`});
-  return value;
+  assert(skin.finite); assert.equal(skin.bones, 7);
+  if (data.legs) assert(skin.minY > data.position.y - .025, `${name}: floor clearance ${skin.minY}`);
+  report.push({ name, ...data, skin });
+  if (screenshot) await page.screenshot({ path: `tests/single-leg-${name}.png` });
+  return data;
 }
-async function phase(name,time=0) {
-  await page.waitForFunction(({name,time})=>window.grabValidation.grab.phase===name&&window.grabValidation.grab.time>=time,{name,time},{timeout:15000});
+async function phase(phase, time = 0) {
+  await page.waitForFunction(({ phase, time }) => window.grabValidation.grab.phase === phase && window.grabValidation.grab.time >= time,
+    { phase, time }, { timeout: 16000 });
+}
+async function prepare(difficulty = 'easy', touch = false, reduced = false, near = false) {
+  await page.evaluate(({ difficulty, touch, reduced, near }) => {
+    const h = window.grabValidation;
+    h.action('menu'); h.action('new'); h.action(`difficulty:${difficulty}`); h.action('start-game'); h.action('skip-intro');
+    h.settings().reducedMotion = reduced; h.input.setTouchMode(touch);
+    h.progress().collected = ['flashlight', 'note']; h.progress().kitchenSeen = true;
+    h.world.syncProgress(h.progress()); h.world.viewmodel.reset(true); h.player.flashlight = true;
+    h.player.position = { x: 0, y: 0, z: -8, level: 0 }; h.player.yaw = .8; h.player.pitch = -.2;
+    h.player.halt(h.world); h.player.camera(h.world, h.settings());
+    h.ghost.state = 'Chase'; h.ghost.grace = near ? 0 : 100; h.ghost.yaw = Math.PI;
+    h.ghost.position = { x: 0, y: 0, z: near ? -9.02 : -12, level: 0 }; h.world.ghost.setEnabled(true);
+    window.singleLegMonitor = { maxGripError: 0, maxRoll: 0, minHeadY: 100, minFacing: 1, heldFrames: 0, idleLegFrames: 0 };
+    document.querySelector('aside[aria-label="Development validation"]').hidden = true;
+  }, { difficulty, touch, reduced, near });
+}
+async function escape(touch = false) {
+  const state = await read();
+  // Native taps do not wait for the button's :active CSS transition after each
+  // press. Locator stability waits can consume a Hard timer on a busy test host.
+  const button = touch ? await page.locator('.struggle-tap').boundingBox() : null;
+  if (touch) assert(button && state.touch, 'Touch struggle button must be available');
+  for (let i = state.presses; i < state.required; i++) {
+    if (touch) { await page.touchscreen.tap(button.x + button.width / 2, button.y + button.height / 2); await page.waitForTimeout(50); }
+    else await page.keyboard.press('e');
+  }
+  await phase('idle');
+  const restored = await read();
+  assert(!restored.legs && !restored.locked && restored.grips === 0); assert.equal(restored.audio.sources, 0);
+  assert(Math.abs(restored.roll) < 1e-8); assert(Math.abs(restored.view[1] - restored.position.y - 1.65) < 1e-6);
+  return restored;
 }
 try {
-  await page.goto(process.env.GAME_URL||'http://127.0.0.1:5175',{waitUntil:'domcontentloaded'});
-  await page.waitForFunction(()=>window.grabValidation,null,{timeout:60000});
-  await page.getByRole('button',{name:/Enter the house|Start a new night/}).click();
-  await page.evaluate(()=>{
-    const h=window.grabValidation;h.action('new');h.action('difficulty:easy');h.action('start-game');h.action('skip-intro');
-    h.progress().collected=['flashlight','note'];h.world.syncProgress(h.progress());h.world.viewmodel.reset(true);h.player.flashlight=true;
-    h.player.position={x:0,y:0,z:-8,level:0};h.player.yaw=0;h.player.pitch=-1.1;h.player.halt(h.world);
-    h.ghost.grace=100;h.ghost.position={x:0,y:0,z:-14,level:0};h.world.ghost.setEnabled(true);h.input.setTouchMode(false);
-    document.querySelector('aside[aria-label="Development validation"]').hidden=true;
+  await page.goto(process.env.GAME_URL || 'http://127.0.0.1:5176', { waitUntil: 'domcontentloaded', timeout: 60000 });
+  await page.waitForFunction(() => window.grabValidation, null, { timeout: 60000 });
+  await page.getByRole('button', { name: /Enter the house|Start a new night/ }).click();
+  await page.waitForFunction(() => window.grabValidation.audioDiagnostics().recordings?.grab.status === 'ready');
+  await page.evaluate(() => {
+    const h = window.grabValidation, B = window.BABYLON;
+    h.world.scene.onAfterRenderObservable.add(() => {
+      const m = window.singleLegMonitor; if (!m || h.screen() !== 'playing') return;
+      const grip = h.grabPresentation.gripTargets[0];
+      if (grip) {
+        m.heldFrames++; m.maxGripError = Math.max(m.maxGripError, B.Vector3.Distance(grip, h.world.legs.contacts[1]));
+        m.maxRoll = Math.max(m.maxRoll, Math.abs(h.world.camera.rotation.z));
+      }
+      if (grip || h.ghost.state === 'Chase' && h.world.corazon.crawlAmount > .9) {
+        const face = h.world.corazon.facePosition(); m.minHeadY = Math.min(m.minHeadY, face.y - h.ghost.position.y);
+        const normal = B.Vector3.TransformNormal(new B.Vector3(0, 0, 1), h.world.corazon.head.getWorldMatrix()).normalize();
+        m.minFacing = Math.min(m.minFacing, B.Vector3.Dot(normal, h.world.camera.position.subtract(face).normalize()));
+      }
+      if (h.grab.phase === 'idle' && h.world.legs.root.isEnabled()) m.idleLegFrames++;
+    });
   });
-  await page.waitForTimeout(150);await sample('standing');
-  await page.keyboard.down('w'); await page.waitForTimeout(170); const walking=await sample('walking');
-  await page.keyboard.down('Shift'); await page.waitForTimeout(120); const running=await sample('running');
-  await page.keyboard.press('Space'); await page.waitForTimeout(140); const jumping=await sample('jumping');
-  await page.keyboard.up('w');await page.keyboard.up('Shift');
-  assert(jumping.body.y>.1);assert.notDeepEqual(walking.joints,running.joints);assert.notDeepEqual(running.joints,jumping.joints);
-  await page.waitForFunction(()=>window.grabValidation.player.grounded);await sample('landing');
-  await page.evaluate(()=>{const h=window.grabValidation;h.player.position={x:0,y:0,z:-8,level:0};h.player.halt(h.world);});
-  await page.evaluate(()=>{const h=window.grabValidation;h.ghost.state='Chase';h.ghost.grace=0;h.ghost.yaw=Math.PI;h.ghost.position={x:0,y:0,z:-9.02,level:0};h.world.corazon.updateLocomotion(0,h.ghost,h.settings());});
-  await phase('grab-start'); await sample('reach');
-  await phase('falling',.4); const falling=await sample('fall');assert(falling.minY>-.02);assert(falling.error<.05);
-  await phase('dragging',.25); const dragging=await sample('drag');assert(dragging.minY>-.02);assert(dragging.error<.05);
-  await phase('struggling'); const held=await sample('ground');
-  assert.equal(held.bones,7);assert(held.finite);assert(held.minY>-.02&&held.minY<.06,'Ground pose must rest near the floor');assert(held.error<.08,`Ankle grip error ${held.error}`);
-  await page.keyboard.press('e'); await page.waitForTimeout(90); const left=await sample('kick-left');assert(left.error<.05);
-  await page.keyboard.press('e'); await page.waitForTimeout(90); const right=await sample('kick-right');assert(right.error<.05);
-  for(let i=2;i<8;i++)await page.keyboard.press('e');
-  await phase('escape-kick',.12);await sample('final-kick');
-  await phase('recovery',.4);await sample('recovery');
-  await phase('idle');await sample('restored');
-  await page.evaluate(()=>{const h=window.grabValidation;h.action('menu');h.action('new');h.action('difficulty:hard');h.action('start-game');h.action('skip-intro');h.input.setTouchMode(true);
-    h.progress().collected=['flashlight','note'];h.progress().kitchenSeen=true;h.world.syncProgress(h.progress());h.world.viewmodel.reset(true);h.player.flashlight=true;
-    h.player.position={x:0,y:0,z:-8,level:0};h.player.halt(h.world);h.player.yaw=.8;h.player.pitch=.2;
-    h.ghost.state='Chase';h.ghost.grace=0;h.ghost.yaw=Math.PI;h.ghost.position={x:0,y:0,z:-9.02,level:0};h.world.ghost.setEnabled(true);});
-  await page.setViewportSize({width:844,height:390});
-  for(let attempt=1;attempt<=4;attempt++) {
-    await phase('struggling');const state=await sample(`touch-grab-${attempt}`,attempt===1);
-    assert.equal(state.attempts,attempt);assert.equal(state.required,16+(attempt-1)*4);assert(state.remaining>Math.max(4,5-(attempt-1)*.5)-.5);
-    for(let i=0;i<state.required;i++)await page.locator('.struggle-tap').tap();
-    await phase('idle');
-    if(attempt===1){await page.setViewportSize({width:390,height:844});await page.waitForTimeout(80);await page.setViewportSize({width:844,height:390});}
+  await prepare();
+  await page.evaluate(() => { const h = window.grabValidation; h.player.pitch = -1.35; });
+  await page.waitForTimeout(100); assert(!(await sample('normal')).legs);
+  await page.keyboard.down('w'); await page.waitForTimeout(200); assert(!(await read()).legs);
+  await page.keyboard.down('Shift'); await page.keyboard.press('Space'); await page.waitForTimeout(140);
+  const jump = await read(); assert(jump.position.y > .1); assert(!jump.legs);
+  await page.keyboard.up('w'); await page.keyboard.up('Shift');
+  await page.waitForFunction(() => window.grabValidation.player.grounded);
+  log('PASS arms-only downward look, walking, sprinting and jump; normal movement preserved');
+  await page.evaluate(() => { const h = window.grabValidation; h.player.position = { x: 0, y: 0, z: -8, level: 0 }; h.player.yaw = 0; h.player.pitch = -.35; h.player.halt(h.world); h.ghost.grace = 0; });
+  const starts = (await read()).audio.starts;
+  await page.waitForTimeout(500); await sample('chase');
+  await phase('grab-start', .1); const contact = await sample('contact'); assert(contact.legs); assert.equal(contact.side, 1); assert.equal(contact.grips, 1); assert.equal(contact.audio.starts, starts + 1);
+  await phase('falling', .2); await sample('falling');
+  await phase('dragging', .2); await sample('dragging');
+  await phase('struggling'); const before = await read();
+  await page.keyboard.down('e'); await page.keyboard.down('e'); await page.waitForTimeout(80);
+  const kick = await sample('kick'); assert.equal(kick.presses, 1); assert.equal(kick.audio.starts, starts + 1);
+  assert.deepEqual(kick.joints.slice(3), before.joints.slice(3)); assert.notDeepEqual(kick.joints.slice(0, 3), before.joints.slice(0, 3));
+  await page.keyboard.up('e');
+  await page.keyboard.press('Escape'); const paused = await read(); assert.equal(paused.screen, 'paused');
+  await page.waitForTimeout(180); assert.equal((await read()).remaining, paused.remaining);
+  await page.locator('#panel [data-action="resume"]').click();
+  const recovered = await escape(); await sample('recovered');
+  assert(recovered.monitor.maxGripError < .08, `maximum contact error ${recovered.monitor.maxGripError}`);
+  assert(recovered.monitor.maxRoll > .01 && recovered.monitor.maxRoll <= .12);
+  assert(recovered.monitor.minHeadY > .35 && recovered.monitor.minFacing > .2, `head tracking ${JSON.stringify(recovered.monitor)}`);
+  assert.equal(recovered.monitor.idleLegFrames, 0);
+  log('PASS source FBX chase/fall/drag, one fixed ankle, free-leg kick, held-E rejection, one-shot sound, Perlin shake, pause and recovery');
+
+  await page.setViewportSize({ width: 844, height: 390 }); await prepare('hard', true, true, true);
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    await phase('struggling'); const state = await sample(`touch-${attempt}`, attempt === 1);
+    assert.equal(state.attempts, attempt); assert.equal(state.required, 16 + (attempt - 1) * 4); assert.equal(state.roll, 0);
+    const restored = await escape(true); assert.equal(restored.monitor.idleLegFrames, 0);
+    assert(Math.abs(restored.yaw - .8) < 1e-6 && Math.abs(restored.pitch + .2) < 1e-6);
   }
-  await page.evaluate(()=>{const h=window.grabValidation;h.action('retry');});
-  assert.equal(await page.evaluate(()=>window.grabValidation.grab.attempts),0);
-  assert.deepEqual(errors,[]);
-  console.log('PASS imported rig, walking/running/jumping/landing, floor clearance, ankle grip, kicks/recovery and four progressive Hard touch grabs with retry reset');
-} catch(e) {console.log(e.stack);process.exitCode=1;await sample('failure').catch(()=>{});}
-finally {await writeFile('tests/leg-grab-browser-report.json',JSON.stringify({errors,report},null,2)+'\n');await browser.close();}
+  log('PASS three consecutive Hard touch escapes, original 16/20/24 progression, protection, reduced-motion view and no accumulated offsets');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await phase('struggling'); await sample('portrait');
+  const captureStarts = (await read()).capture.starts;
+  await page.waitForFunction(() => window.grabValidation.screen() === 'caught', null, { timeout: 14000 });
+  const dead = await sample('failure'); assert(!dead.legs && !dead.locked && dead.grips === 0); assert.equal(dead.audio.sources, 0); assert.equal(dead.capture.starts, captureStarts + 1);
+  await page.keyboard.press('e'); assert.equal((await read()).screen, 'caught');
+  await page.evaluate(() => window.grabValidation.action('retry')); const retry = await read(); assert.equal(retry.attempts, 0); assert.equal(retry.phase, 'idle'); assert(!retry.legs && !retry.locked);
+  log('PASS failed escape → one existing capture → Game Over; rejects later E; retry cleans state');
+  await prepare('easy', true, false, true); await phase('struggling');
+  await page.evaluate(() => window.grabValidation.action('menu')); const menu = await read(); assert.equal(menu.phase, 'idle'); assert(!menu.legs && !menu.locked); assert.equal(menu.audio.sources, 0);
+  assert.deepEqual(errors, []); assert.deepEqual(missing, []);
+  log('PASS menu interruption, no missing assets and no browser runtime errors');
+} catch (error) {
+  log(`FAIL ${error.stack}`); console.log(JSON.stringify(await read().catch(() => null)));
+  await sample('diagnostic').catch(() => {}); process.exitCode = 1;
+} finally {
+  await writeFile('tests/single-leg-browser-report.json', JSON.stringify({ errors, missing, report }, null, 2) + '\n'); await browser.close();
+}

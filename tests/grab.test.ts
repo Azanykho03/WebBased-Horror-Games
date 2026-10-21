@@ -176,7 +176,7 @@ test('pull and release use collision/gravity; repeated recoveries restore the ca
   const viewRoot = new Babylon.TransformNode('arms', scene);
   const world = { ghost: root, scene, camera, data, collision, nav,
     corazon: new CorazonPresentation(scene, camera, root),
-    legs: { meshes: [], poseGrab() { return [new Babylon.Vector3(-.15, .4, -8.8), new Babylon.Vector3(.15, .4, -8.8)]; } },
+    legs: { meshes: [], reset() {}, poseGrab() { return [new Babylon.Vector3(-.15, .4, -8.8), new Babylon.Vector3(.15, .4, -8.8)]; } },
     viewmodel: { root: viewRoot, meshes: [], beginGrab() {}, endGrab() {}, poseGrab() { viewRoot.position.setAll(0); } },
   } as unknown as World;
   const presentation = new GrabPresentation(world, player, ghost);
@@ -188,7 +188,7 @@ test('pull and release use collision/gravity; repeated recoveries restore the ca
       const qte = new GrabSequence(); qte.start('easy'); presentation.start();
       for (let i = 0; i < 140; i++) {
         qte.update(1 / 60); presentation.update(1 / 60, qte, DEFAULT_SETTINGS);
-        assert(!collision.blocked(player.position)); assert.equal(camera.rotation.z, 0); assert.equal(camera.rotationQuaternion, null);
+        assert(!collision.blocked(player.position)); assert(Math.abs(camera.rotation.z) <= .12); assert.equal(camera.rotationQuaternion, null);
       }
       assert.equal(player.position.y, 0, 'Airborne capture must settle to the floor');
       assert(Math.abs(player.eye[1] - GRAB.eyeHeight) < 1e-6, 'Camera settles at ground height');
