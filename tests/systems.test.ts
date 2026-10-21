@@ -18,7 +18,7 @@ import type { FlashlightViewmodel, ArmMotion } from '../src/flashlight-viewmodel
 Object.assign(globalThis, { OffscreenCanvas: class {
   width: number; height: number;
   constructor(width: number, height: number) { this.width = width; this.height = height; }
-  getContext() { return { fillRect() {}, fillText() {} }; }
+  getContext() { return { fillRect() {}, fillText() {}, measureText(text: string) { return { width: text.length * 28 }; } }; }
 } });
 const { World } = await import('../src/world.ts');
 const { Player } = await import('../src/player.ts');

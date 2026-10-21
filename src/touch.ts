@@ -33,7 +33,7 @@ export class TouchControls {
     this.input = input;
     const element = this.element = document.createElement('div'); element.id = 'touch-controls'; element.hidden = true;
     element.innerHTML = `<div class="touch-look" aria-label="Touch camera area"></div>
-      <div class="touch-top"><button data-touch="Tab" aria-label="Journal and inventory">▤ <span>Journal</span></button><button data-touch="Pause" aria-label="Pause game">Ⅱ <span>Pause</span></button></div>
+      <div class="touch-top"><button data-touch="Tab" aria-label="Missions & Inventory">▤ <span>Missions</span></button><button data-touch="KeyM" aria-label="House map">⌖ <span>Map</span></button><button data-touch="Pause" aria-label="Pause game">Ⅱ <span>Pause</span></button></div>
       <div class="touch-stick" role="group" aria-label="Movement joystick"><span class="stick-label">MOVE</span><i></i></div>
       <div class="touch-actions">
         <button data-touch="KeyE" aria-label="Interact" class="touch-interact">✋<span>Interact</span></button>

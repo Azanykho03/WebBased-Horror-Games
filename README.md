@@ -29,16 +29,24 @@ weights, source footage and working reference collections remain outside `dist/`
 ## Play
 
 WASD moves, mouse looks, Shift sprints, **Space jumps**, E interacts/hides, F toggles the light,
-left click throws the tsinelas, Tab toggles the journal and Escape pauses.
+left click throws the tsinelas, **Tab toggles Missions & Inventory**, **M toggles the house map**, and Escape pauses.
 If pointer lock is unavailable, hold the right mouse button to look or use the
 arrow keys. Click the play/continue button to enable sound.
 
 On a touch phone, controls appear automatically: left joystick moves, right-side
 drag looks, **Interact** uses items/doors, **Light** toggles the flashlight, **Run**
 toggles sprint, **Jump** jumps, **Hide/Leave** uses hiding places, and **Throw** throws the tsinelas.
-Journal and Pause are at the top right. Movement, camera and buttons accept
+Missions, Map, and Pause are at the top right. Movement, camera and buttons accept
 simultaneous pointers. Keyboard movement or a mouse press restores desktop input
 on hybrid devices. Touch sensitivity is adjustable in Settings.
+
+Read the short warning with E at the living-room coffee table. The TAB menu keeps
+the six-step Escape Guide, live mission tracker, and inventory together; the guide
+uses the existing family locket, folded letter, and music box objectives. Take the
+flashlight and read the warning before finding the fuse. The separate house map
+shows the actual room footprints, walls, doorways, stairs, and your position and
+facing direction. Select either floor or use **Locate me** to return to your floor.
+Both menus pause the game and resume through their close shortcut or **Back to the house**.
 
 Landscape is recommended; portrait remains playable and its rotation hint can
 be dismissed. Mobile landscape gameplay attempts document fullscreen once, then

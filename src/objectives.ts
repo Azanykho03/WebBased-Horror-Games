@@ -22,6 +22,36 @@ export function objective(p: Progress): { title: string; detail: string } {
     case 'M05': return { title: 'Leave the house', detail: !has(p, 'exit-key') ? 'Take the final key from the glass cabinet.' : !p.exitUnlocked ? 'Unlock the main entrance at the front of the house.' : 'Open the main entrance and step outside.' };
   }
 }
+
+export interface ChecklistEntry {
+  id: string; title: string; detail: string; status: 'done' | 'current' | 'upcoming';
+}
+function checklist(entries: { id: string; title: string; detail: string; done: boolean }[], ready = true): ChecklistEntry[] {
+  const next = ready ? entries.findIndex(entry => !entry.done) : -1;
+  return entries.map(({ done, ...entry }, index) => ({ ...entry, status: done ? 'done' : index === next ? 'current' : 'upcoming' }));
+}
+
+// These views read the existing progress; opening a menu never advances a mission.
+export function missionChecklist(p: Progress, escaped = false): ChecklistEntry[] {
+  return checklist([
+    { id: 'M01', title: 'Find your bearings', detail: '', done: bearingsFound(p) },
+    { id: 'M02', title: 'Restore the lights', detail: '', done: p.power },
+    { id: 'M03', title: 'Recover the keepsakes', detail: '', done: keepsakeCount(p) === 3 },
+    { id: 'M04', title: 'Return what belongs here', detail: '', done: p.cabinet },
+    { id: 'M05', title: 'Escape through the main entrance', detail: '', done: escaped && canEscape(p) },
+  ]);
+}
+
+export function escapeGuide(p: Progress, escaped = false): ChecklistEntry[] {
+  return checklist([
+    { id: 'fuse', title: 'Find the Fuse', detail: 'Locate the fuse on the kitchen counter downstairs.', done: has(p, 'fuse') },
+    { id: 'power', title: 'Restore Power', detail: 'Go upstairs and install the fuse in the electrical breaker near Master Bedroom 1.', done: p.power },
+    { id: 'master-key', title: 'Find the Master Bedroom Key', detail: 'Search the study desk upstairs to obtain the key.', done: has(p, 'master-key') },
+    { id: 'keepsakes', title: 'Collect the Required Items', detail: `Find the family locket in the guest bedroom, the folded letter in the garage, and the music box in Master Bedroom 2. Unlock that bedroom with the study key. ${keepsakeCount(p)}/3 collected.`, done: keepsakeCount(p) === 3 },
+    { id: 'final-key', title: 'Unlock the Final Key', detail: p.cabinet && !has(p, 'exit-key') ? 'The keepsakes are returned. Take the revealed final key from the glass cabinet.' : 'Return all three keepsakes to the glass cabinet in the downstairs bar passage, then take the final key.', done: p.cabinet && has(p, 'exit-key') },
+    { id: 'escape', title: 'Escape the House', detail: p.exitUnlocked ? 'The main entrance is unlocked. Open the door and step outside to escape.' : 'Use the final key to unlock the main entrance, open the door, and step outside.', done: escaped && canEscape(p) },
+  ], bearingsFound(p));
+}
 export interface InteractionResult { changed: boolean; message: string; checkpoint?: boolean }
 export function interact(p: Progress, id: InteractionId): InteractionResult {
   const no = (message: string): InteractionResult => ({ changed: false, message });
@@ -67,7 +97,7 @@ export function interact(p: Progress, id: InteractionId): InteractionResult {
   }
   const messages: Partial<Record<ItemId, string>> = {
     flashlight: 'Taking the flashlight. F switches it on or off once it settles. Read the warning beside it.',
-    note: 'Warning read. Find the kitchen fuse, then the breaker upstairs.',
+    note: 'Warning read. Open Missions & Inventory for the Escape Guide.',
     fuse: 'Kitchen fuse collected. The breaker is upstairs near Master 1.',
     locket: 'Celestina’s locket. The little portrait has been carefully kept.', letter: 'A folded letter: “Celestina, we left the light on for you.”', 'music-box': 'Celestina’s music box. One unfinished melody, then silence.',
     'exit-key': 'The final key is yours. Return to the main entrance.',

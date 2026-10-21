@@ -3,7 +3,7 @@ import { B, vector } from './world.ts';
 import type { World } from './world.ts';
 import type { Player } from './player.ts';
 import type { GhostStateMachine } from './ghost.ts';
-import { HOTSPOTS } from './config.ts';
+import { HOTSPOTS, WARNING_TITLE, WARNING_PARAGRAPHS } from './config.ts';
 import { has } from './objectives.ts';
 import type { Hotspot, ItemId, Position, Progress, Vec3 } from './types.ts';
 import { sphereHit, worldHit } from './geometry.ts';
@@ -44,13 +44,24 @@ export class InteractionSystem {
         mesh = B.MeshBuilder.CreateBox(h.id, h.id === 'music-box' ? { width: .23, height: .16, depth: .17 } : h.id === 'note' ? { width: .26, height: .006, depth: .33 } : { width: .24, height: .015, depth: .16 }, scene);
         mesh.material = h.id === 'music-box' ? red : paper;
         if (h.id === 'note') {
-          const ink = new B.DynamicTexture('living-room-warning-print', { width: 512, height: 640 }, scene, false);
+          const ink = new B.DynamicTexture('living-room-warning-print', { width: 1024, height: 1280 }, scene, false);
           // Correct the horizontal canvas UV orientation in the RH game scene.
           ink.uScale = -1; ink.uOffset = 1;
-          const context = ink.getContext(); context.fillStyle = '#b8aa80'; context.fillRect(0, 0, 512, 640);
-          context.fillStyle = '#30291f'; context.font = 'bold 42px serif'; context.fillText('DO NOT ENTER.', 35, 85);
-          context.font = '28px serif';
-          ['Return what belongs', 'to this house.', '', 'Find the kitchen fuse.', 'Restore the lights.', '', 'Get fully inside to hide.', 'Stay quiet as she searches.'].forEach((line, i) => context.fillText(line, 36, 160 + i * 48));
+          const context = ink.getContext(); context.fillStyle = '#b8aa80'; context.fillRect(0, 0, 1024, 1280);
+          context.fillStyle = '#30291f';
+          let y = 100;
+          const print = (text: string, font: string, lineHeight: number) => {
+            context.font = font;
+            let line = '';
+            for (const word of text.split(' ')) {
+              const next = line ? `${line} ${word}` : word;
+              if (line && context.measureText(next).width > 880) { context.fillText(line, 72, y); y += lineHeight; line = word; }
+              else line = next;
+            }
+            context.fillText(line, 72, y); y += lineHeight + 28;
+          };
+          print(WARNING_TITLE, 'bold 58px serif', 68);
+          for (const paragraph of WARNING_PARAGRAPHS) print(paragraph, '42px serif', 54);
           ink.update();
           const face = new B.StandardMaterial('warning-print', scene); face.diffuseTexture = ink; face.specularColor.setAll(0); face.backFaceCulling = false;
           face.emissiveColor.set(.08, .065, .04);

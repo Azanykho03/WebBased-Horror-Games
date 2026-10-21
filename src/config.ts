@@ -75,4 +75,9 @@ export const HOTSPOTS: Hotspot[] = [
   { id: 'tsinelas', label: 'Pick up the tsinelas', position: [-3.2, .12, -18.8], room: 'F05', kind: 'pickup', radius: .3 },
 ];
 
-export const WARNING = 'Do not enter. The front door is locked. Find the fuse in the kitchen. Restore the breaker upstairs. The study holds the master bedroom key. Return our locket, letter, and music box to the glass cabinet. The final key opens the main entrance. Break her line of sight before hiding in the dining or upstairs cabinet. You are concealed only after the cabinet closes. Stay hidden while she searches the nearby rooms.';
+export const WARNING_TITLE = 'YOU HAVE ENTERED. THERE IS NO GETTING OUT.';
+export const WARNING_PARAGRAPHS = [
+  'The moment you stepped inside this house, you sealed your fate. The front door is locked, and there is no turning back. Your only chance of escaping is to complete the tasks hidden within these walls.',
+  'But beware... you are not alone. Something is watching, waiting for you to make a mistake. Complete your tasks, find the key, and escape before she finds you.',
+] as const;
+export const WARNING = [WARNING_TITLE, ...WARNING_PARAGRAPHS].join('\n\n');

@@ -27,7 +27,7 @@ export const DEFAULT_SETTINGS: Settings = {
   subtitles: true, reducedFlicker: true, reducedMotion: true, gentleScares: false,
   cleanDialogue: false, quality: 'auto',
 };
-export type Screen = 'loading' | 'menu' | 'difficulty' | 'ready' | 'intro' | 'playing' | 'paused' | 'journal' | 'settings' | 'credits' | 'caught' | 'won' | 'error';
+export type Screen = 'loading' | 'menu' | 'difficulty' | 'ready' | 'intro' | 'playing' | 'paused' | 'journal' | 'map' | 'settings' | 'credits' | 'caught' | 'won' | 'error';
 export type Mission = 'M01' | 'M02' | 'M03' | 'M04' | 'M05';
 export type ItemId = 'flashlight' | 'note' | 'fuse' | 'locket' | 'letter' | 'music-box' | 'exit-key' | 'master-key' | 'battery-kitchen' | 'battery-study' | 'battery-guest' | 'tsinelas';
 export type InteractionId = ItemId | 'breaker' | 'cabinet' | 'exit' | 'front-door' | 'bedroom-door' | 'hide-guest' | 'hide-dining' | `door:${string}`;

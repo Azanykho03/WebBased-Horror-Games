@@ -8,7 +8,7 @@ import { SaveSystem } from './storage.ts';
 import { UI } from './ui.ts';
 import { bearingsFound, canEscape, interact, has, mission } from './objectives.ts';
 import { freshProgress } from './types.ts';
-import type { Progress, Screen, Settings, Vec3 } from './types.ts';
+import type { Floor, Progress, Screen, Settings, Vec3 } from './types.ts';
 import { CHECKPOINTS, GHOST_DIALOGUE, GHOST_PROFILE, WARNING } from './config.ts';
 import type { VoiceCue } from './config.ts';
 import { HorrorDirector, calmAtmosphere, surfaceForRoom } from './horror.ts';
@@ -57,6 +57,7 @@ export class Game {
   private progress = freshProgress();
   private screen: Screen = 'loading';
   private returnScreen: Screen = 'menu';
+  private mapFloor: Floor = 0;
   private loaded = false;
   private runStarted = false;
   private last = 0;
@@ -101,8 +102,11 @@ export class Game {
     window.addEventListener('beforeunload', () => { if (this.runStarted && this.screen !== 'difficulty') this.save(); }, { signal: this.abort.signal });
     window.addEventListener('keydown', event => {
       if (this.screen === 'intro' && event.code === 'Escape') { event.preventDefault(); this.action('skip-intro', event.isTrusted); }
-      if (this.screen === 'journal' && (event.code === 'Tab' || event.code === 'Escape')) {
-        event.preventDefault(); this.action('resume', event.isTrusted);
+      if (['journal', 'map'].includes(this.screen) && ['Tab', 'KeyM', 'Escape'].includes(event.code)) {
+        event.preventDefault();
+        if (event.repeat) return;
+        if (event.code === 'Escape' || this.screen === 'journal' && event.code === 'Tab' || this.screen === 'map' && event.code === 'KeyM') this.action('resume', event.isTrusted);
+        else this.action(event.code === 'Tab' ? 'journal' : 'map', event.isTrusted);
       }
     }, { signal: this.abort.signal });
     window.addEventListener('blur', () => { this.presentationPaused = true; this.audio.pause(); }, { signal: this.abort.signal });
@@ -162,6 +166,7 @@ export class Game {
     if (screen === 'menu' || screen === 'caught' || screen === 'won') this.audio.reset();
     this.syncAudio();
     this.ui.screen(screen, this.progress, this.settings, this.storage.load() !== null, detail, this.selectedDifficulty);
+    if (screen === 'map') this.ui.map(this.world.data, this.player.position, this.player.yaw, this.mapFloor);
     this.syncTouch();
     this.struggleUI.update(this.grab, screen === 'playing');
   }
@@ -185,7 +190,7 @@ export class Game {
     if (action === 'start-game' && this.screen === 'difficulty') { this.storage.clear(); this.begin(freshProgress(this.selectedDifficulty)); }
     if (action === 'continue' || action === 'retry') this.begin(this.storage.load() ?? freshProgress());
     if (action === 'resume' || action === 'skip-intro') {
-      if (!['ready', 'intro', 'paused', 'journal'].includes(this.screen)) return;
+      if (!['ready', 'intro', 'paused', 'journal', 'map'].includes(this.screen)) return;
       this.display.sync(true, userGesture);
       this.presentationPaused = false; this.last = performance.now();
       this.performanceProfile.resetSamples();
@@ -202,6 +207,12 @@ export class Game {
       this.show('menu');
     }
     if (action === 'journal') this.show('journal');
+    if (action === 'map') { this.mapFloor = this.player.position.level; this.show('map'); }
+    if (this.screen === 'map' && ['map-floor:0', 'map-floor:1', 'map-player'].includes(action)) {
+      this.mapFloor = action === 'map-player' ? this.player.position.level : action === 'map-floor:1' ? 1 : 0;
+      this.ui.map(this.world.data, this.player.position, this.player.yaw, this.mapFloor);
+      document.querySelector<HTMLButtonElement>(`#map-content [data-action="${action}"]`)?.focus();
+    }
     if (action === 'settings' || action === 'credits') { this.returnScreen = this.screen === 'menu' ? 'menu' : 'paused'; this.show(action); }
     if (action === 'back') this.show(this.returnScreen);
   }
@@ -279,7 +290,7 @@ export class Game {
     const before = mission(this.progress);
     const result = interact(this.progress, target.id);
     this.audio.interaction(target.id, target.kind, result.changed, target.position);
-    if (target.id === 'note') this.speak(WARNING, 18, true);
+    if (target.id === 'note') this.speak(WARNING, 28, true);
     this.ui.notice(this.input.touchMode && target.id === 'flashlight' ? 'Taking the flashlight. Tap Light after it settles. Read the warning beside it.' : result.message, target.id === 'note' ? 8 : 4);
     if (result.changed) {
       if (target.id === 'flashlight') { this.player.flashlight = false; this.world.viewmodel.pickup(); }
@@ -425,6 +436,7 @@ export class Game {
       this.progress.elapsed += dt; this.subtitleCooldown = Math.max(0, this.subtitleCooldown - dt);
       this.ui.tick(dt, this.settings.subtitles);
       if (this.input.consume('Tab')) { this.show('journal'); this.world.scene.render(); return; }
+      if (this.input.consume('KeyM')) { this.action('map'); this.world.scene.render(); return; }
       const wasLit = this.player.flashlight;
       // Input belongs to the state in which it arrived, even when this frame
       // completes an animation. Do not replay a transition-time press afterward.

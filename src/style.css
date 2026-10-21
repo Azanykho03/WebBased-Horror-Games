@@ -74,3 +74,54 @@ html,body{padding:0;min-height:0}body{height:100dvh}#game{position:fixed;inset:0
 #ui[data-reduced-motion='true'] .struggle-track i{transition:none}
 @media(max-height:500px){.struggle-card{margin-top:0;align-self:center;width:min(260px,33vw)}.struggle-card h2{font-size:16px;margin:5px 0 7px}.struggle-card p{margin:5px 0}#ui[data-input='touch'] .struggle-tap{min-height:56px;margin-top:10px}}
 @media(max-width:500px) and (min-height:501px){.struggle-card{justify-self:center;align-self:end;width:min(320px,85vw);margin-top:0}}
+
+/* The letter keeps its existing reading surface; the walkthrough lives in TAB. */
+#subtitle.warning-letter{width:min(650px,85vw);text-align:left;max-height:60dvh;overflow:auto;pointer-events:auto;touch-action:pan-y;border:1px solid #93866270;border-left:3px solid #bca565}
+.warning-letter strong,.warning-copy strong{display:block;font:600 16px/1.5 Georgia,serif;letter-spacing:.055em;color:#eadbb4}
+#subtitle.warning-letter p{margin:12px 0 0;font-size:14px;line-height:1.65;color:#e5dfcb}
+.warning-copy strong{margin-top:18px}.warning-copy p{font-size:13px}
+#ui[data-screen="journal"] h1,#ui[data-screen="map"] h1{font-size:clamp(34px,5vw,57px);line-height:1.05;margin:12px 0}
+.escape-guide,.mission-tracker{border-top:1px solid #7d897143;margin-top:18px;padding-top:18px}
+.escape-guide h2,.mission-tracker h2,.inventory h2,.map-directory h2{font:23px/1.4 Georgia,serif;color:#ddd4b4;margin:0 0 10px}
+.escape-guide h2 span{display:block;font-size:16px;color:#abb5a2;margin-top:4px}
+.guide-prerequisite{padding:12px 15px;background:#30362370;border-left:2px solid #bca565;font-size:12px;line-height:1.6}
+.guide-prerequisite.done{border-color:#849d7e;color:#b4c7a9}
+.escape-guide ol{list-style:none;padding:0;margin:18px 0;display:grid;gap:10px}
+.escape-guide li{display:flex;gap:15px;padding:15px;background:#0c1612a6;border:1px solid #7d897136}
+.escape-guide li.current{border-color:#bca565a3;background:#30362390}
+.guide-number{display:grid;place-items:center;flex:none;width:27px;height:27px;border:1px solid #a9a28266;color:#ddc98d;font:16px Georgia,serif}
+.escape-guide h3{margin:2px 0 6px;font-size:14px;line-height:1.4;color:#e3ddc5}
+.escape-guide li p{margin:0 0 8px;font-size:13px;line-height:1.6;color:#bcc7b5}
+.step-status{font-size:10px;letter-spacing:.06em;color:#b3b6a4}.done .step-status,.done .guide-number{color:#bdcfae}.current .step-status{color:#e5ca89}
+.missions li{align-items:baseline;flex-wrap:wrap;row-gap:5px}.missions .step-status{margin-left:auto}
+.inventory{text-transform:none}.inventory p{text-transform:capitalize;font-size:12px}
+#ui[data-screen="map"] .panel-inner{width:min(1180px,100%);margin:auto;padding:4vh max(25px,4vw)}
+#ui[data-screen="map"] #panel{background:#080f0df2}
+.map-toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.map-toolbar button{min-height:48px;padding:10px 15px;border:1px solid #89927770;background:#142018;color:#d7ddcd;font-size:13px}
+.map-toolbar button[aria-pressed="true"]{background:#dfd9bd;color:#1f291f;border-color:#dfd9bd}
+.map-toolbar small{display:block;font-size:10px;margin-top:4px}
+.map-location{font-size:12px;line-height:1.6;margin:12px 0 20px}
+.map-layout{display:grid;grid-template-columns:minmax(240px,1.35fr) minmax(190px,1fr);align-items:start;gap:26px}
+.map-plan{margin:0;padding:12px;background:#101b15;border:1px solid #7d897159}
+#house-map{display:block;width:100%;height:65dvh;min-height:310px;max-height:640px}
+.map-room rect{fill:#1c2a22;stroke:#74816d;stroke-width:.035}.map-room.here rect{fill:#3c4933}
+.map-wall{fill:#bbc0a5}.map-door{stroke:#dbc78a;stroke-width:.12;stroke-dasharray:.16 .1}
+.map-room-label{fill:#dddcc7;font-size:.6px;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+.map-stairs rect{fill:#151e18;stroke:#939c7d;stroke-width:.05}.map-stairs.here rect{fill:#3c4933}
+.map-stairs line{stroke:#8b9479;stroke-width:.04}.map-stairs text{fill:#ede2b3;font-size:.43px;text-anchor:middle;paint-order:stroke;stroke:#151e18;stroke-width:.13;stroke-linejoin:round}
+#map-player circle{fill:#f8d683;stroke:#172217;stroke-width:.1}#map-player path{fill:#f8d683;stroke:#172217;stroke-width:.05}
+.map-plan figcaption{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;color:#c0c9b4;font-size:10px;line-height:1.8}
+.map-key-player,.map-key-door{color:#f8d683}.map-key-stairs{color:#bcc5a6}
+.map-directory ul{list-style:none;padding:0;margin:0;display:grid;gap:5px}
+.map-directory li{padding:10px 12px;color:#c0c9b4;font-size:12px;line-height:1.5;border-bottom:1px solid #7d897136}
+.map-directory li>span{display:inline-block;min-width:35px;color:#8f9f85;font:11px monospace}
+.map-directory li.here{background:#303d2980;color:#ebdfb6;border-left:2px solid #dcc17d}
+.map-directory strong{display:block;margin:6px 0 0 35px;font-size:9px;letter-spacing:.1em;color:#f8d683}
+#ui[data-input="touch"] .objective{max-width:calc(100% - 200px)}
+#ui[data-input="touch"] #subtitle.warning-letter{bottom:16%;width:min(650px,88vw);max-width:88vw;max-height:61dvh;padding:14px 18px;z-index:3}
+#ui[data-input="touch"] #subtitle.warning-letter p{font-size:12px;line-height:1.6}
+@media(max-width:600px){.map-layout{grid-template-columns:1fr;gap:20px}.map-directory ul{grid-template-columns:1fr 1fr}.map-directory li{padding:9px 6px;font-size:11px}.map-directory h2{font-size:20px}.map-toolbar button{flex:1;padding:8px;font-size:12px}.map-toolbar button:last-child{flex:0 0 auto}#house-map{height:57dvh}.escape-guide li{padding:12px;gap:10px}.missions li{font-size:12px}.warning-letter strong{font-size:14px}}
+@media(orientation:portrait){#ui[data-input="touch"] .objective{max-width:calc(100% - 200px)}#ui[data-input="touch"] #subtitle.warning-letter{bottom:max(225px,calc(env(safe-area-inset-bottom) + 225px));max-height:55dvh}}
+@media(orientation:landscape) and (max-height:500px){#ui[data-input="touch"] .meters{right:max(200px,calc(env(safe-area-inset-right) + 190px))}#ui[data-input="touch"] .objective{max-width:calc(100% - 370px)}#ui[data-input="touch"] #subtitle.warning-letter{width:calc(100vw - 370px);max-height:60dvh;bottom:16%}.map-layout{grid-template-columns:minmax(240px,1.2fr) minmax(190px,1fr)}#house-map{height:90dvh}}
+@media(min-width:761px) and (min-height:501px){#ui[data-screen="map"] .panel-inner{padding-top:20px}#ui[data-screen="map"] h1{font-size:44px;margin:8px 0}#ui[data-screen="map"] .fine{margin:8px 0}.map-location{margin:8px 0 15px}#house-map{height:calc(100dvh - 310px);min-height:280px}}
